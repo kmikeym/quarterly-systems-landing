@@ -33,8 +33,10 @@ import Layout from '../layouts/Layout.astro';
 		</div>
 
 		<!-- Globe Section -->
-		<div class="flex justify-center mb-16">
-			<div id="globe-container" class="w-80 h-80"></div>
+		<div class="bg-black rounded-2xl p-12 mb-16 mx-auto max-w-4xl">
+			<div class="flex justify-center">
+				<div id="globe-container" class="w-96 h-96"></div>
+			</div>
 		</div>
 
 		<!-- Status Grid -->
@@ -174,7 +176,7 @@ import Layout from '../layouts/Layout.astro';
 		const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
 		const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 
-		renderer.setSize(320, 320);
+		renderer.setSize(384, 384);
 		renderer.setClearColor(0x000000, 0);
 		container.appendChild(renderer.domElement);
 
@@ -277,7 +279,7 @@ import Layout from '../layouts/Layout.astro';
 
 		// Create instanced meshes for better performance
 		const dotMeshes = [];
-		const circleGeometry = new THREE.CircleGeometry(0.008, 8);
+		const circleGeometry = new THREE.CircleGeometry(0.012, 8);
 
 		Object.entries(dotsByRegion).forEach(([region, dots], index) => {
 			const instancedMesh = new THREE.InstancedMesh(
@@ -435,6 +437,6 @@ import Layout from '../layouts/Layout.astro';
 
 	#globe-container canvas {
 		border-radius: 50%;
-		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 0 60px rgba(112, 214, 255, 0.3), 0 0 120px rgba(112, 214, 255, 0.1);
 	}
 </style>
