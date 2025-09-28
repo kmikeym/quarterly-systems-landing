@@ -32,10 +32,81 @@ import Layout from '../layouts/Layout.astro';
 			</p>
 		</div>
 
-		<!-- Globe Section -->
+		<!-- Executive Location Section -->
 		<div class="bg-black rounded-2xl p-12 mb-16 mx-auto max-w-4xl">
+			<div class="text-center mb-8">
+				<h2 class="text-2xl font-bold text-white mb-2">Executive Location</h2>
+				<p class="text-gray-400">Current operational status and location</p>
+			</div>
 			<div class="flex justify-center">
-				<div id="globe-container" class="w-96 h-96"></div>
+				<div id="map-container" class="w-full h-96 rounded-lg overflow-hidden"></div>
+			</div>
+			<div class="mt-6 text-center">
+				<div class="text-lg font-semibold text-white" id="location-name">Los Angeles, CA</div>
+				<div class="text-sm text-gray-400" id="location-timestamp">Last seen: 2 hours ago</div>
+			</div>
+		</div>
+
+		<!-- Activity Feed Section -->
+		<div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-12 mx-auto max-w-4xl">
+			<h2 class="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h2>
+			<div class="space-y-4">
+				<!-- Mock activity items -->
+				<div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+					<div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+					<div class="flex-1">
+						<div class="flex items-center justify-between mb-1">
+							<h3 class="font-medium text-gray-900">System Deployment</h3>
+							<span class="text-sm text-gray-500">2 hours ago</span>
+						</div>
+						<p class="text-sm text-gray-600">quarterly-systems-landing deployed to production</p>
+						<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-2">
+							Deployment
+						</span>
+					</div>
+				</div>
+
+				<div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+					<div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+					<div class="flex-1">
+						<div class="flex items-center justify-between mb-1">
+							<h3 class="font-medium text-gray-900">Development Activity</h3>
+							<span class="text-sm text-gray-500">4 hours ago</span>
+						</div>
+						<p class="text-sm text-gray-600">Committed changes to quarterly-systems-landing repository</p>
+						<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-2">
+							GitHub
+						</span>
+					</div>
+				</div>
+
+				<div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+					<div class="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
+					<div class="flex-1">
+						<div class="flex items-center justify-between mb-1">
+							<h3 class="font-medium text-gray-900">Content Publication</h3>
+							<span class="text-sm text-gray-500">6 hours ago</span>
+						</div>
+						<p class="text-sm text-gray-600">New blog post published on KmikeyM.com</p>
+						<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mt-2">
+							Blog
+						</span>
+					</div>
+				</div>
+
+				<div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+					<div class="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+					<div class="flex-1">
+						<div class="flex items-center justify-between mb-1">
+							<h3 class="font-medium text-gray-900">Location Update</h3>
+							<span class="text-sm text-gray-500">8 hours ago</span>
+						</div>
+						<p class="text-sm text-gray-600">Checked in at Santa Monica Pier, CA</p>
+						<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 mt-2">
+							Location
+						</span>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -166,279 +237,84 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-	import * as THREE from 'three';
+	import L from 'leaflet';
 
 	// Wait for DOM to be loaded
 	document.addEventListener('DOMContentLoaded', function() {
-		const container = document.getElementById('globe-container');
-		if (!container) return;
+		const mapContainer = document.getElementById('map-container');
+		if (!mapContainer) return;
 
-		// Scene setup
-		const scene = new THREE.Scene();
-		const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-		const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+		// Los Angeles coordinates
+		const losAngeles = [34.0522, -118.2437];
 
-		renderer.setSize(384, 384);
-		renderer.setClearColor(0x000000, 0);
-		container.appendChild(renderer.domElement);
-
-		// Lighting setup
-		const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-		scene.add(ambientLight);
-
-		const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-		directionalLight.position.set(5, 3, 5);
-		scene.add(directionalLight);
-
-		// Globe group for rotation
-		const globeGroup = new THREE.Group();
-		scene.add(globeGroup);
-
-		// Enhanced land detection
-		function isLandPoint(lat, lon) {
-			const continents = [
-				// North America
-				{ latMin: 25, latMax: 70, lonMin: -170, lonMax: -50 },
-				{ latMin: 15, latMax: 32, lonMin: -125, lonMax: -80 },
-				// South America
-				{ latMin: -60, latMax: 15, lonMin: -85, lonMax: -30 },
-				// Europe
-				{ latMin: 35, latMax: 75, lonMin: -15, lonMax: 45 },
-				{ latMin: 60, latMax: 82, lonMin: -25, lonMax: 70 },
-				// Africa
-				{ latMin: -35, latMax: 40, lonMin: -20, lonMax: 55 },
-				// Asia
-				{ latMin: 5, latMax: 80, lonMin: 25, lonMax: 180 },
-				{ latMin: 40, latMax: 75, lonMin: 40, lonMax: 180 },
-				{ latMin: -10, latMax: 30, lonMin: 60, lonMax: 150 },
-				// Australia and Oceania
-				{ latMin: -50, latMax: -10, lonMin: 110, lonMax: 180 },
-				{ latMin: -25, latMax: 0, lonMin: 130, lonMax: 180 },
-			];
-
-			return continents.some(continent =>
-				lat >= continent.latMin && lat <= continent.latMax &&
-				lon >= continent.lonMin && lon <= continent.lonMax
-			);
-		}
-
-		function getRegion(lat, lon) {
-			if (lat > 25 && lon > -170 && lon < -50) return 'north_america';
-			if (lat > -60 && lat < 15 && lon > -85 && lon < -30) return 'south_america';
-			if (lat > 35 && lat < 75 && lon > -15 && lon < 45) return 'europe';
-			if (lat > -35 && lat < 40 && lon > -20 && lon < 55) return 'africa';
-			if (lat > 5 && lat < 80 && lon > 25 && lon < 180) return 'asia';
-			if (lat > -45 && lat < -10 && lon > 110 && lon < 160) return 'australia';
-			return 'other';
-		}
-
-		// Generate world dots with higher density
-		function generateWorldDots() {
-			const dots = [];
-			const step = 1.5; // Smaller step for more dots
-
-			for (let lat = -90; lat <= 90; lat += step) {
-				const lonStep = step / Math.cos(lat * Math.PI / 180);
-				for (let lon = -180; lon <= 180; lon += lonStep) {
-					if (isLandPoint(lat, lon)) {
-						// Convert lat/lng to 3D sphere coordinates
-						const phi = (90 - lat) * (Math.PI / 180);
-						const theta = (lon + 180) * (Math.PI / 180);
-
-						const x = -(Math.sin(phi) * Math.cos(theta));
-						const z = Math.sin(phi) * Math.sin(theta);
-						const y = Math.cos(phi);
-
-						dots.push({
-							position: new THREE.Vector3(x, y, z),
-							lat,
-							lon,
-							region: getRegion(lat, lon)
-						});
-					}
-				}
-			}
-
-			return dots;
-		}
-
-		// Color schemes
-		const colorScheme = {
-			land: [0x70d6ff, 0xe9ff70, 0xffd670, 0xff9770, 0xff70a6],
-			atmosphere: 0x70d6ff
-		};
-
-		// Generate dots and group by region
-		const worldDots = generateWorldDots();
-		const dotsByRegion = {};
-
-		worldDots.forEach(dot => {
-			if (!dotsByRegion[dot.region]) {
-				dotsByRegion[dot.region] = [];
-			}
-			dotsByRegion[dot.region].push(dot);
+		// Initialize map with corporate styling
+		const map = L.map('map-container', {
+			center: losAngeles,
+			zoom: 10,
+			zoomControl: false,
+			attributionControl: false,
+			scrollWheelZoom: false,
+			doubleClickZoom: false,
+			dragging: false,
+			touchZoom: false,
+			boxZoom: false,
+			keyboard: false
 		});
 
-		// Create instanced meshes for better performance
-		const dotMeshes = [];
-		const circleGeometry = new THREE.CircleGeometry(0.012, 8);
+		// Add custom grayscale tile layer
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: '',
+			className: 'map-tiles'
+		}).addTo(map);
 
-		Object.entries(dotsByRegion).forEach(([region, dots], index) => {
-			const instancedMesh = new THREE.InstancedMesh(
-				circleGeometry,
-				new THREE.MeshLambertMaterial({
-					color: colorScheme.land[index % colorScheme.land.length],
-					transparent: true,
-					opacity: 0.9,
-					side: THREE.DoubleSide
-				}),
-				dots.length
-			);
-
-			const matrix = new THREE.Matrix4();
-
-			dots.forEach((dot, i) => {
-				// Position and orient circle to face outward from sphere
-				matrix.setPosition(dot.position.x, dot.position.y, dot.position.z);
-
-				const lookAtMatrix = new THREE.Matrix4();
-				lookAtMatrix.lookAt(dot.position, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0));
-				matrix.multiply(lookAtMatrix);
-
-				instancedMesh.setMatrixAt(i, matrix);
-			});
-
-			instancedMesh.instanceMatrix.needsUpdate = true;
-			globeGroup.add(instancedMesh);
-			dotMeshes.push({ mesh: instancedMesh, dots, region });
+		// Custom marker icon
+		const customIcon = L.divIcon({
+			className: 'custom-marker',
+			html: `
+				<div class="w-4 h-4 bg-red-500 border-2 border-white rounded-full shadow-lg animate-pulse"></div>
+				<div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-red-500 rotate-45"></div>
+			`,
+			iconSize: [16, 24],
+			iconAnchor: [8, 24]
 		});
 
-		// Atmosphere effect
-		const atmosphereGeometry = new THREE.SphereGeometry(1.03, 32, 32);
-		const atmosphereMaterial = new THREE.MeshBasicMaterial({
-			color: colorScheme.atmosphere,
-			transparent: true,
-			opacity: 0.15,
-			side: THREE.BackSide
-		});
-		const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
-		globeGroup.add(atmosphere);
+		// Add marker for current location
+		const marker = L.marker(losAngeles, { icon: customIcon }).addTo(map);
 
-		// Mouse interaction
-		let isDragging = false;
-		let previousMousePosition = { x: 0, y: 0 };
-		let autoRotate = true;
-
-		const handleMouseDown = (event) => {
-			isDragging = true;
-			autoRotate = false;
-			previousMousePosition = {
-				x: event.clientX,
-				y: event.clientY
-			};
-		};
-
-		const handleMouseMove = (event) => {
-			if (isDragging) {
-				const deltaMove = {
-					x: event.clientX - previousMousePosition.x,
-					y: event.clientY - previousMousePosition.y
-				};
-
-				const deltaRotationQuaternion = new THREE.Quaternion()
-					.setFromEuler(new THREE.Euler(
-						deltaMove.y * 0.01,
-						deltaMove.x * 0.01,
-						0,
-						'XYZ'
-					));
-
-				globeGroup.quaternion.multiplyQuaternions(deltaRotationQuaternion, globeGroup.quaternion);
-
-				previousMousePosition = {
-					x: event.clientX,
-					y: event.clientY
-				};
-			}
-		};
-
-		const handleMouseUp = () => {
-			isDragging = false;
-			// Resume auto-rotate after a delay
-			setTimeout(() => {
-				if (!isDragging) autoRotate = true;
-			}, 3000);
-		};
-
-		const handleWheel = (event) => {
-			event.preventDefault();
-			const scale = event.deltaY > 0 ? 1.1 : 0.9;
-			camera.position.multiplyScalar(scale);
-			camera.position.clampLength(1.5, 6);
-		};
-
-		// Add event listeners
-		renderer.domElement.addEventListener('mousedown', handleMouseDown);
-		renderer.domElement.addEventListener('mousemove', handleMouseMove);
-		renderer.domElement.addEventListener('mouseup', handleMouseUp);
-		renderer.domElement.addEventListener('wheel', handleWheel);
-
-		// Position camera
-		camera.position.z = 3;
-
-		// Animation loop
-		const clock = new THREE.Clock();
-		function animate() {
-			requestAnimationFrame(animate);
-
-			const elapsed = clock.getElapsedTime();
-
-			// Auto rotation when not dragging
-			if (autoRotate && !isDragging) {
-				globeGroup.rotation.y += 0.003;
-			}
-
-			// Subtle pulsing effect for dots
-			dotMeshes.forEach((meshData, index) => {
-				const pulse = Math.sin(elapsed * 1.5 + index * 0.5) * 0.1 + 1;
-				meshData.mesh.material.opacity = 0.7 + pulse * 0.2;
-			});
-
-			renderer.render(scene, camera);
-		}
-
-		animate();
-
-		// Handle resize
-		function handleResize() {
-			const size = Math.min(container.clientWidth, container.clientHeight);
-			renderer.setSize(size, size);
-		}
-
-		window.addEventListener('resize', handleResize);
-		handleResize();
-
-		// Cleanup function
-		return () => {
-			renderer.domElement.removeEventListener('mousedown', handleMouseDown);
-			renderer.domElement.removeEventListener('mousemove', handleMouseMove);
-			renderer.domElement.removeEventListener('mouseup', handleMouseUp);
-			renderer.domElement.removeEventListener('wheel', handleWheel);
-			circleGeometry.dispose();
-			renderer.dispose();
-		};
+		// Add subtle zoom animation on load
+		setTimeout(() => {
+			map.setView(losAngeles, 12, { animate: true, duration: 2 });
+		}, 1000);
 	});
 </script>
 
 <style>
-	#globe-container {
-		display: flex;
-		align-items: center;
-		justify-content: center;
+	/* Import Leaflet CSS */
+	@import 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+
+	#map-container {
+		height: 384px;
+		width: 100%;
+		border-radius: 12px;
+		overflow: hidden;
 	}
 
-	#globe-container canvas {
-		border-radius: 50%;
-		box-shadow: 0 0 60px rgba(112, 214, 255, 0.3), 0 0 120px rgba(112, 214, 255, 0.1);
+	/* Corporate grayscale map styling */
+	:global(.map-tiles) {
+		filter: grayscale(100%) contrast(120%) brightness(0.9);
+	}
+
+	/* Custom marker styling */
+	:global(.custom-marker) {
+		position: relative;
+	}
+
+	/* Executive location info styling */
+	#location-name {
+		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	}
+
+	#location-timestamp {
+		opacity: 0.8;
 	}
 </style>
