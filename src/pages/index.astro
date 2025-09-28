@@ -1,0 +1,100 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Quarterly Systems - Business-grade vibe coding">
+	<nav class="bg-white border-b border-gray-200">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="flex justify-between items-center h-16">
+				<div class="flex items-center">
+					<span class="text-xl font-bold text-gray-900">Quarterly Systems</span>
+				</div>
+				<div class="hidden md:block">
+					<div class="ml-10 flex items-baseline space-x-4">
+						<a href="#product" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Product</a>
+						<a href="#apps" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Apps</a>
+						<a href="#knowledge" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Knowledge Base</a>
+						<a href="/waitlist" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Waitlist</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<main>
+		<!-- Hero Section -->
+		<section class="bg-white">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+				<div class="text-center">
+					<h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl lg:text-6xl">
+						<span class="block">Business-grade</span>
+						<span class="block">vibe coding</span>
+					</h1>
+					<p class="mt-6 max-w-2xl mx-auto text-xl text-gray-600">
+						The experimental app platform for building fast, simple systems
+					</p>
+					<div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+						<a
+							href="/waitlist"
+							class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:text-lg md:px-10"
+						>
+							Join the Waitlist
+						</a>
+						<a
+							href="/about"
+							class="inline-flex items-center justify-center px-8 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 md:text-lg md:px-10"
+						>
+							Learn More
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Features Section -->
+		<section class="bg-gray-50 py-24">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+					<div class="bg-white p-8 rounded-lg shadow-sm">
+						<h3 class="text-xl font-semibold text-gray-900 mb-4">Fast Builds</h3>
+						<p class="text-gray-600">
+							Deploy applications in seconds, not hours. Our optimized build pipeline gets your ideas running instantly.
+						</p>
+					</div>
+					<div class="bg-white p-8 rounded-lg shadow-sm">
+						<h3 class="text-xl font-semibold text-gray-900 mb-4">Simple Tools</h3>
+						<p class="text-gray-600">
+							Clean, intuitive interfaces that get out of your way. Focus on building, not configuring.
+						</p>
+					</div>
+					<div class="bg-white p-8 rounded-lg shadow-sm">
+						<h3 class="text-xl font-semibold text-gray-900 mb-4">Experimental Freedom</h3>
+						<p class="text-gray-600">
+							Try new approaches without commitment. Prototype, iterate, and discover what works.
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<!-- Footer -->
+	<footer class="bg-white border-t border-gray-200">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+			<div class="flex flex-col md:flex-row justify-between items-center">
+				<div class="mb-4 md:mb-0">
+					<span class="text-sm text-gray-500">© 2025 Quarterly Systems</span>
+				</div>
+				<div class="flex space-x-6">
+					<a href="/about" class="text-sm text-gray-500 hover:text-gray-900">About</a>
+					<span class="text-gray-300">·</span>
+					<a href="/changelog" class="text-sm text-gray-500 hover:text-gray-900">Changelog</a>
+					<span class="text-gray-300">·</span>
+					<a href="/contact" class="text-sm text-gray-500 hover:text-gray-900">Contact</a>
+					<span class="text-gray-300">·</span>
+					<a href="/status" class="text-sm text-gray-500 hover:text-gray-900">Status</a>
+				</div>
+			</div>
+		</div>
+	</footer>
+</Layout>

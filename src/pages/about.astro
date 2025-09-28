@@ -1,0 +1,108 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="About - Quarterly Systems">
+	<nav class="bg-white border-b border-gray-200">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="flex justify-between items-center h-16">
+				<div class="flex items-center">
+					<a href="/" class="text-xl font-bold text-gray-900">Quarterly Systems</a>
+				</div>
+				<div class="hidden md:block">
+					<div class="ml-10 flex items-baseline space-x-4">
+						<a href="#product" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Product</a>
+						<a href="#apps" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Apps</a>
+						<a href="#knowledge" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Knowledge Base</a>
+						<a href="/waitlist" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Waitlist</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+		<div class="prose prose-lg mx-auto">
+			<h1>About Quarterly Systems</h1>
+
+			<p class="lead">
+				Quarterly Systems is an experimental platform for business-grade vibe coding,
+				designed to help teams build fast, simple systems without the complexity.
+			</p>
+
+			<h2>What is Vibe Coding?</h2>
+			<p>
+				Vibe coding represents a new approach to software development that prioritizes
+				intuition, rapid iteration, and experimental freedom over rigid processes.
+				It's about building systems that feel right and work efficiently.
+			</p>
+
+			<h2>Our Philosophy</h2>
+			<ul>
+				<li><strong>Speed over perfection</strong> - Get ideas running quickly</li>
+				<li><strong>Simplicity over complexity</strong> - Remove unnecessary friction</li>
+				<li><strong>Experimentation over orthodoxy</strong> - Try new approaches</li>
+			</ul>
+
+			<h2>Why Quarterly Systems?</h2>
+			<p>
+				We believe the future of software development lies in platforms that amplify
+				human creativity rather than constraining it. Quarterly Systems provides the
+				infrastructure and tools to make experimental development scalable for business use.
+			</p>
+
+			<div class="not-prose mt-12">
+				<a
+					href="/waitlist"
+					class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+				>
+					Join the Waitlist
+				</a>
+			</div>
+		</div>
+	</main>
+
+	<!-- Footer -->
+	<footer class="bg-white border-t border-gray-200 mt-16">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+			<div class="flex flex-col md:flex-row justify-between items-center">
+				<div class="mb-4 md:mb-0">
+					<span class="text-sm text-gray-500">© 2025 Quarterly Systems</span>
+				</div>
+				<div class="flex space-x-6">
+					<a href="/about" class="text-sm text-gray-500 hover:text-gray-900">About</a>
+					<span class="text-gray-300">·</span>
+					<a href="/changelog" class="text-sm text-gray-500 hover:text-gray-900">Changelog</a>
+					<span class="text-gray-300">·</span>
+					<a href="/contact" class="text-sm text-gray-500 hover:text-gray-900">Contact</a>
+					<span class="text-gray-300">·</span>
+					<a href="/status" class="text-sm text-gray-500 hover:text-gray-900">Status</a>
+				</div>
+			</div>
+		</div>
+	</footer>
+</Layout>
+
+<style>
+	.prose {
+		@apply text-gray-900;
+	}
+	.prose h1 {
+		@apply text-3xl font-bold text-gray-900 mb-8;
+	}
+	.prose h2 {
+		@apply text-2xl font-semibold text-gray-900 mt-8 mb-4;
+	}
+	.prose p {
+		@apply text-gray-600 mb-4 leading-relaxed;
+	}
+	.prose .lead {
+		@apply text-xl text-gray-700 mb-8;
+	}
+	.prose ul {
+		@apply list-disc ml-6 mb-4;
+	}
+	.prose li {
+		@apply text-gray-600 mb-2;
+	}
+</style>
