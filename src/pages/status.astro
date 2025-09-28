@@ -1,0 +1,247 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Status - Quarterly Systems">
+	<nav class="bg-white border-b border-gray-200">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="flex justify-between items-center h-16">
+				<div class="flex items-center">
+					<a href="/" class="text-xl font-bold text-gray-900">Quarterly Systems</a>
+				</div>
+				<div class="hidden md:block">
+					<div class="ml-10 flex items-baseline space-x-4">
+						<a href="https://vibecode.quarterly.systems" class="text-gray-600 hover:text-purple-600 hover:shadow-lg hover:shadow-purple-500/25 px-3 py-2 rounded-md text-sm font-medium flex items-center transition-all duration-200">
+							Product
+							<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">beta</span>
+						</a>
+						<a href="/apps" class="text-gray-600 hover:text-purple-600 hover:shadow-lg hover:shadow-purple-500/25 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200">Apps</a>
+						<a href="#knowledge" class="text-gray-600 hover:text-purple-600 hover:shadow-lg hover:shadow-purple-500/25 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200">Knowledge Base</a>
+						<a href="/waitlist" class="text-gray-600 hover:text-purple-600 hover:shadow-lg hover:shadow-purple-500/25 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200">Waitlist</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+		<div class="text-center mb-12">
+			<h1 class="text-4xl font-bold text-gray-900 mb-4">Global System Status</h1>
+			<p class="text-xl text-gray-600">
+				Real-time operational status across all Quarterly Systems platforms
+			</p>
+		</div>
+
+		<!-- Globe Section -->
+		<div class="flex justify-center mb-16">
+			<div class="globe-container">
+				<div class="globe"></div>
+			</div>
+		</div>
+
+		<!-- Status Grid -->
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+			<!-- VibeCode Platform -->
+			<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+				<div class="flex items-center justify-between mb-4">
+					<h3 class="text-lg font-semibold text-gray-900">VibeCode Platform</h3>
+					<div class="flex items-center">
+						<div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+						<span class="text-sm text-green-600 font-medium">Operational</span>
+					</div>
+				</div>
+				<p class="text-gray-600 text-sm mb-3">vibecode.quarterly.systems</p>
+				<div class="space-y-2 text-sm">
+					<div class="flex justify-between">
+						<span class="text-gray-500">Uptime</span>
+						<span class="text-gray-900">99.9%</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="text-gray-500">Response Time</span>
+						<span class="text-gray-900">142ms</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Office Communications -->
+			<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+				<div class="flex items-center justify-between mb-4">
+					<h3 class="text-lg font-semibold text-gray-900">Office Communications</h3>
+					<div class="flex items-center">
+						<div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+						<span class="text-sm text-green-600 font-medium">Operational</span>
+					</div>
+				</div>
+				<p class="text-gray-600 text-sm mb-3">office.quarterly.systems</p>
+				<div class="space-y-2 text-sm">
+					<div class="flex justify-between">
+						<span class="text-gray-500">Uptime</span>
+						<span class="text-gray-900">99.8%</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="text-gray-500">Response Time</span>
+						<span class="text-gray-900">89ms</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Main Website -->
+			<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+				<div class="flex items-center justify-between mb-4">
+					<h3 class="text-lg font-semibold text-gray-900">Main Website</h3>
+					<div class="flex items-center">
+						<div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+						<span class="text-sm text-green-600 font-medium">Operational</span>
+					</div>
+				</div>
+				<p class="text-gray-600 text-sm mb-3">quarterly.systems</p>
+				<div class="space-y-2 text-sm">
+					<div class="flex justify-between">
+						<span class="text-gray-500">Uptime</span>
+						<span class="text-gray-900">99.9%</span>
+					</div>
+					<div class="flex justify-between">
+						<span class="text-gray-500">Response Time</span>
+						<span class="text-gray-900">76ms</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Incidents Section -->
+		<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+			<h2 class="text-2xl font-bold text-gray-900 mb-6">Recent Incidents</h2>
+			<div class="space-y-4">
+				<div class="flex items-start space-x-4 p-4 bg-green-50 rounded-lg border border-green-200">
+					<div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+					<div class="flex-1">
+						<div class="flex items-center justify-between mb-2">
+							<h3 class="font-medium text-gray-900">All Systems Operational</h3>
+							<span class="text-sm text-gray-500">Last 30 days</span>
+						</div>
+						<p class="text-sm text-gray-600">No incidents reported in the past 30 days. All systems running smoothly.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Performance Metrics -->
+		<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+			<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+				<div class="text-3xl font-bold text-blue-600 mb-2">99.9%</div>
+				<div class="text-gray-600">Average Uptime</div>
+			</div>
+			<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+				<div class="text-3xl font-bold text-purple-600 mb-2">102ms</div>
+				<div class="text-gray-600">Average Response</div>
+			</div>
+			<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+				<div class="text-3xl font-bold text-green-600 mb-2">0</div>
+				<div class="text-gray-600">Active Incidents</div>
+			</div>
+		</div>
+	</main>
+
+	<!-- Footer -->
+	<footer class="bg-white border-t border-gray-200 mt-16">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+			<div class="flex flex-col md:flex-row justify-between items-center">
+				<div class="mb-4 md:mb-0">
+					<span class="text-sm text-gray-500">© 2025 Quarterly Systems</span>
+				</div>
+				<div class="flex space-x-6">
+					<a href="/about" class="text-sm text-gray-500 hover:text-gray-900">About</a>
+					<span class="text-gray-300">·</span>
+					<a href="/changelog" class="text-sm text-gray-500 hover:text-gray-900">Changelog</a>
+					<span class="text-gray-300">·</span>
+					<a href="/contact" class="text-sm text-gray-500 hover:text-gray-900">Contact</a>
+					<span class="text-gray-300">·</span>
+					<a href="/status" class="text-purple-600 hover:text-purple-700">Status</a>
+				</div>
+			</div>
+		</div>
+	</footer>
+</Layout>
+
+<style>
+	.globe-container {
+		perspective: 1000px;
+		width: 300px;
+		height: 300px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.globe {
+		width: 280px;
+		height: 280px;
+		border-radius: 50%;
+		background: radial-gradient(circle at 30% 30%, #4a5568, #2d3748);
+		position: relative;
+		animation: spin 20s linear infinite;
+		box-shadow:
+			inset -20px -20px 50px rgba(0, 0, 0, 0.5),
+			0 20px 40px rgba(0, 0, 0, 0.3);
+	}
+
+	.globe::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		background-image:
+			radial-gradient(2px 2px at 20px 30px, #60a5fa, transparent),
+			radial-gradient(2px 2px at 40px 70px, #60a5fa, transparent),
+			radial-gradient(1px 1px at 90px 40px, #60a5fa, transparent),
+			radial-gradient(1px 1px at 130px 80px, #60a5fa, transparent),
+			radial-gradient(2px 2px at 160px 30px, #60a5fa, transparent),
+			radial-gradient(1px 1px at 200px 60px, #60a5fa, transparent),
+			radial-gradient(1px 1px at 30px 110px, #60a5fa, transparent),
+			radial-gradient(2px 2px at 80px 120px, #60a5fa, transparent),
+			radial-gradient(1px 1px at 120px 140px, #60a5fa, transparent),
+			radial-gradient(2px 2px at 170px 120px, #60a5fa, transparent),
+			radial-gradient(1px 1px at 220px 130px, #60a5fa, transparent),
+			radial-gradient(1px 1px at 40px 180px, #60a5fa, transparent),
+			radial-gradient(2px 2px at 100px 200px, #60a5fa, transparent),
+			radial-gradient(1px 1px at 150px 220px, #60a5fa, transparent),
+			radial-gradient(1px 1px at 210px 200px, #60a5fa, transparent),
+			radial-gradient(2px 2px at 260px 180px, #60a5fa, transparent),
+			radial-gradient(1px 1px at 50px 240px, #60a5fa, transparent),
+			radial-gradient(1px 1px at 120px 260px, #60a5fa, transparent),
+			radial-gradient(2px 2px at 190px 250px, #60a5fa, transparent),
+			radial-gradient(1px 1px at 240px 220px, #60a5fa, transparent);
+		background-repeat: repeat;
+		background-size: 300px 300px;
+		animation: mapRotate 20s linear infinite reverse;
+	}
+
+	.globe::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		background: linear-gradient(
+			-45deg,
+			transparent 40%,
+			rgba(255, 255, 255, 0.1) 50%,
+			transparent 60%
+		);
+	}
+
+	@keyframes spin {
+		0% { transform: rotateY(0deg); }
+		100% { transform: rotateY(360deg); }
+	}
+
+	@keyframes mapRotate {
+		0% { transform: rotateZ(0deg); }
+		100% { transform: rotateZ(-360deg); }
+	}
+</style>
