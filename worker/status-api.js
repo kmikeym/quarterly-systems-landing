@@ -107,7 +107,7 @@ async function refreshData(env) {
 
   // Fetch all data sources in parallel
   const [githubData, rssData] = await Promise.allSettled([
-    fetchGitHubActivity(env.GITHUB_TOKEN),
+    fetchGitHubRSS(),
     fetchRSSFeeds()
   ]);
 
@@ -171,62 +171,60 @@ async function refreshData(env) {
   return statusData;
 }
 
-async function fetchGitHubActivity(token) {
-  if (!token) {
-    console.log('No GitHub token provided');
-    return [];
-  }
-
+async function fetchGitHubRSS() {
   try {
     const activities = [];
 
-    // Fetch recent commits from user's public activity
-    const eventsResponse = await fetch('https://api.github.com/users/kmikeym/events/public', {
-      headers: {
-        'Authorization': `token ${token}`,
-        'User-Agent': 'Quarterly-Systems-Status/1.0'
+    // List of GitHub RSS feeds to monitor
+    const gitHubFeeds = [
+      {
+        url: 'https://github.com/kmikeym/quarterly-systems-landing/commits/main.atom',
+        repository: 'kmikeym/quarterly-systems-landing'
+      },
+      {
+        url: 'https://github.com/kmikeym/quarterlykb/commits/v4.atom',
+        repository: 'kmikeym/quarterlykb'
+      },
+      {
+        url: 'https://github.com/kmikeym.atom',
+        repository: 'all-repositories'
       }
-    });
+    ];
 
-    if (!eventsResponse.ok) {
-      throw new Error(`GitHub API error: ${eventsResponse.status}`);
-    }
-
-    const events = await eventsResponse.json();
-
-    for (const event of events.slice(0, 5)) {
-      if (event.type === 'PushEvent') {
-        activities.push({
-          id: `github-${event.id}`,
-          type: 'development',
-          title: 'Development Activity',
-          description: `Pushed ${event.payload.commits?.length || 1} commit(s) to ${event.repo.name}`,
-          timestamp: event.created_at,
-          source: 'GitHub',
-          metadata: {
-            repository: event.repo.name,
-            commits: event.payload.commits?.length || 1
+    // Fetch from multiple GitHub RSS feeds
+    for (const feed of gitHubFeeds) {
+      try {
+        const response = await fetch(feed.url, {
+          headers: {
+            'User-Agent': 'Quarterly-Systems-Status/1.0'
           }
         });
-      } else if (event.type === 'ReleaseEvent') {
-        activities.push({
-          id: `github-release-${event.id}`,
-          type: 'deployment',
-          title: 'Release Published',
-          description: `Released ${event.payload.release.tag_name} for ${event.repo.name}`,
-          timestamp: event.created_at,
-          source: 'GitHub',
-          metadata: {
-            repository: event.repo.name,
-            version: event.payload.release.tag_name
-          }
-        });
+
+        if (!response.ok) {
+          console.log(`GitHub RSS feed error for ${feed.repository}: ${response.status}`);
+          continue;
+        }
+
+        const xml = await response.text();
+        const commits = parseGitHubRSSItems(xml, feed.repository);
+
+        // Add commits to activities (limit to 3 per feed)
+        activities.push(...commits.slice(0, 3));
+      } catch (error) {
+        console.error(`Error fetching GitHub RSS for ${feed.repository}:`, error);
       }
     }
 
-    return activities;
+    // Remove duplicates by commit ID and sort by timestamp
+    const uniqueActivities = activities.filter((activity, index, self) =>
+      index === self.findIndex(a => a.id === activity.id)
+    );
+
+    uniqueActivities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    return uniqueActivities.slice(0, 10); // Return top 10 most recent
   } catch (error) {
-    console.error('GitHub API error:', error);
+    console.error('GitHub RSS processing error:', error);
     return [];
   }
 }
@@ -323,6 +321,51 @@ function extractXMLValue(xml, tag) {
   const regex = new RegExp(`<${tag}[^>]*>(.*?)<\/${tag}>`, 'i');
   const match = xml.match(regex);
   return match ? match[1].trim() : null;
+}
+
+function parseGitHubRSSItems(xml, repositoryName) {
+  const activities = [];
+  const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
+  let match;
+
+  while ((match = entryRegex.exec(xml)) !== null) {
+    const entryXML = match[1];
+
+    // Extract commit data from GitHub Atom feed
+    const title = extractXMLValue(entryXML, 'title');
+    const link = extractXMLValue(entryXML, 'link href') || extractXMLValue(entryXML, 'link');
+    const updated = extractXMLValue(entryXML, 'updated');
+    const id = extractXMLValue(entryXML, 'id');
+    const author = extractXMLValue(entryXML, 'name');
+
+    if (title && link && updated && id) {
+      // Extract commit hash from the ID or link
+      const commitHash = id ? id.split('/').pop() || id.split(':').pop() :
+                       link ? link.split('/').pop() :
+                       'unknown';
+
+      // Create activity object
+      activities.push({
+        id: `github-commit-${commitHash}`,
+        type: 'development',
+        title: 'Development Activity',
+        description: repositoryName === 'all-repositories' ?
+                    `${title}` :
+                    `Pushed commit to ${repositoryName}`,
+        timestamp: new Date(updated).toISOString(),
+        source: 'GitHub',
+        metadata: {
+          repository: repositoryName,
+          commitHash: commitHash.substring(0, 7), // Short hash
+          commitMessage: title,
+          link: link,
+          author: author
+        }
+      });
+    }
+  }
+
+  return activities;
 }
 
 async function updateLocation(env, locationData) {
