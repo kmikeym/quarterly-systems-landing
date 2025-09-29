@@ -99,6 +99,11 @@ async function refreshData(env) {
 
   console.log('Refreshing status data...');
 
+  // Get current location context for geo-tagging
+  const cachedStatus = await env.STATUS_KV.get('status_data');
+  const currentStatus = cachedStatus ? JSON.parse(cachedStatus) : {};
+  const currentLocation = currentStatus.location?.name || 'Los Angeles, CA';
+
   // Fetch all data sources in parallel
   const [githubData, rssData] = await Promise.allSettled([
     fetchGitHubActivity(env.GITHUB_TOKEN),
@@ -107,14 +112,22 @@ async function refreshData(env) {
 
   const activities = [];
 
-  // Process GitHub data
+  // Process GitHub data with location context
   if (githubData.status === 'fulfilled' && githubData.value) {
-    activities.push(...githubData.value);
+    const geoTaggedGithub = githubData.value.map(activity => ({
+      ...activity,
+      location: currentLocation
+    }));
+    activities.push(...geoTaggedGithub);
   }
 
-  // Process RSS data
+  // Process RSS data with location context
   if (rssData.status === 'fulfilled' && rssData.value) {
-    activities.push(...rssData.value);
+    const geoTaggedRSS = rssData.value.map(activity => ({
+      ...activity,
+      location: currentLocation
+    }));
+    activities.push(...geoTaggedRSS);
   }
 
   // Sort activities by timestamp (newest first)
@@ -294,7 +307,7 @@ function extractXMLValue(xml, tag) {
 }
 
 async function updateLocation(env, locationData) {
-  const { location, coordinates, timestamp } = locationData;
+  const { location, activity, coordinates, timestamp } = locationData;
 
   // Update current location in status data
   const cachedStatus = await env.STATUS_KV.get('status_data');
@@ -311,12 +324,14 @@ async function updateLocation(env, locationData) {
   const locationActivity = {
     id: `location-${Date.now()}`,
     type: 'location',
-    title: 'Location Update',
-    description: `Arrived in ${location}`,
+    title: activity ? 'Activity Update' : 'Location Update',
+    description: activity ? `${activity} in ${location}` : `Arrived in ${location}`,
     timestamp: timestamp || new Date().toISOString(),
     source: 'Manual',
+    location: location,
     metadata: {
       location: location,
+      activity: activity,
       coordinates: coordinates
     }
   };

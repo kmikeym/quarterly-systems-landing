@@ -34,6 +34,20 @@ import Layout from '../../layouts/Layout.astro';
 					<p class="mt-1 text-xs text-gray-500">Enter city and state/country</p>
 				</div>
 
+				<div>
+					<label for="activity" class="block text-sm font-medium text-gray-700 mb-2">
+						Activity (optional)
+					</label>
+					<input
+						type="text"
+						id="activity"
+						name="activity"
+						placeholder="e.g., Client meeting, Conference attendance, Working from coffee shop"
+						class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+					>
+					<p class="mt-1 text-xs text-gray-500">Describe what you're doing at this location</p>
+				</div>
+
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<label for="latitude" class="block text-sm font-medium text-gray-700 mb-2">
@@ -132,6 +146,7 @@ import Layout from '../../layouts/Layout.astro';
 
 				const formData = new FormData(form);
 				const location = formData.get('location').trim();
+				const activity = formData.get('activity').trim();
 				const latitude = formData.get('latitude');
 				const longitude = formData.get('longitude');
 
@@ -147,6 +162,7 @@ import Layout from '../../layouts/Layout.astro';
 				try {
 					const payload = {
 						location: location,
+						activity: activity || null,
 						coordinates: (latitude && longitude) ? [parseFloat(latitude), parseFloat(longitude)] : null,
 						timestamp: new Date().toISOString()
 					};
