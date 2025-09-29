@@ -141,7 +141,7 @@ async function refreshData(env) {
       coordinates: [34.0522, -118.2437],
       lastSeen: new Date(now - 7200000).toISOString() // 2 hours ago
     },
-    activities: activities.slice(0, 10), // Keep only latest 10
+    activities: activities.slice(0, 20), // Keep only latest 20
     services: {
       vibecode: { status: 'operational', uptime: '99.9%', responseTime: '142ms' },
       office: { status: 'operational', uptime: '99.8%', responseTime: '89ms' },
@@ -242,6 +242,16 @@ async function fetchRSSFeeds() {
       url: 'https://kmikeym.substack.com/feed',
       source: 'Substack',
       type: 'content'
+    },
+    {
+      url: 'https://letterboxd.com/kmikeym/rss/',
+      source: 'Letterboxd',
+      type: 'R&D'
+    },
+    {
+      url: 'https://bsky.app/profile/did:plc:gagojcjzqigtnzz25jmgmhgq/rss',
+      source: 'Bluesky',
+      type: 'content'
     }
   ];
 
@@ -256,11 +266,15 @@ async function fetchRSSFeeds() {
       const items = parseRSSItems(xml);
 
       for (const item of items.slice(0, 3)) {
+        const activityType = feed.type === 'R&D' ? 'research' : 'content';
+        const activityTitle = feed.type === 'R&D' ? 'Research Activity' : 'Content Publication';
+        const description = feed.type === 'R&D' ? `Watched: ${item.title}` : `Published: ${item.title}`;
+
         activities.push({
           id: `rss-${btoa(item.link).slice(0, 10)}`,
-          type: 'content',
-          title: 'Content Publication',
-          description: `Published: ${item.title}`,
+          type: activityType,
+          title: activityTitle,
+          description: description,
           timestamp: item.pubDate,
           source: feed.source,
           metadata: {
@@ -286,12 +300,16 @@ function parseRSSItems(xml) {
     const itemXML = match[1];
 
     const title = extractXMLValue(itemXML, 'title');
+    const description = extractXMLValue(itemXML, 'description');
     const link = extractXMLValue(itemXML, 'link');
     const pubDate = extractXMLValue(itemXML, 'pubDate');
 
-    if (title && link && pubDate) {
+    // Use description as title if title is missing (for Bluesky)
+    const itemTitle = title || description || 'Post';
+
+    if (itemTitle && link && pubDate) {
       items.push({
-        title: title.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1'),
+        title: itemTitle.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1'),
         link,
         pubDate: new Date(pubDate).toISOString()
       });
