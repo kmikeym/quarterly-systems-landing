@@ -37,6 +37,17 @@ export default {
         });
       }
 
+      if (url.pathname === '/api/location' && request.method === 'POST') {
+        const locationData = await request.json();
+        await updateLocation(env, locationData);
+        return new Response(JSON.stringify({ status: 'location updated' }), {
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders
+          }
+        });
+      }
+
       return new Response('Not Found', { status: 404 });
     } catch (error) {
       console.error('Worker error:', error);
@@ -116,6 +127,19 @@ async function refreshData(env) {
   await env.STATUS_KV.put('status_data', JSON.stringify(statusData), {
     expirationTtl: 1800 // 30 minutes
   });
+
+  // Update full activity history with new activities
+  const allActivities = await env.STATUS_KV.get('all_activities');
+  let fullHistory = allActivities ? JSON.parse(allActivities) : [];
+
+  // Add new activities to history (avoid duplicates by checking IDs)
+  activities.forEach(activity => {
+    if (!fullHistory.some(existing => existing.id === activity.id)) {
+      fullHistory.unshift(activity);
+    }
+  });
+
+  await env.STATUS_KV.put('all_activities', JSON.stringify(fullHistory));
 
   console.log('Status data refreshed:', activities.length, 'activities');
   return statusData;
@@ -255,4 +279,54 @@ function extractXMLValue(xml, tag) {
   const regex = new RegExp(`<${tag}[^>]*>(.*?)<\/${tag}>`, 'i');
   const match = xml.match(regex);
   return match ? match[1].trim() : null;
+}
+
+async function updateLocation(env, locationData) {
+  const { location, coordinates, timestamp } = locationData;
+
+  // Update current location in status data
+  const cachedStatus = await env.STATUS_KV.get('status_data');
+  let statusData = cachedStatus ? JSON.parse(cachedStatus) : {};
+
+  // Update location info
+  statusData.location = {
+    name: location,
+    coordinates: coordinates || [34.0522, -118.2437], // Default to LA if no coords
+    lastSeen: timestamp || new Date().toISOString()
+  };
+
+  // Create location activity
+  const locationActivity = {
+    id: `location-${Date.now()}`,
+    type: 'location',
+    title: 'Location Update',
+    description: `Arrived in ${location}`,
+    timestamp: timestamp || new Date().toISOString(),
+    source: 'Manual',
+    metadata: {
+      location: location,
+      coordinates: coordinates
+    }
+  };
+
+  // Add to activities (if they exist)
+  if (!statusData.activities) {
+    statusData.activities = [];
+  }
+
+  // Add location activity to beginning and keep only latest 10 for main feed
+  statusData.activities.unshift(locationActivity);
+  statusData.activities = statusData.activities.slice(0, 10);
+
+  // Store all activities in separate key for history
+  const allActivities = await env.STATUS_KV.get('all_activities');
+  let fullHistory = allActivities ? JSON.parse(allActivities) : [];
+  fullHistory.unshift(locationActivity);
+
+  // Update both caches
+  statusData.lastUpdate = Date.now();
+  await env.STATUS_KV.put('status_data', JSON.stringify(statusData));
+  await env.STATUS_KV.put('all_activities', JSON.stringify(fullHistory));
+
+  console.log('Location updated:', location, 'at', timestamp);
 }
