@@ -239,6 +239,10 @@ import Layout from '../layouts/Layout.astro';
 		// Add marker for current location
 		const marker = L.marker(losAngeles, { icon: customIcon }).addTo(map);
 
+		// Make map and marker globally accessible for updates
+		window.mapInstance = map;
+		window.markerInstance = marker;
+
 		// Add subtle zoom animation on load
 		setTimeout(() => {
 			map.setView(losAngeles, 12, { animate: true, duration: 2 });
@@ -403,6 +407,13 @@ import Layout from '../layouts/Layout.astro';
 		if (timestampElement && location.lastSeen) {
 			const lastSeen = new Date(location.lastSeen);
 			timestampElement.textContent = `Last seen: ${getTimeAgo(lastSeen)}`;
+		}
+
+		// Update map position if coordinates are available
+		if (location.coordinates && window.mapInstance && window.markerInstance) {
+			const newCoords = [location.coordinates[0], location.coordinates[1]];
+			window.mapInstance.setView(newCoords, 12, { animate: true, duration: 2 });
+			window.markerInstance.setLatLng(newCoords);
 		}
 	}
 </script>

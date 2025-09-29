@@ -396,15 +396,28 @@ async function getLocationLevels(locationInput, providedCoordinates) {
         coordinates: providedCoordinates || [34.0522, -118.2437]
       };
     } else if (parts.length === 3) {
-      // Format: "West Hollywood, Los Angeles, CA"
-      return {
-        exactAddress: input,
-        neighborhood: parts[0],
-        city: `${parts[1]}, ${parts[2]}`,
-        coordinates: providedCoordinates || [34.0522, -118.2437]
-      };
+      // Format: "123 Main St, Los Angeles, CA" or "West Hollywood, Los Angeles, CA"
+      const lastPart = parts[2];
+      const secondPart = parts[1];
+
+      // If last part looks like a state (2 letters), combine last two parts as city
+      if (lastPart.length === 2) {
+        return {
+          exactAddress: input,
+          neighborhood: secondPart,
+          city: `${secondPart}, ${lastPart}`,
+          coordinates: providedCoordinates || [34.0522, -118.2437]
+        };
+      } else {
+        return {
+          exactAddress: input,
+          neighborhood: parts[0],
+          city: `${parts[1]}, ${parts[2]}`,
+          coordinates: providedCoordinates || [34.0522, -118.2437]
+        };
+      }
     } else if (parts.length === 2) {
-      // City, State format: "Los Angeles, CA"
+      // Format: "Los Angeles, CA"
       return {
         exactAddress: input,
         neighborhood: parts[0],
