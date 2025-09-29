@@ -367,23 +367,30 @@ function parseLocationLevels(locationInput) {
   // Handle different input formats and extract appropriate levels
   const input = locationInput.trim();
 
-  // If it contains a comma, assume it's in format like "123 Main St, Downtown, Los Angeles, CA"
+  // If it contains a comma, assume it's in format like "123 Main St, West Hollywood, Los Angeles, CA"
   if (input.includes(',')) {
     const parts = input.split(',').map(part => part.trim());
 
-    if (parts.length >= 3) {
-      // Full address format: "123 Main St, Downtown, Los Angeles, CA"
+    if (parts.length >= 4) {
+      // Full address format: "123 Main St, West Hollywood, Los Angeles, CA"
       return {
-        exactAddress: input,                    // Full address
-        neighborhood: parts[parts.length - 2], // Second to last (Los Angeles)
-        city: parts[parts.length - 2]          // Same as neighborhood for now
+        exactAddress: input,                           // Full address
+        neighborhood: parts[1],                        // West Hollywood
+        city: `${parts[2]}, ${parts[3]}`              // Los Angeles, CA
+      };
+    } else if (parts.length === 3) {
+      // Format: "West Hollywood, Los Angeles, CA"
+      return {
+        exactAddress: input,
+        neighborhood: parts[0],                        // West Hollywood
+        city: `${parts[1]}, ${parts[2]}`              // Los Angeles, CA
       };
     } else if (parts.length === 2) {
       // City, State format: "Los Angeles, CA"
       return {
         exactAddress: input,
-        neighborhood: parts[0],  // Los Angeles
-        city: parts[0]          // Los Angeles
+        neighborhood: parts[0],                        // Los Angeles
+        city: input                                    // Los Angeles, CA
       };
     }
   }
