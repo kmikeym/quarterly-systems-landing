@@ -48,6 +48,18 @@ export default {
         });
       }
 
+      if (url.pathname === '/api/activities') {
+        const page = parseInt(url.searchParams.get('page') || '1');
+        const limit = parseInt(url.searchParams.get('limit') || '50');
+        const activitiesData = await getActivitiesHistory(env, page, limit);
+        return new Response(JSON.stringify(activitiesData), {
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders
+          }
+        });
+      }
+
       return new Response('Not Found', { status: 404 });
     } catch (error) {
       console.error('Worker error:', error);
@@ -329,4 +341,25 @@ async function updateLocation(env, locationData) {
   await env.STATUS_KV.put('all_activities', JSON.stringify(fullHistory));
 
   console.log('Location updated:', location, 'at', timestamp);
+}
+
+async function getActivitiesHistory(env, page = 1, limit = 50) {
+  const allActivities = await env.STATUS_KV.get('all_activities');
+  const activities = allActivities ? JSON.parse(allActivities) : [];
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const paginatedActivities = activities.slice(startIndex, endIndex);
+
+  return {
+    activities: paginatedActivities,
+    pagination: {
+      page: page,
+      limit: limit,
+      total: activities.length,
+      totalPages: Math.ceil(activities.length / limit),
+      hasNext: endIndex < activities.length,
+      hasPrev: page > 1
+    }
+  };
 }
