@@ -261,18 +261,18 @@ import Layout from '../layouts/Layout.astro';
 			keyboard: false
 		});
 
-		// Add custom grayscale tile layer
-		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		// Add CartoDB Dark Matter tile layer
+		L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
 			attribution: '',
-			className: 'map-tiles'
+			subdomains: 'abcd'
 		}).addTo(map);
 
-		// Custom marker icon
+		// Custom blinking green marker icon
 		const customIcon = L.divIcon({
 			className: 'custom-marker',
 			html: `
-				<div class="w-4 h-4 bg-red-500 border-2 border-white rounded-full shadow-lg animate-pulse"></div>
-				<div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-red-500 rotate-45"></div>
+				<div class="w-4 h-4 bg-green-400 border-2 border-white rounded-full shadow-lg animate-pulse"></div>
+				<div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-green-400 rotate-45"></div>
 			`,
 			iconSize: [16, 24],
 			iconAnchor: [8, 24]
@@ -299,10 +299,7 @@ import Layout from '../layouts/Layout.astro';
 		overflow: hidden;
 	}
 
-	/* Corporate grayscale map styling */
-	:global(.map-tiles) {
-		filter: grayscale(100%) contrast(120%) brightness(0.9);
-	}
+	/* Dark Matter map styling - no additional filters needed */
 
 	/* Custom marker styling */
 	:global(.custom-marker) {
