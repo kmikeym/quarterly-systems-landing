@@ -397,7 +397,7 @@ import Layout from '../layouts/Layout.astro';
 		const timestampElement = document.getElementById('location-timestamp');
 
 		if (nameElement) {
-			nameElement.textContent = location.name;
+			nameElement.textContent = location.neighborhood || location.name;
 		}
 
 		if (timestampElement && location.lastSeen) {

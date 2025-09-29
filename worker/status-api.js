@@ -102,7 +102,7 @@ async function refreshData(env) {
   // Get current location context for geo-tagging
   const cachedStatus = await env.STATUS_KV.get('status_data');
   const currentStatus = cachedStatus ? JSON.parse(cachedStatus) : {};
-  const currentLocation = currentStatus.location?.name || 'Los Angeles, CA';
+  const currentLocation = currentStatus.location?.city || currentStatus.location?.name || 'Los Angeles, CA';
 
   // Fetch all data sources in parallel
   const [githubData, rssData] = await Promise.allSettled([
@@ -309,28 +309,33 @@ function extractXMLValue(xml, tag) {
 async function updateLocation(env, locationData) {
   const { location, activity, coordinates, timestamp } = locationData;
 
+  // Parse location for different display levels
+  const { exactAddress, neighborhood, city } = parseLocationLevels(location);
+
   // Update current location in status data
   const cachedStatus = await env.STATUS_KV.get('status_data');
   let statusData = cachedStatus ? JSON.parse(cachedStatus) : {};
 
-  // Update location info
+  // Store full location data with different levels
   statusData.location = {
-    name: location,
+    exact: exactAddress,           // Full address (private)
+    neighborhood: neighborhood,    // For map display
+    city: city,                   // For activity feed
     coordinates: coordinates || [34.0522, -118.2437], // Default to LA if no coords
     lastSeen: timestamp || new Date().toISOString()
   };
 
-  // Create location activity
+  // Create location activity using city-level location
   const locationActivity = {
     id: `location-${Date.now()}`,
     type: 'location',
     title: activity ? 'Activity Update' : 'Location Update',
-    description: activity ? `${activity} in ${location}` : `Arrived in ${location}`,
+    description: activity ? `${activity} in ${city}` : `Arrived in ${city}`,
     timestamp: timestamp || new Date().toISOString(),
     source: 'Manual',
-    location: location,
+    location: city, // Public activities use city-level
     metadata: {
-      location: location,
+      location: city,
       activity: activity,
       coordinates: coordinates
     }
@@ -356,6 +361,39 @@ async function updateLocation(env, locationData) {
   await env.STATUS_KV.put('all_activities', JSON.stringify(fullHistory));
 
   console.log('Location updated:', location, 'at', timestamp);
+}
+
+function parseLocationLevels(locationInput) {
+  // Handle different input formats and extract appropriate levels
+  const input = locationInput.trim();
+
+  // If it contains a comma, assume it's in format like "123 Main St, Downtown, Los Angeles, CA"
+  if (input.includes(',')) {
+    const parts = input.split(',').map(part => part.trim());
+
+    if (parts.length >= 3) {
+      // Full address format: "123 Main St, Downtown, Los Angeles, CA"
+      return {
+        exactAddress: input,                    // Full address
+        neighborhood: parts[parts.length - 2], // Second to last (Los Angeles)
+        city: parts[parts.length - 2]          // Same as neighborhood for now
+      };
+    } else if (parts.length === 2) {
+      // City, State format: "Los Angeles, CA"
+      return {
+        exactAddress: input,
+        neighborhood: parts[0],  // Los Angeles
+        city: parts[0]          // Los Angeles
+      };
+    }
+  }
+
+  // Single location (city name, neighborhood, etc.)
+  return {
+    exactAddress: input,
+    neighborhood: input,
+    city: input
+  };
 }
 
 async function getActivitiesHistory(env, page = 1, limit = 50) {
