@@ -309,8 +309,8 @@ function extractXMLValue(xml, tag) {
 async function updateLocation(env, locationData) {
   const { location, activity, coordinates, timestamp } = locationData;
 
-  // Parse location for different display levels
-  const { exactAddress, neighborhood, city } = parseLocationLevels(location);
+  // Get real neighborhood from coordinates or address
+  const locationLevels = await getLocationLevels(location, coordinates);
 
   // Update current location in status data
   const cachedStatus = await env.STATUS_KV.get('status_data');
@@ -318,10 +318,10 @@ async function updateLocation(env, locationData) {
 
   // Store full location data with different levels
   statusData.location = {
-    exact: exactAddress,           // Full address (private)
-    neighborhood: neighborhood,    // For map display
-    city: city,                   // For activity feed
-    coordinates: coordinates || [34.0522, -118.2437], // Default to LA if no coords
+    exact: locationLevels.exactAddress,           // Full address (private)
+    neighborhood: locationLevels.neighborhood,    // For map display
+    city: locationLevels.city,                   // For activity feed
+    coordinates: locationLevels.coordinates || [34.0522, -118.2437], // Default to LA if no coords
     lastSeen: timestamp || new Date().toISOString()
   };
 
@@ -330,14 +330,14 @@ async function updateLocation(env, locationData) {
     id: `location-${Date.now()}`,
     type: 'location',
     title: activity ? 'Activity Update' : 'Location Update',
-    description: activity ? `${activity} in ${city}` : `Arrived in ${city}`,
+    description: activity ? `${activity} in ${locationLevels.city}` : `Arrived in ${locationLevels.city}`,
     timestamp: timestamp || new Date().toISOString(),
     source: 'Manual',
-    location: city, // Public activities use city-level
+    location: locationLevels.city, // Public activities use city-level
     metadata: {
-      location: city,
+      location: locationLevels.city,
       activity: activity,
-      coordinates: coordinates
+      coordinates: locationLevels.coordinates
     }
   };
 
@@ -363,44 +363,101 @@ async function updateLocation(env, locationData) {
   console.log('Location updated:', location, 'at', timestamp);
 }
 
-function parseLocationLevels(locationInput) {
-  // Handle different input formats and extract appropriate levels
+async function getLocationLevels(locationInput, providedCoordinates) {
   const input = locationInput.trim();
 
-  // If it contains a comma, assume it's in format like "123 Main St, West Hollywood, Los Angeles, CA"
+  // If coordinates are provided, use them for reverse geocoding
+  if (providedCoordinates && providedCoordinates.length === 2) {
+    try {
+      const reverseGeoData = await reverseGeocode(providedCoordinates[0], providedCoordinates[1]);
+      if (reverseGeoData) {
+        return {
+          exactAddress: input,
+          neighborhood: reverseGeoData.neighborhood,
+          city: reverseGeoData.city,
+          coordinates: providedCoordinates
+        };
+      }
+    } catch (error) {
+      console.log('Reverse geocoding failed, falling back to address parsing');
+    }
+  }
+
+  // Fallback to address parsing if no coordinates or geocoding fails
   if (input.includes(',')) {
     const parts = input.split(',').map(part => part.trim());
 
     if (parts.length >= 4) {
       // Full address format: "123 Main St, West Hollywood, Los Angeles, CA"
       return {
-        exactAddress: input,                           // Full address
-        neighborhood: parts[1],                        // West Hollywood
-        city: `${parts[2]}, ${parts[3]}`              // Los Angeles, CA
+        exactAddress: input,
+        neighborhood: parts[1],
+        city: `${parts[2]}, ${parts[3]}`,
+        coordinates: providedCoordinates || [34.0522, -118.2437]
       };
     } else if (parts.length === 3) {
       // Format: "West Hollywood, Los Angeles, CA"
       return {
         exactAddress: input,
-        neighborhood: parts[0],                        // West Hollywood
-        city: `${parts[1]}, ${parts[2]}`              // Los Angeles, CA
+        neighborhood: parts[0],
+        city: `${parts[1]}, ${parts[2]}`,
+        coordinates: providedCoordinates || [34.0522, -118.2437]
       };
     } else if (parts.length === 2) {
       // City, State format: "Los Angeles, CA"
       return {
         exactAddress: input,
-        neighborhood: parts[0],                        // Los Angeles
-        city: input                                    // Los Angeles, CA
+        neighborhood: parts[0],
+        city: input,
+        coordinates: providedCoordinates || [34.0522, -118.2437]
       };
     }
   }
 
-  // Single location (city name, neighborhood, etc.)
+  // Single location fallback
   return {
     exactAddress: input,
     neighborhood: input,
-    city: input
+    city: input,
+    coordinates: providedCoordinates || [34.0522, -118.2437]
   };
+}
+
+async function reverseGeocode(lat, lng) {
+  try {
+    // Using OpenStreetMap Nominatim (free, no API key required)
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
+      {
+        headers: {
+          'User-Agent': 'Quarterly-Systems-Status/1.0'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Geocoding API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data && data.address) {
+      const addr = data.address;
+      // Extract neighborhood (suburb, neighbourhood, or city_district)
+      const neighborhood = addr.suburb || addr.neighbourhood || addr.city_district || addr.city || 'Unknown';
+      // Extract city and state
+      const city = addr.city || addr.town || addr.village || 'Unknown';
+      const state = addr.state || addr.province || '';
+
+      return {
+        neighborhood: neighborhood,
+        city: state ? `${city}, ${state}` : city
+      };
+    }
+  } catch (error) {
+    console.error('Reverse geocoding error:', error);
+    return null;
+  }
 }
 
 async function getActivitiesHistory(env, page = 1, limit = 50) {
