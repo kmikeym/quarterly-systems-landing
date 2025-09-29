@@ -102,7 +102,7 @@ async function refreshData(env) {
   // Get current location context for geo-tagging
   const cachedStatus = await env.STATUS_KV.get('status_data');
   const currentStatus = cachedStatus ? JSON.parse(cachedStatus) : {};
-  const currentLocation = currentStatus.location?.city || currentStatus.location?.name || 'Los Angeles, CA';
+  const currentLocation = currentStatus.location?.name || 'Los Angeles, CA';
 
   // Fetch all data sources in parallel
   const [githubData, rssData] = await Promise.allSettled([
@@ -309,35 +309,33 @@ function extractXMLValue(xml, tag) {
 async function updateLocation(env, locationData) {
   const { location, activity, coordinates, timestamp } = locationData;
 
-  // Get real neighborhood from coordinates or address
-  const locationLevels = await getLocationLevels(location, coordinates);
+  // Simple location - just use what's provided (City, State format)
+  const cityState = location.trim();
 
   // Update current location in status data
   const cachedStatus = await env.STATUS_KV.get('status_data');
   let statusData = cachedStatus ? JSON.parse(cachedStatus) : {};
 
-  // Store full location data with different levels
+  // Simple location storage
   statusData.location = {
-    exact: locationLevels.exactAddress,           // Full address (private)
-    neighborhood: locationLevels.neighborhood,    // For map display
-    city: locationLevels.city,                   // For activity feed
-    coordinates: locationLevels.coordinates || [34.0522, -118.2437], // Default to LA if no coords
+    name: cityState,
+    coordinates: coordinates || [34.0522, -118.2437], // Default to LA if no coords
     lastSeen: timestamp || new Date().toISOString()
   };
 
-  // Create location activity using city-level location
+  // Create location activity
   const locationActivity = {
     id: `location-${Date.now()}`,
     type: 'location',
     title: activity ? 'Activity Update' : 'Location Update',
-    description: activity ? `${activity} in ${locationLevels.city}` : `Arrived in ${locationLevels.city}`,
+    description: activity ? `${activity} in ${cityState}` : `Arrived in ${cityState}`,
     timestamp: timestamp || new Date().toISOString(),
     source: 'Manual',
-    location: locationLevels.city, // Public activities use city-level
+    location: cityState,
     metadata: {
-      location: locationLevels.city,
+      location: cityState,
       activity: activity,
-      coordinates: locationLevels.coordinates
+      coordinates: coordinates
     }
   };
 
@@ -363,115 +361,7 @@ async function updateLocation(env, locationData) {
   console.log('Location updated:', location, 'at', timestamp);
 }
 
-async function getLocationLevels(locationInput, providedCoordinates) {
-  const input = locationInput.trim();
-
-  // If coordinates are provided, use them for reverse geocoding
-  if (providedCoordinates && providedCoordinates.length === 2) {
-    try {
-      const reverseGeoData = await reverseGeocode(providedCoordinates[0], providedCoordinates[1]);
-      if (reverseGeoData) {
-        return {
-          exactAddress: input,
-          neighborhood: reverseGeoData.neighborhood,
-          city: reverseGeoData.city,
-          coordinates: providedCoordinates
-        };
-      }
-    } catch (error) {
-      console.log('Reverse geocoding failed, falling back to address parsing');
-    }
-  }
-
-  // Fallback to address parsing if no coordinates or geocoding fails
-  if (input.includes(',')) {
-    const parts = input.split(',').map(part => part.trim());
-
-    if (parts.length >= 4) {
-      // Full address format: "123 Main St, West Hollywood, Los Angeles, CA"
-      return {
-        exactAddress: input,
-        neighborhood: parts[1],
-        city: `${parts[2]}, ${parts[3]}`,
-        coordinates: providedCoordinates || [34.0522, -118.2437]
-      };
-    } else if (parts.length === 3) {
-      // Format: "123 Main St, Los Angeles, CA" or "West Hollywood, Los Angeles, CA"
-      const lastPart = parts[2];
-      const secondPart = parts[1];
-
-      // If last part looks like a state (2 letters), combine last two parts as city
-      if (lastPart.length === 2) {
-        return {
-          exactAddress: input,
-          neighborhood: secondPart,
-          city: `${secondPart}, ${lastPart}`,
-          coordinates: providedCoordinates || [34.0522, -118.2437]
-        };
-      } else {
-        return {
-          exactAddress: input,
-          neighborhood: parts[0],
-          city: `${parts[1]}, ${parts[2]}`,
-          coordinates: providedCoordinates || [34.0522, -118.2437]
-        };
-      }
-    } else if (parts.length === 2) {
-      // Format: "Los Angeles, CA"
-      return {
-        exactAddress: input,
-        neighborhood: parts[0],
-        city: input,
-        coordinates: providedCoordinates || [34.0522, -118.2437]
-      };
-    }
-  }
-
-  // Single location fallback
-  return {
-    exactAddress: input,
-    neighborhood: input,
-    city: input,
-    coordinates: providedCoordinates || [34.0522, -118.2437]
-  };
-}
-
-async function reverseGeocode(lat, lng) {
-  try {
-    // Using OpenStreetMap Nominatim (free, no API key required)
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
-      {
-        headers: {
-          'User-Agent': 'Quarterly-Systems-Status/1.0'
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Geocoding API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    if (data && data.address) {
-      const addr = data.address;
-      // Extract neighborhood (suburb, neighbourhood, or city_district)
-      const neighborhood = addr.suburb || addr.neighbourhood || addr.city_district || addr.city || 'Unknown';
-      // Extract city and state
-      const city = addr.city || addr.town || addr.village || 'Unknown';
-      const state = addr.state || addr.province || '';
-
-      return {
-        neighborhood: neighborhood,
-        city: state ? `${city}, ${state}` : city
-      };
-    }
-  } catch (error) {
-    console.error('Reverse geocoding error:', error);
-    return null;
-  }
-}
+// Removed complex location parsing - now using simple City, State format
 
 async function getActivitiesHistory(env, page = 1, limit = 50) {
   const allActivities = await env.STATUS_KV.get('all_activities');
