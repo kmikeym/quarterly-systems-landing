@@ -1,0 +1,22 @@
+name = "quarterly-systems-status-api"
+main = "status-api.js"
+compatibility_date = "2024-01-01"
+
+# KV namespace for caching
+[[kv_namespaces]]
+binding = "STATUS_KV"
+id = "d090d283d2e74207b6185403da295ed7"
+preview_id = "666e4e241fbe4c23806d10d3daad6d28"
+
+# Environment variables (will be set via dashboard for security)
+[vars]
+# GITHUB_TOKEN will be set as a secret in Cloudflare dashboard
+
+# Cron trigger for automatic data refresh (every 10 minutes)
+[triggers]
+crons = ["*/10 * * * *"]
+
+# Route configuration
+[[routes]]
+pattern = "status-api.quarterly.systems/*"
+zone_name = "quarterly.systems"

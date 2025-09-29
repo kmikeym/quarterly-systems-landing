@@ -49,63 +49,14 @@ import Layout from '../layouts/Layout.astro';
 
 		<!-- Activity Feed Section -->
 		<div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-12 mx-auto max-w-4xl">
-			<h2 class="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h2>
-			<div class="space-y-4">
-				<!-- Mock activity items -->
-				<div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
-					<div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-					<div class="flex-1">
-						<div class="flex items-center justify-between mb-1">
-							<h3 class="font-medium text-gray-900">System Deployment</h3>
-							<span class="text-sm text-gray-500">2 hours ago</span>
-						</div>
-						<p class="text-sm text-gray-600">quarterly-systems-landing deployed to production</p>
-						<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-2">
-							Deployment
-						</span>
-					</div>
-				</div>
-
-				<div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
-					<div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-					<div class="flex-1">
-						<div class="flex items-center justify-between mb-1">
-							<h3 class="font-medium text-gray-900">Development Activity</h3>
-							<span class="text-sm text-gray-500">4 hours ago</span>
-						</div>
-						<p class="text-sm text-gray-600">Committed changes to quarterly-systems-landing repository</p>
-						<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-2">
-							GitHub
-						</span>
-					</div>
-				</div>
-
-				<div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
-					<div class="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
-					<div class="flex-1">
-						<div class="flex items-center justify-between mb-1">
-							<h3 class="font-medium text-gray-900">Content Publication</h3>
-							<span class="text-sm text-gray-500">6 hours ago</span>
-						</div>
-						<p class="text-sm text-gray-600">New blog post published on KmikeyM.com</p>
-						<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mt-2">
-							Blog
-						</span>
-					</div>
-				</div>
-
-				<div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
-					<div class="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
-					<div class="flex-1">
-						<div class="flex items-center justify-between mb-1">
-							<h3 class="font-medium text-gray-900">Location Update</h3>
-							<span class="text-sm text-gray-500">8 hours ago</span>
-						</div>
-						<p class="text-sm text-gray-600">Checked in at Santa Monica Pier, CA</p>
-						<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 mt-2">
-							Location
-						</span>
-					</div>
+			<div class="flex items-center justify-between mb-6">
+				<h2 class="text-2xl font-bold text-gray-900">Recent Activity</h2>
+				<div class="text-sm text-gray-500" id="last-updated">Loading...</div>
+			</div>
+			<div id="activity-feed" class="space-y-4">
+				<!-- Activity items will be loaded here -->
+				<div class="flex items-center justify-center p-8">
+					<div class="text-gray-500">Loading recent activity...</div>
 				</div>
 			</div>
 		</div>
@@ -285,7 +236,150 @@ import Layout from '../layouts/Layout.astro';
 		setTimeout(() => {
 			map.setView(losAngeles, 12, { animate: true, duration: 2 });
 		}, 1000);
+
+		// Load activity data
+		loadActivityData();
 	});
+
+	// Activity data loading and rendering
+	async function loadActivityData() {
+		try {
+			const response = await fetch('https://status-api.quarterly.systems/api/status');
+			if (!response.ok) {
+				throw new Error('Failed to fetch status data');
+			}
+
+			const data = await response.json();
+			renderActivityFeed(data.activities || []);
+			updateLastUpdated(data.lastUpdate);
+			updateLocationInfo(data.location);
+		} catch (error) {
+			console.error('Error loading activity data:', error);
+			renderFallbackActivity();
+		}
+	}
+
+	function renderActivityFeed(activities) {
+		const feed = document.getElementById('activity-feed');
+		if (!feed) return;
+
+		if (activities.length === 0) {
+			feed.innerHTML = `
+				<div class="flex items-center justify-center p-8">
+					<div class="text-gray-500">No recent activity found</div>
+				</div>
+			`;
+			return;
+		}
+
+		const activityHTML = activities.map(activity => {
+			const timeAgo = getTimeAgo(new Date(activity.timestamp));
+			const { color, bgColor } = getActivityColors(activity.type);
+
+			return `
+				<div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+					<div class="w-2 h-2 ${color} rounded-full mt-2"></div>
+					<div class="flex-1">
+						<div class="flex items-center justify-between mb-1">
+							<h3 class="font-medium text-gray-900">${activity.title}</h3>
+							<span class="text-sm text-gray-500">${timeAgo}</span>
+						</div>
+						<p class="text-sm text-gray-600">${activity.description}</p>
+						<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${bgColor} mt-2">
+							${activity.source}
+						</span>
+					</div>
+				</div>
+			`;
+		}).join('');
+
+		feed.innerHTML = activityHTML;
+	}
+
+	function renderFallbackActivity() {
+		const feed = document.getElementById('activity-feed');
+		if (!feed) return;
+
+		// Fallback to mock data if API fails
+		const fallbackHTML = `
+			<div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+				<div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+				<div class="flex-1">
+					<div class="flex items-center justify-between mb-1">
+						<h3 class="font-medium text-gray-900">System Deployment</h3>
+						<span class="text-sm text-gray-500">2 hours ago</span>
+					</div>
+					<p class="text-sm text-gray-600">quarterly-systems-landing deployed to production</p>
+					<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-2">
+						Deployment
+					</span>
+				</div>
+			</div>
+			<div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+				<div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+				<div class="flex-1">
+					<div class="flex items-center justify-between mb-1">
+						<h3 class="font-medium text-gray-900">Development Activity</h3>
+						<span class="text-sm text-gray-500">4 hours ago</span>
+					</div>
+					<p class="text-sm text-gray-600">Recent commits to multiple repositories</p>
+					<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-2">
+						GitHub
+					</span>
+				</div>
+			</div>
+		`;
+
+		feed.innerHTML = fallbackHTML;
+	}
+
+	function getActivityColors(type) {
+		const colors = {
+			development: { color: 'bg-blue-500', bgColor: 'bg-blue-100 text-blue-800' },
+			deployment: { color: 'bg-green-500', bgColor: 'bg-green-100 text-green-800' },
+			content: { color: 'bg-purple-500', bgColor: 'bg-purple-100 text-purple-800' },
+			location: { color: 'bg-orange-500', bgColor: 'bg-orange-100 text-orange-800' }
+		};
+
+		return colors[type] || { color: 'bg-gray-500', bgColor: 'bg-gray-100 text-gray-800' };
+	}
+
+	function getTimeAgo(date) {
+		const now = new Date();
+		const diff = now - date;
+		const minutes = Math.floor(diff / 60000);
+		const hours = Math.floor(diff / 3600000);
+		const days = Math.floor(diff / 86400000);
+
+		if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+		if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+		if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+		return 'Just now';
+	}
+
+	function updateLastUpdated(timestamp) {
+		const element = document.getElementById('last-updated');
+		if (element && timestamp) {
+			const updateTime = new Date(timestamp);
+			element.textContent = `Updated ${getTimeAgo(updateTime)}`;
+		}
+	}
+
+	function updateLocationInfo(location) {
+		if (!location) return;
+
+		const nameElement = document.getElementById('location-name');
+		const timestampElement = document.getElementById('location-timestamp');
+
+		if (nameElement) {
+			nameElement.textContent = location.name;
+		}
+
+		if (timestampElement && location.lastSeen) {
+			const lastSeen = new Date(location.lastSeen);
+			timestampElement.textContent = `Last seen: ${getTimeAgo(lastSeen)}`;
+		}
+	}
 </script>
 
 <style>
