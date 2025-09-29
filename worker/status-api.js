@@ -60,6 +60,7 @@ export default {
         });
       }
 
+
       return new Response('Not Found', { status: 404 });
     } catch (error) {
       console.error('Worker error:', error);
