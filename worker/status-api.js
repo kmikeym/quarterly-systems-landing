@@ -184,16 +184,15 @@ async function fetchGitHubActivity(token) {
 async function fetchRSSFeeds() {
   const feeds = [
     {
-      url: 'https://kmikeym.com/feed',
-      source: 'KmikeyM Blog',
+      url: 'https://news.kmikeym.com/feed/',
+      source: 'KmikeyM News',
       type: 'content'
     },
-    // Add Substack feed when available
-    // {
-    //   url: 'https://your-substack.substack.com/feed',
-    //   source: 'Substack',
-    //   type: 'content'
-    // }
+    {
+      url: 'https://kmikeym.substack.com/feed',
+      source: 'Substack',
+      type: 'content'
+    }
   ];
 
   const activities = [];
@@ -208,7 +207,7 @@ async function fetchRSSFeeds() {
 
       for (const item of items.slice(0, 3)) {
         activities.push({
-          id: `rss-${Buffer.from(item.link).toString('base64').slice(0, 10)}`,
+          id: `rss-${btoa(item.link).slice(0, 10)}`,
           type: 'content',
           title: 'Content Publication',
           description: `Published: ${item.title}`,

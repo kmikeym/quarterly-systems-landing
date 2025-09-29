@@ -281,10 +281,18 @@ import Layout from '../layouts/Layout.astro';
 					<div class="w-2 h-2 ${color} rounded-full mt-2"></div>
 					<div class="flex-1">
 						<div class="flex items-center justify-between mb-1">
-							<h3 class="font-medium text-gray-900">${activity.title}</h3>
+							${activity.metadata?.link ?
+								`<h3 class="font-medium text-gray-900"><a href="${activity.metadata.link}" target="_blank" class="hover:text-blue-600 transition-colors">${activity.title}</a></h3>` :
+								`<h3 class="font-medium text-gray-900">${activity.title}</h3>`
+							}
 							<span class="text-sm text-gray-500">${timeAgo}</span>
 						</div>
-						<p class="text-sm text-gray-600">${activity.description}</p>
+						<p class="text-sm text-gray-600">
+							${activity.metadata?.link ?
+								`<a href="${activity.metadata.link}" target="_blank" class="hover:text-blue-600 transition-colors">${activity.description}</a>` :
+								activity.description
+							}
+						</p>
 						<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${bgColor} mt-2">
 							${activity.source}
 						</span>
