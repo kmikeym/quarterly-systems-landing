@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>FEBA - Tactical Wargaming Simulator</title>
+    <script type="module">
+        import { animate, createTimeline, stagger } from 'https://cdn.jsdelivr.net/npm/animejs@4.0.0-beta.102.3/+esm';
+        window.anime = { animate, createTimeline, stagger };
+    </script>
     <style>
         body {
             margin: 0;
@@ -410,6 +414,34 @@
             pointer-events: none;
             z-index: 8;
         }
+
+        .projectile {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 25;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .projectile-line {
+            position: absolute;
+            height: 2px;
+            transform-origin: left center;
+            pointer-events: none;
+            z-index: 24;
+        }
+
+        .damage-number {
+            position: absolute;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff4444;
+            text-shadow: 0 0 4px #000, 0 0 8px #ff0000;
+            pointer-events: none;
+            z-index: 30;
+        }
     </style>
 </head>
 <body>
@@ -424,7 +456,7 @@
         </div>
         <div class="hud-right">
             <div class="hud-item">STATUS: <span class="hud-value" id="game-status">ACTIVE</span></div>
-            <div class="hud-item">GRID: <span class="hud-value">20x14</span></div>
+            <button onclick="restartGame()" class="action-btn" style="padding: 6px 12px; margin-left: 10px;">🔄 New Game</button>
         </div>
     </div>
 
@@ -515,6 +547,27 @@
             updateHUD();
             addBattleLogEntry('Game initialized. Blue forces move first.');
             addBattleLogEntry('Recon units (S) have maximum vision. Use them to scout enemy positions!');
+        }
+
+        function restartGame() {
+            // Clear battlefield
+            const battlefield = document.getElementById('battlefield');
+            battlefield.innerHTML = '';
+
+            // Reset game state
+            gameState.turn = 1;
+            gameState.phase = 'BLUE';
+            gameState.mode = 'select';
+            gameState.selectedUnit = null;
+            gameState.units = [];
+            gameState.drones = [];
+            gameState.battleLog = [];
+
+            // Clear battle log display
+            document.getElementById('battle-log').innerHTML = '';
+
+            // Reinitialize
+            initGame();
         }
 
         // Fog of War Functions
@@ -765,31 +818,39 @@
         }
 
         function deployUnits() {
-            // Blue forces (friendly) - deployed on left side of larger map
+            // Blue forces (friendly) - 4 units, balanced composition
             gameState.units = [
-                createUnit('infantry', 1, 10, 'friendly', 'ALPHA-1'),
-                createUnit('infantry', 2, 12, 'friendly', 'ALPHA-2'),
-                createUnit('armor', 0, 8, 'friendly', 'BRAVO-1'),
-                createUnit('artillery', 1, 6, 'friendly', 'CHARLIE-1'),
-                createUnit('recon', 3, 9, 'friendly', 'DELTA-1'),
-                createUnit('recon', 2, 7, 'friendly', 'DELTA-2'),
-                createUnit('infantry', 2, 11, 'friendly', 'ECHO-1'),
-                createUnit('infantry', 1, 13, 'friendly', 'ECHO-2')
+                createUnit('infantry', 2, 7, 'friendly', 'ALPHA-1'),
+                createUnit('armor', 1, 9, 'friendly', 'BRAVO-1'),
+                createUnit('artillery', 2, 5, 'friendly', 'CHARLIE-1'),
+                createUnit('recon', 3, 8, 'friendly', 'DELTA-1')
             ];
 
-            // Red forces (enemy) - deployed on right side of larger map
-            gameState.units.push(
-                createUnit('infantry', 18, 3, 'enemy', 'RED-1'),
-                createUnit('infantry', 17, 5, 'enemy', 'RED-2'),
-                createUnit('armor', 19, 2, 'enemy', 'RED-3'),
-                createUnit('artillery', 16, 4, 'enemy', 'RED-4'),
-                createUnit('recon', 18, 6, 'enemy', 'RED-5'),
-                createUnit('infantry', 17, 8, 'enemy', 'RED-6'),
-                createUnit('infantry', 19, 7, 'enemy', 'RED-7'),
-                createUnit('recon', 16, 9, 'enemy', 'RED-8')
-            );
+            // Red forces (enemy) - 4 random units
+            generateEnemyForce();
 
             gameState.units.forEach(unit => renderUnit(unit));
+        }
+
+        function generateEnemyForce() {
+            const unitTypePool = ['infantry', 'armor', 'artillery', 'recon'];
+            const usedPositions = new Set();
+
+            for (let i = 0; i < 4; i++) {
+                // Random unit type
+                const randomType = unitTypePool[Math.floor(Math.random() * unitTypePool.length)];
+
+                // Random position on right side, avoid overlaps
+                let x, y, posKey;
+                do {
+                    x = 16 + Math.floor(Math.random() * 4); // x: 16-19
+                    y = 2 + Math.floor(Math.random() * 10); // y: 2-11
+                    posKey = `${x},${y}`;
+                } while (usedPositions.has(posKey));
+
+                usedPositions.add(posKey);
+                gameState.units.push(createUnit(randomType, x, y, 'enemy', `RED-${i+1}`));
+            }
         }
 
         function createUnit(type, x, y, side, callsign) {
@@ -945,7 +1006,16 @@
             });
 
             gameState.selectedUnit = unit;
-            document.getElementById(`unit-${unit.id}`).classList.add('selected');
+            const unitElement = document.getElementById(`unit-${unit.id}`);
+            unitElement.classList.add('selected');
+
+            // Selection bounce animation
+            window.anime.animate({
+                targets: unitElement,
+                scale: [1, 1.15, 1],
+                duration: 200,
+                easing: 'easeOutQuad'
+            });
             
             updateUnitInfo();
             
@@ -1151,28 +1221,120 @@
             unit.y = targetY;
             unit.movesLeft -= distance;
 
-            // Update visual position (centered)
-            const unitElement = document.getElementById(`unit-${unit.id}`);
-            unitElement.style.left = (targetX * gameState.cellSize + 7.5) + 'px';
-            unitElement.style.top = (targetY * gameState.cellSize + 7.5) + 'px';
+            // Animate movement
+            animateMovement(unit, targetX, targetY, () => {
+                // Update fog of war after movement completes
+                updateFogOfWar();
+
+                // Clear ranges and reselect to show updated movement
+                document.querySelectorAll('.grid-cell').forEach(c => {
+                    c.classList.remove('movement-range', 'attack-range');
+                });
+
+                if (unit.movesLeft > 0) {
+                    showMovementRange();
+                }
+
+                updateUnitInfo();
+            });
 
             addBattleLogEntry(`${unit.callsign}: Moved to ${targetX},${targetY}`, 'movement');
-            
-            // Update fog of war after movement
-            updateFogOfWar();
-            
-            // Clear ranges and reselect to show updated movement
-            document.querySelectorAll('.grid-cell').forEach(c => {
-                c.classList.remove('movement-range', 'attack-range');
-            });
-            
-            if (unit.movesLeft > 0) {
-                showMovementRange();
-            }
-            
-            updateUnitInfo();
+
             gameState.mode = 'select';
             updateActionButtons();
+        }
+
+        function animateAttack(attacker, target, damage, callback) {
+            const battlefield = document.getElementById('battlefield');
+            const attackerEl = document.getElementById(`unit-${attacker.id}`);
+            const targetEl = document.getElementById(`unit-${target.id}`);
+
+            // Get positions
+            const attackerX = attacker.x * gameState.cellSize + 7.5 + 22.5; // center of unit
+            const attackerY = attacker.y * gameState.cellSize + 7.5 + 22.5;
+            const targetX = target.x * gameState.cellSize + 7.5 + 22.5;
+            const targetY = target.y * gameState.cellSize + 7.5 + 22.5;
+
+            // Unit type specific colors
+            const projectileColors = {
+                infantry: '#ffff00',
+                armor: '#ff8800',
+                artillery: '#ff0000',
+                recon: '#00ffff'
+            };
+            const color = projectileColors[attacker.type] || '#ffff00';
+
+            // 1. Attacker flash (50ms)
+            window.anime.animate({
+                targets: attackerEl,
+                scale: [1, 1.15, 1],
+                filter: ['brightness(1)', 'brightness(2)', 'brightness(1)'],
+                duration: 100,
+                easing: 'easeOutQuad'
+            });
+
+            // 2. Create and animate projectile (100ms)
+            const projectile = document.createElement('div');
+            projectile.className = 'projectile';
+            projectile.style.background = color;
+            projectile.style.left = attackerX + 'px';
+            projectile.style.top = attackerY + 'px';
+            battlefield.appendChild(projectile);
+
+            setTimeout(() => {
+                window.anime.animate({
+                    targets: projectile,
+                    translateX: targetX - attackerX,
+                    translateY: targetY - attackerY,
+                    duration: 100,
+                    easing: 'linear',
+                    complete: () => {
+                        projectile.remove();
+
+                        // 3. Target shake (50ms)
+                        window.anime.animate({
+                            targets: targetEl,
+                            translateX: [-3, 3, -2, 2, 0],
+                            duration: 100,
+                            easing: 'easeOutQuad'
+                        });
+
+                        // 4. Damage number (200ms)
+                        const damageNum = document.createElement('div');
+                        damageNum.className = 'damage-number';
+                        damageNum.textContent = `-${damage}`;
+                        damageNum.style.left = (target.x * gameState.cellSize + 22) + 'px';
+                        damageNum.style.top = (target.y * gameState.cellSize) + 'px';
+                        battlefield.appendChild(damageNum);
+
+                        window.anime.animate({
+                            targets: damageNum,
+                            translateY: -30,
+                            opacity: [1, 0],
+                            duration: 400,
+                            easing: 'easeOutQuad',
+                            complete: () => damageNum.remove()
+                        });
+
+                        if (callback) callback();
+                    }
+                });
+            }, 50);
+        }
+
+        function animateMovement(unit, targetX, targetY, callback) {
+            const unitElement = document.getElementById(`unit-${unit.id}`);
+            const newLeft = targetX * gameState.cellSize + 7.5;
+            const newTop = targetY * gameState.cellSize + 7.5;
+
+            window.anime.animate({
+                targets: unitElement,
+                left: newLeft + 'px',
+                top: newTop + 'px',
+                duration: 250,
+                easing: 'easeOutQuad',
+                complete: callback
+            });
         }
 
         function attackTarget(attacker, targetX, targetY) {
@@ -1206,23 +1368,26 @@
             damage = Math.floor(damage);
             target.health = Math.max(0, target.health - damage);
 
-            // Create explosion effect
-            createExplosion(targetX, targetY);
+            // Animate attack sequence
+            animateAttack(attacker, target, damage, () => {
+                // Create explosion effect after projectile hits
+                createExplosion(targetX, targetY);
+
+                // Update target health bar
+                updateUnitHealthBar(target);
+
+                if (target.health <= 0) {
+                    addBattleLogEntry(`${target.callsign} destroyed!`, 'combat');
+                    document.getElementById(`unit-${target.id}`).classList.add('destroyed');
+                }
+            });
 
             addBattleLogEntry(`${attacker.callsign} attacks ${target.callsign} for ${damage} damage`, 'combat');
 
-            if (target.health <= 0) {
-                addBattleLogEntry(`${target.callsign} destroyed!`, 'combat');
-                document.getElementById(`unit-${target.id}`).classList.add('destroyed');
-            }
-
-            // Update target health bar
-            updateUnitHealthBar(target);
-            
             attacker.hasAttacked = true;
             gameState.mode = 'select';
             updateActionButtons();
-            
+
             // Clear attack range
             document.querySelectorAll('.grid-cell').forEach(c => {
                 c.classList.remove('attack-range');
@@ -1456,12 +1621,12 @@
 
             // Execute autopilot for friendly units during BLUE phase
             if (gameState.phase === 'BLUE') {
-                setTimeout(executeAutopilotActions, 1000);
+                setTimeout(executeAutopilotActions, 300);
             }
-            
+
             // Simple AI for enemy turn
             if (gameState.phase === 'RED') {
-                setTimeout(executeEnemyTurn, 1000);
+                setTimeout(executeEnemyTurn, 300);
             }
         }
 
@@ -1472,7 +1637,7 @@
             enemyUnits.forEach((unit, index) => {
                 setTimeout(() => {
                     // Simple AI: move towards objectives or attack nearby enemies
-                    const nearbyEnemies = gameState.units.filter(u => 
+                    const nearbyEnemies = gameState.units.filter(u =>
                         u.side === 'friendly' && u.health > 0 &&
                         Math.abs(u.x - unit.x) + Math.abs(u.y - unit.y) <= unit.range
                     );
@@ -1483,30 +1648,30 @@
                         const distance = Math.abs(target.x - unit.x) + Math.abs(target.y - unit.y);
                         if (distance <= unit.range) {
                             selectUnit(unit);
-                            setTimeout(() => attackTarget(unit, target.x, target.y), 500);
+                            setTimeout(() => attackTarget(unit, target.x, target.y), 150);
                         }
                     } else if (unit.movesLeft > 0) {
                         // Move towards center of map
-                        const targetX = Math.max(0, Math.min(gameState.gridSize.width - 1, 
+                        const targetX = Math.max(0, Math.min(gameState.gridSize.width - 1,
                             unit.x + (Math.random() < 0.5 ? -1 : 1)));
-                        const targetY = Math.max(0, Math.min(gameState.gridSize.height - 1, 
+                        const targetY = Math.max(0, Math.min(gameState.gridSize.height - 1,
                             unit.y + (Math.random() < 0.5 ? -1 : 1)));
-                        
+
                         if (!isOccupied(targetX, targetY)) {
                             selectUnit(unit);
-                            setTimeout(() => moveUnit(unit, targetX, targetY), 300);
+                            setTimeout(() => moveUnit(unit, targetX, targetY), 100);
                         }
                     }
 
                     actionCount++;
                     if (actionCount === enemyUnits.length) {
-                        setTimeout(endTurn, 2000);
+                        setTimeout(endTurn, 500);
                     }
-                }, index * 1000);
+                }, index * 300);
             });
 
             if (enemyUnits.length === 0) {
-                setTimeout(endTurn, 1000);
+                setTimeout(endTurn, 500);
             }
         }
 
