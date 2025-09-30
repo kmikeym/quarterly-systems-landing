@@ -175,6 +175,226 @@ import Layout from '../layouts/Layout.astro';
 			</div>
 		</section>
 
+		<!-- Scrolling Timeline -->
+		<section class="mb-20">
+			<h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Interactive Timeline: Mike Merrill (1977–2025)</h2>
+			<div class="timeline-container relative bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-2xl p-8 overflow-hidden min-h-screen">
+				<!-- Timeline Line -->
+				<div class="timeline-line absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-400 via-purple-400 to-pink-400 transform -translate-x-1/2 opacity-30"></div>
+
+				<!-- Progress Line -->
+				<div class="timeline-progress absolute left-1/2 top-0 w-1 bg-gradient-to-b from-cyan-400 via-purple-400 to-pink-400 transform -translate-x-1/2 h-0"></div>
+
+				<!-- Timeline Periods -->
+				<div class="timeline-period mb-32 opacity-0" data-period="alaska">
+					<div class="flex items-center mb-8">
+						<div class="timeline-icon w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg absolute left-1/2 transform -translate-x-1/2 shadow-lg">
+							🏔️
+						</div>
+						<div class="w-1/2 pr-8 text-right">
+							<h3 class="text-3xl font-bold text-white mb-2">1977–1994</h3>
+							<h4 class="text-xl text-cyan-300 font-semibold">Alaska Origins</h4>
+						</div>
+					</div>
+					<div class="timeline-events space-y-4 ml-auto w-1/2 pl-8">
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-cyan-400/30 opacity-0 transform translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-cyan-400 font-bold text-sm">1977</span>
+								<p class="text-gray-200 text-sm">Born in Alaska. Trans-Alaska Pipeline completed.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-cyan-400/30 opacity-0 transform translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-cyan-400 font-bold text-sm">1979</span>
+								<p class="text-gray-200 text-sm">Iranian Revolution triggers oil shock. Cold War tension nearby.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-cyan-400/30 opacity-0 transform translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-cyan-400 font-bold text-sm">1986</span>
+								<p class="text-gray-200 text-sm">Oil price collapse → Alaska recession.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-cyan-400/30 opacity-0 transform translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-cyan-400 font-bold text-sm">1989</span>
+								<p class="text-gray-200 text-sm">Exxon Valdez oil spill devastates Alaska.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-cyan-400/30 opacity-0 transform translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-cyan-400 font-bold text-sm">1991</span>
+								<p class="text-gray-200 text-sm">Soviet Union collapses. Alaska no longer frontline.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="timeline-period mb-32 opacity-0" data-period="army">
+					<div class="flex items-center mb-8">
+						<div class="timeline-icon w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-lg absolute left-1/2 transform -translate-x-1/2 shadow-lg">
+							🪖
+						</div>
+						<div class="w-1/2 pl-8">
+							<h3 class="text-3xl font-bold text-white mb-2">1995–1998</h3>
+							<h4 class="text-xl text-green-300 font-semibold">Army and Transition</h4>
+						</div>
+					</div>
+					<div class="timeline-events space-y-4 w-1/2 pr-8">
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-green-400/30 opacity-0 transform -translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-green-400 font-bold text-sm">1995</span>
+								<p class="text-gray-200 text-sm">Joins U.S. Army → stationed in Alabama. Barings Bank collapses.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-green-400/30 opacity-0 transform -translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-green-400 font-bold text-sm">1996</span>
+								<p class="text-gray-200 text-sm">Posted to Germany. Dot-com boom accelerates.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-green-400/30 opacity-0 transform -translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-green-400 font-bold text-sm">1998</span>
+								<p class="text-gray-200 text-sm">Leaves Army, uncertain next steps. Russia defaults, LTCM collapse. Joins friends in Portland's indie scene.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="timeline-period mb-32 opacity-0" data-period="portland">
+					<div class="flex items-center mb-8">
+						<div class="timeline-icon w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg absolute left-1/2 transform -translate-x-1/2 shadow-lg">
+							🎨
+						</div>
+						<div class="w-1/2 pr-8 text-right">
+							<h3 class="text-3xl font-bold text-white mb-2">1999–2007</h3>
+							<h4 class="text-xl text-purple-300 font-semibold">Portland DIY / Indie Web</h4>
+						</div>
+					</div>
+					<div class="timeline-events space-y-4 ml-auto w-1/2 pl-8">
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-purple-400/30 opacity-0 transform translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-purple-400 font-bold text-sm">2002</span>
+								<p class="text-gray-200 text-sm">Urban Honking founded (collective blog empire). Enron collapse prompts Sarbanes-Oxley.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-purple-400/30 opacity-0 transform translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-purple-400 font-bold text-sm">2004</span>
+								<p class="text-gray-200 text-sm">Portland zine/web crossover scene. Facebook founded.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-purple-400/30 opacity-0 transform translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-purple-400 font-bold text-sm">2007</span>
+								<p class="text-gray-200 text-sm">Global financial crisis begins. Portland DIY scene at peak; you position as experimenter in media systems.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="timeline-period mb-32 opacity-0" data-period="ipo">
+					<div class="flex items-center mb-8">
+						<div class="timeline-icon w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg absolute left-1/2 transform -translate-x-1/2 shadow-lg">
+							📈
+						</div>
+						<div class="w-1/2 pl-8">
+							<h3 class="text-3xl font-bold text-white mb-2">2008–2012</h3>
+							<h4 class="text-xl text-yellow-300 font-semibold">IPO and Early Experiments</h4>
+						</div>
+					</div>
+					<div class="timeline-events space-y-4 w-1/2 pr-8">
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-yellow-400/30 opacity-0 transform -translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-yellow-400 font-bold text-sm">2008</span>
+								<p class="text-gray-200 text-sm"><strong>Mike Merrill IPO launched in Portland.</strong> First "publicly traded person." Lehman Brothers collapse.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-yellow-400/30 opacity-0 transform -translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-yellow-400 font-bold text-sm">2009</span>
+								<p class="text-gray-200 text-sm">Bitcoin whitepaper released. KmikeyM positioned as parallel financial experiment.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-yellow-400/30 opacity-0 transform -translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-yellow-400 font-bold text-sm">2011</span>
+								<p class="text-gray-200 text-sm">Occupy Wall Street. KmikeyM referenced in coverage of alternative markets.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="timeline-period mb-32 opacity-0" data-period="media">
+					<div class="flex items-center mb-8">
+						<div class="timeline-icon w-16 h-16 bg-gradient-to-br from-red-400 to-rose-500 rounded-full flex items-center justify-center text-white font-bold text-lg absolute left-1/2 transform -translate-x-1/2 shadow-lg">
+							📺
+						</div>
+						<div class="w-1/2 pr-8 text-right">
+							<h3 class="text-3xl font-bold text-white mb-2">2013–2017</h3>
+							<h4 class="text-xl text-red-300 font-semibold">Media Visibility and Legitimacy</h4>
+						</div>
+					</div>
+					<div class="timeline-events space-y-4 ml-auto w-1/2 pl-8">
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-red-400/30 opacity-0 transform translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-red-400 font-bold text-sm">2013</span>
+								<p class="text-gray-200 text-sm">Snowden leaks. Mike appears in media (NPR, WIRED).</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-red-400/30 opacity-0 transform translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-red-400 font-bold text-sm">2016</span>
+								<p class="text-gray-200 text-sm">Brexit + Trump. Political climate makes governance experiments newly relevant.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-red-400/30 opacity-0 transform translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-red-400 font-bold text-sm">2017</span>
+								<p class="text-gray-200 text-sm">Bitcoin hits $20k, ICO boom. KmikeyM seen as early parallel to tokenization of identity.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="timeline-period mb-32 opacity-0" data-period="speculative">
+					<div class="flex items-center mb-8">
+						<div class="timeline-icon w-16 h-16 bg-gradient-to-br from-indigo-400 to-violet-500 rounded-full flex items-center justify-center text-white font-bold text-lg absolute left-1/2 transform -translate-x-1/2 shadow-lg">
+							🚀
+						</div>
+						<div class="w-1/2 pl-8">
+							<h3 class="text-3xl font-bold text-white mb-2">2021–2025</h3>
+							<h4 class="text-xl text-indigo-300 font-semibold">Speculative Culture and New Platforms</h4>
+						</div>
+					</div>
+					<div class="timeline-events space-y-4 w-1/2 pr-8">
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-indigo-400/30 opacity-0 transform -translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-indigo-400 font-bold text-sm">2021</span>
+								<p class="text-gray-200 text-sm">GameStop/AMC mania. Parallel to your experiment in shareholder influence.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-indigo-400/30 opacity-0 transform -translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-indigo-400 font-bold text-sm">2023</span>
+								<p class="text-gray-200 text-sm">Regional banking crisis (SVB collapse). Mike exploring Blippo+, indie games, media systems.</p>
+							</div>
+						</div>
+						<div class="timeline-event bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-indigo-400/30 opacity-0 transform -translate-x-8">
+							<div class="flex items-start gap-3">
+								<span class="text-indigo-400 font-bold text-sm">2025</span>
+								<p class="text-gray-200 text-sm"><strong>Quarterly Systems launched.</strong> Transform Ideas Into Operational Systems.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Floating particles for atmosphere -->
+				<div class="timeline-particles absolute inset-0 pointer-events-none"></div>
+			</div>
+		</section>
+
 		<!-- Control Panel -->
 		<section class="bg-gray-50 rounded-2xl p-8">
 			<h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Animation Controls</h2>
@@ -194,6 +414,9 @@ import Layout from '../layouts/Layout.astro';
 				<button onclick="createParticleSystem()" class="bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 transition-colors">
 					Particle System
 				</button>
+				<button onclick="playFullTimeline()" class="bg-violet-600 text-white px-6 py-3 rounded-lg hover:bg-violet-700 transition-colors">
+					Full Timeline
+				</button>
 				<button onclick="playTypewriterAnimation()" class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors">
 					Typewriter Effect
 				</button>
@@ -209,7 +432,7 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-	import { animate, createTimeline, set, remove, easings, createMotionPath, createDraggable, createSpring } from 'animejs';
+	import { animate, createTimeline, set, remove, easings, createMotionPath, createDraggable, createSpring, onScroll } from 'animejs';
 
 	// Hero Animation
 	function playHeroAnimation() {
@@ -426,6 +649,133 @@ import Layout from '../layouts/Layout.astro';
 		});
 	}
 
+	// Scroll-Triggered Timeline Animation
+	function initTimelineScrollAnimation() {
+		const container = document.querySelector('.timeline-container');
+		if (!container) return;
+
+		// Create floating timeline particles
+		createTimelineParticles();
+
+		// Set up scroll-triggered animations for each timeline period
+		const periods = document.querySelectorAll('.timeline-period');
+
+		periods.forEach((period, index) => {
+			onScroll({
+				targets: period,
+				translateY: [100, 0],
+				opacity: [0, 1],
+				scale: [0.9, 1],
+				easing: easings.outExpo,
+				duration: 1500,
+				delay: 200
+			});
+
+			// Animate events within each period
+			const events = period.querySelectorAll('.timeline-event');
+			events.forEach((event, eventIndex) => {
+				onScroll({
+					targets: event,
+					translateX: [event.classList.contains('translate-x-8') ? 50 : -50, 0],
+					opacity: [0, 1],
+					scale: [0.8, 1],
+					easing: easings.outBack,
+					duration: 800,
+					delay: 100 * eventIndex
+				});
+			});
+
+			// Animate timeline icons
+			const icon = period.querySelector('.timeline-icon');
+			if (icon) {
+				onScroll({
+					targets: icon,
+					scale: [0, 1.2, 1],
+					rotate: [0, 360],
+					easing: easings.outElastic,
+					duration: 1200,
+					delay: 300
+				});
+			}
+		});
+
+		// Animate progress line based on scroll
+		onScroll({
+			targets: '.timeline-progress',
+			height: ['0%', '100%'],
+			easing: easings.linear,
+			duration: 0,
+			sync: true
+		});
+	}
+
+	function createTimelineParticles() {
+		const container = document.querySelector('.timeline-particles');
+		if (!container) return;
+
+		// Create ambient particles
+		for (let i = 0; i < 50; i++) {
+			const particle = document.createElement('div');
+			particle.className = 'absolute w-1 h-1 rounded-full pointer-events-none';
+			particle.style.left = Math.random() * 100 + '%';
+			particle.style.top = Math.random() * 100 + '%';
+
+			// Random colors from timeline palette
+			const colors = ['rgba(34, 211, 238, 0.6)', 'rgba(168, 85, 247, 0.6)', 'rgba(236, 72, 153, 0.6)', 'rgba(34, 197, 94, 0.6)'];
+			particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+			container.appendChild(particle);
+		}
+
+		// Animate ambient particles
+		animate('.timeline-particles > div', {
+			translateY: () => (Math.random() - 0.5) * 200,
+			translateX: () => (Math.random() - 0.5) * 100,
+			scale: [0.5, 1.5, 0.5],
+			opacity: [0.3, 0.8, 0.3],
+			easing: easings.inOutSine,
+			duration: () => Math.random() * 4000 + 3000,
+			delay: (el, i) => i * 100,
+			loop: true
+		});
+	}
+
+	// Enhanced Timeline Controls
+	function playFullTimeline() {
+		const timeline = createTimeline();
+
+		// Progressive reveal of all timeline periods
+		timeline
+			.add(animate('.timeline-period', {
+				opacity: [0, 1],
+				translateY: [50, 0],
+				scale: [0.9, 1],
+				easing: easings.outExpo,
+				duration: 1000,
+				delay: (el, i) => i * 500
+			}))
+			.add(animate('.timeline-event', {
+				opacity: [0, 1],
+				translateX: (el) => el.classList.contains('translate-x-8') ? [50, 0] : [-50, 0],
+				scale: [0.8, 1],
+				easing: easings.outBack,
+				duration: 600,
+				delay: (el, i) => i * 100
+			}), 1000)
+			.add(animate('.timeline-icon', {
+				scale: [0, 1.3, 1],
+				rotate: [0, 360],
+				easing: easings.outElastic,
+				duration: 1200,
+				delay: (el, i) => i * 200
+			}), 1500)
+			.add(animate('.timeline-progress', {
+				height: ['0%', '100%'],
+				easing: easings.outQuart,
+				duration: 3000
+			}), 2000);
+	}
+
 	// Typewriter Animation
 	function playTypewriterAnimation() {
 		animate('.typewriter-char', {
@@ -477,6 +827,7 @@ import Layout from '../layouts/Layout.astro';
 	window.playLineDrawing = playLineDrawing;
 	window.playMotionPath = playMotionPath;
 	window.createParticleSystem = createParticleSystem;
+	window.playFullTimeline = playFullTimeline;
 	window.playTypewriterAnimation = playTypewriterAnimation;
 	window.playBounceAnimation = playBounceAnimation;
 	window.resetAllAnimations = resetAllAnimations;
@@ -496,6 +847,11 @@ import Layout from '../layouts/Layout.astro';
 		setTimeout(() => {
 			createParticleSystem();
 		}, 2000);
+
+		// Initialize scroll-triggered timeline
+		setTimeout(() => {
+			initTimelineScrollAnimation();
+		}, 1500);
 	});
 </script>
 
