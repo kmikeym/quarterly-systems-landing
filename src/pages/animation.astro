@@ -68,13 +68,89 @@ import Layout from '../layouts/Layout.astro';
 			</div>
 		</section>
 
-		<!-- Morphing Shapes Test -->
+		<!-- SVG Line Drawing Animation -->
 		<section class="mb-20">
-			<h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Morphing Elements</h2>
-			<div class="flex justify-center items-center space-x-12">
-				<div class="morph-shape w-20 h-20 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"></div>
-				<div class="morph-shape w-20 h-20 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-lg"></div>
-				<div class="morph-shape w-20 h-20 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full"></div>
+			<h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">SVG Line Drawing</h2>
+			<div class="flex justify-center">
+				<svg width="600" height="300" viewBox="0 0 600 300" class="border border-gray-200 rounded-lg bg-black">
+					<!-- Circuit board style paths -->
+					<path id="circuit-path-1" d="M50 150 L150 150 L150 100 L250 100 L250 50 L350 50 L350 150 L450 150 L450 200 L550 200"
+						stroke="#00ff88" stroke-width="3" fill="none" stroke-dasharray="2000" stroke-dashoffset="2000"/>
+
+					<path id="circuit-path-2" d="M50 200 L100 200 L100 250 L200 250 L200 200 L300 200 L300 150 L400 150 L400 100 L500 100 L500 150 L550 150"
+						stroke="#ff0088" stroke-width="3" fill="none" stroke-dasharray="2000" stroke-dashoffset="2000"/>
+
+					<path id="circuit-path-3" d="M50 100 L120 100 L120 180 L180 180 L180 120 L260 120 L260 180 L320 180 L320 100 L400 100 L400 180 L480 180 L480 120 L550 120"
+						stroke="#0088ff" stroke-width="3" fill="none" stroke-dasharray="2000" stroke-dashoffset="2000"/>
+
+					<!-- Circuit nodes -->
+					<circle class="circuit-node" cx="150" cy="150" r="4" fill="#00ff88" opacity="0"/>
+					<circle class="circuit-node" cx="250" cy="100" r="4" fill="#00ff88" opacity="0"/>
+					<circle class="circuit-node" cx="350" cy="50" r="4" fill="#00ff88" opacity="0"/>
+					<circle class="circuit-node" cx="450" cy="150" r="4" fill="#00ff88" opacity="0"/>
+
+					<circle class="circuit-node" cx="200" cy="250" r="4" fill="#ff0088" opacity="0"/>
+					<circle class="circuit-node" cx="300" cy="200" r="4" fill="#ff0088" opacity="0"/>
+					<circle class="circuit-node" cx="400" cy="150" r="4" fill="#ff0088" opacity="0"/>
+					<circle class="circuit-node" cx="500" cy="100" r="4" fill="#ff0088" opacity="0"/>
+
+					<!-- Data packets -->
+					<circle class="data-packet" cx="50" cy="150" r="3" fill="#ffffff" opacity="0"/>
+					<circle class="data-packet" cx="50" cy="200" r="3" fill="#ffffff" opacity="0"/>
+					<circle class="data-packet" cx="50" cy="100" r="3" fill="#ffffff" opacity="0"/>
+				</svg>
+			</div>
+		</section>
+
+		<!-- Motion Path Animation -->
+		<section class="mb-20">
+			<h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Motion Path Animation</h2>
+			<div class="flex justify-center">
+				<svg width="600" height="400" viewBox="0 0 600 400" class="border border-gray-200 rounded-lg bg-gradient-to-br from-purple-900 to-blue-900">
+					<!-- Track path -->
+					<path id="race-track" d="M100 200 Q150 100 300 150 Q450 200 500 120 Q550 200 450 280 Q300 320 150 280 Q50 200 100 200 Z"
+						stroke="rgba(255,255,255,0.3)" stroke-width="40" fill="none" stroke-dasharray="10 5"/>
+
+					<!-- Racing car -->
+					<g id="race-car" transform="translate(100, 200)">
+						<rect x="-15" y="-8" width="30" height="16" rx="3" fill="#ff4444"/>
+						<rect x="-10" y="-6" width="20" height="12" rx="2" fill="#ffaa00"/>
+						<circle cx="-8" cy="-10" r="3" fill="#333"/>
+						<circle cx="8" cy="-10" r="3" fill="#333"/>
+						<circle cx="-8" cy="10" r="3" fill="#333"/>
+						<circle cx="8" cy="10" r="3" fill="#333"/>
+						<!-- Exhaust particles -->
+						<circle class="exhaust" cx="-20" cy="0" r="2" fill="#ff6600" opacity="0"/>
+						<circle class="exhaust" cx="-25" cy="2" r="1.5" fill="#ff8800" opacity="0"/>
+						<circle class="exhaust" cx="-30" cy="-1" r="1" fill="#ffaa00" opacity="0"/>
+					</g>
+				</svg>
+			</div>
+		</section>
+
+		<!-- Particle System -->
+		<section class="mb-20">
+			<h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Particle System</h2>
+			<div class="flex justify-center">
+				<div class="particle-container w-full h-96 bg-black rounded-lg relative overflow-hidden">
+					<!-- Particles will be generated here -->
+				</div>
+			</div>
+		</section>
+
+		<!-- Draggable Spring Physics -->
+		<section class="mb-20">
+			<h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Spring Physics</h2>
+			<div class="flex justify-center">
+				<div class="spring-demo w-full h-96 bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg relative overflow-hidden">
+					<div class="draggable-orb absolute w-20 h-20 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full shadow-lg cursor-grab active:cursor-grabbing"
+						style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
+						<div class="absolute inset-2 bg-white rounded-full opacity-30"></div>
+					</div>
+					<div class="absolute bottom-4 left-4 text-white text-sm opacity-70">
+						Drag the orb and release to see spring physics
+					</div>
+				</div>
 			</div>
 		</section>
 
@@ -109,8 +185,14 @@ import Layout from '../layouts/Layout.astro';
 				<button onclick="playCardAnimation()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
 					Card Reveal
 				</button>
-				<button onclick="playMorphAnimation()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
-					Morph Shapes
+				<button onclick="playLineDrawing()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+					SVG Line Drawing
+				</button>
+				<button onclick="playMotionPath()" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors">
+					Motion Path
+				</button>
+				<button onclick="createParticleSystem()" class="bg-yellow-600 text-white px-6 py-3 rounded-lg hover:bg-yellow-700 transition-colors">
+					Particle System
 				</button>
 				<button onclick="playTypewriterAnimation()" class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors">
 					Typewriter Effect
@@ -127,7 +209,7 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-	import { animate, createTimeline, set, remove, easings } from 'animejs';
+	import { animate, createTimeline, set, remove, easings, createMotionPath, createDraggable, createSpring } from 'animejs';
 
 	// Hero Animation
 	function playHeroAnimation() {
@@ -180,15 +262,167 @@ import Layout from '../layouts/Layout.astro';
 			}), 500);
 	}
 
-	// Morph Animation
-	function playMorphAnimation() {
-		animate('.morph-shape', {
-			borderRadius: ['50%', '0%', '50%'],
-			rotate: [0, 180, 360, 0],
-			scale: [1, 1.2, 0.8, 1],
-			easing: easings.inOutQuad,
-			duration: 3000,
-			delay: (el, i) => 200 * i
+	// SVG Line Drawing Animation
+	function playLineDrawing() {
+		const timeline = createTimeline();
+
+		// Draw circuit paths
+		timeline
+			.add(animate('#circuit-path-1', {
+				strokeDashoffset: [2000, 0],
+				easing: easings.outExpo,
+				duration: 2000
+			}))
+			.add(animate('#circuit-path-2', {
+				strokeDashoffset: [2000, 0],
+				easing: easings.outExpo,
+				duration: 2000
+			}), 500)
+			.add(animate('#circuit-path-3', {
+				strokeDashoffset: [2000, 0],
+				easing: easings.outExpo,
+				duration: 2000
+			}), 1000);
+
+		// Animate circuit nodes
+		setTimeout(() => {
+			animate('.circuit-node', {
+				opacity: [0, 1],
+				scale: [0, 1.5, 1],
+				easing: easings.outElastic,
+				duration: 800,
+				delay: (el, i) => 100 * i
+			});
+		}, 1500);
+
+		// Animate data packets
+		setTimeout(() => {
+			animate('.data-packet', {
+				opacity: [0, 1, 0],
+				scale: [0, 1, 0],
+				easing: easings.inOutQuad,
+				duration: 1000,
+				delay: (el, i) => 300 * i,
+				loop: true
+			});
+		}, 3000);
+	}
+
+	// Motion Path Animation
+	function playMotionPath() {
+		const motionPath = createMotionPath('#race-track');
+
+		animate('#race-car', {
+			motionPath: {
+				path: motionPath,
+				autoRotate: true
+			},
+			duration: 8000,
+			easing: easings.inOutCubic,
+			loop: true
+		});
+
+		// Animate exhaust particles
+		animate('.exhaust', {
+			opacity: [0, 0.8, 0],
+			scale: [0.5, 1, 1.5],
+			translateX: [-5, -15],
+			translateY: () => (Math.random() - 0.5) * 10,
+			easing: easings.outQuart,
+			duration: 500,
+			delay: (el, i) => i * 100,
+			loop: true
+		});
+	}
+
+	// Particle System
+	function createParticleSystem() {
+		const container = document.querySelector('.particle-container');
+		if (!container) return;
+
+		// Clear existing particles
+		container.innerHTML = '';
+
+		// Create 100 particles
+		for (let i = 0; i < 100; i++) {
+			const particle = document.createElement('div');
+			particle.className = 'particle absolute rounded-full pointer-events-none';
+			particle.style.width = Math.random() * 4 + 2 + 'px';
+			particle.style.height = particle.style.width;
+			particle.style.left = Math.random() * 100 + '%';
+			particle.style.top = Math.random() * 100 + '%';
+
+			// Random colors
+			const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff'];
+			particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+			container.appendChild(particle);
+		}
+
+		// Animate particles
+		animate('.particle', {
+			translateX: () => (Math.random() - 0.5) * 400,
+			translateY: () => (Math.random() - 0.5) * 400,
+			scale: [0, 1, 0],
+			opacity: [0, 1, 0],
+			rotate: () => Math.random() * 360,
+			easing: easings.outQuart,
+			duration: () => Math.random() * 3000 + 2000,
+			delay: (el, i) => i * 50,
+			loop: true
+		});
+	}
+
+	// Spring Physics
+	function initSpringPhysics() {
+		const orb = document.querySelector('.draggable-orb');
+		if (!orb) return;
+
+		const spring = createSpring({
+			mass: 1,
+			stiffness: 100,
+			damping: 10
+		});
+
+		createDraggable(orb, {
+			onDrag: (x, y) => {
+				set(orb, {
+					translateX: x,
+					translateY: y
+				});
+			},
+			onRelease: (x, y, velocityX, velocityY) => {
+				// Spring back to center with physics
+				animate(orb, {
+					translateX: 0,
+					translateY: 0,
+					easing: spring,
+					duration: 2000
+				});
+
+				// Add ripple effect
+				createRippleEffect(x, y);
+			}
+		});
+	}
+
+	function createRippleEffect(x, y) {
+		const container = document.querySelector('.spring-demo');
+		const ripple = document.createElement('div');
+		ripple.className = 'absolute rounded-full border-2 border-cyan-400 pointer-events-none';
+		ripple.style.left = x + 'px';
+		ripple.style.top = y + 'px';
+		ripple.style.width = '20px';
+		ripple.style.height = '20px';
+		ripple.style.transform = 'translate(-50%, -50%)';
+		container.appendChild(ripple);
+
+		animate(ripple, {
+			scale: [0, 4],
+			opacity: [0.8, 0],
+			easing: easings.outQuart,
+			duration: 1000,
+			complete: () => ripple.remove()
 		});
 	}
 
@@ -240,7 +474,9 @@ import Layout from '../layouts/Layout.astro';
 	// Make functions global for onclick handlers
 	window.playHeroAnimation = playHeroAnimation;
 	window.playCardAnimation = playCardAnimation;
-	window.playMorphAnimation = playMorphAnimation;
+	window.playLineDrawing = playLineDrawing;
+	window.playMotionPath = playMotionPath;
+	window.createParticleSystem = createParticleSystem;
 	window.playTypewriterAnimation = playTypewriterAnimation;
 	window.playBounceAnimation = playBounceAnimation;
 	window.resetAllAnimations = resetAllAnimations;
@@ -250,6 +486,16 @@ import Layout from '../layouts/Layout.astro';
 		setTimeout(() => {
 			playHeroAnimation();
 		}, 500);
+
+		// Initialize spring physics
+		setTimeout(() => {
+			initSpringPhysics();
+		}, 1000);
+
+		// Create initial particle system
+		setTimeout(() => {
+			createParticleSystem();
+		}, 2000);
 	});
 </script>
 
