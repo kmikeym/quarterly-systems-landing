@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial News Hub</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #0a0a0b;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            color: white;
+            text-decoration: none;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        /* Main Grid Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1a1a1b, #2d2d30);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .hero-content {
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #b3b3b3;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: #1a1a1b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #333;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-btn {
+            background: #333;
+            border: 1px solid #555;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chart-btn:hover,
+        .chart-btn.active {
+            background: #ff6b35;
+            border-color: #ff6b35;
+        }
+
+        #stockChart {
+            max-height: 400px;
+        }
+
+        /* News Grid */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .news-card {
+            background: #1a1a1b;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+        }
+
+        .news-card:hover {
+            transform: translateY(-4px);
+            border-color: #ff6b35;
+        }
+
+        .news-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 3rem;
+        }
+
+        .news-content {
+            padding: 1.5rem;
+        }
+
+        .news-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .news-excerpt {
+            color: #b3b3b3;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .sidebar-section {
+            background: #1a1a1b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #333;
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #ff6b35;
+        }
+
+        .stock-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .stock-item:last-child {
+            border-bottom: none;
+        }
+
+        .stock-symbol {
+            font-weight: 600;
+        }
+
+        .stock-price {
+            font-weight: 700;
+        }
+
+        .stock-change {
+            font-size: 0.9rem;
+        }
+
+        .positive {
+            color: #00d4aa;
+        }
+
+        .negative {
+            color: #ff4757;
+        }
+
+        /* Trending Topics */
+        .trending-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #333;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .trending-item:hover {
+            color: #ff6b35;
+        }
+
+        .trending-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            nav ul {
+                gap: 1rem;
+            }
+
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #333;
+            border-radius: 50%;
+            border-top-color: #ff6b35;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">FinanceHub</a>
+                <nav>
+                    <ul>
+                        <li><a href="#">Markets</a></li>
+                        <li><a href="#">News</a></li>
+                        <li><a href="#">Analysis</a></li>
+                        <li><a href="#">Portfolio</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Financial Markets Today</h1>
+                <p>Stay ahead of market movements with real-time data, breaking news, and expert analysis. Your comprehensive source for financial intelligence.</p>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="main-content">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Market Overview</h2>
+                        <div class="chart-controls">
+                            <button class="chart-btn active" data-period="1D">1D</button>
+                            <button class="chart-btn" data-period="1W">1W</button>
+                            <button class="chart-btn" data-period="1M">1M</button>
+                            <button class="chart-btn" data-period="1Y">1Y</button>
+                        </div>
+                    </div>
+                    <canvas id="stockChart"></canvas>
+                </div>
+
+                <div class="news-grid" id="newsGrid">
+                    <!-- News items will be dynamically generated -->
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Market Movers</h3>
+                    <div id="stockList">
+                        <!-- Stock items will be dynamically generated -->
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Trending Topics</h3>
+                    <div id="trendingTopics">
+                        <!-- Trending items will be dynamically generated -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Mock data for demonstration
+        const mockStockData = {
+            '1D': {
+                labels: ['9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00'],
+                data: [450, 452, 448, 455, 451, 458, 462, 459, 464, 461, 467, 469, 471, 468]
+            },
+            '1W': {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                data: [450, 465, 458, 472, 468]
+            },
+            '1M': {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                data: [420, 445, 465, 468]
+            },
+            '1Y': {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                data: [380, 420, 445, 468]
+            }
+        };
+
+        const mockNews = [
+            {
+                title: "Tech Stocks Rally Amid Strong Earnings Reports",
+                excerpt: "Major technology companies report better-than-expected quarterly results, driving market optimism.",
+                time: "2 hours ago",
+                category: "Markets"
+            },
+            {
+                title: "Federal Reserve Signals Interest Rate Stability",
+                excerpt: "Central bank officials indicate rates will remain steady through the next quarter.",
+                time: "4 hours ago",
+                category: "Policy"
+            },
+            {
+                title: "Energy Sector Sees Unprecedented Growth",
+                excerpt: "Renewable energy investments surge as companies pivot to sustainable solutions.",
+                time: "6 hours ago",
+                category: "Energy"
+            },
+            {
+                title: "Cryptocurrency Market Shows Signs of Recovery",
+                excerpt: "Digital assets rebound after weeks of volatility, with Bitcoin leading the charge.",
+                time: "8 hours ago",
+                category: "Crypto"
+            },
+            {
+                title: "International Trade Agreements Boost Market Confidence",
+                excerpt: "New bilateral trade deals expected to increase global economic cooperation.",
+                time: "10 hours ago",
+                category: "Global"
+            },
+            {
+                title: "Healthcare Innovation Drives Biotech Surge",
+                excerpt: "Breakthrough treatments and FDA approvals fuel investor interest in biotech sector.",
+                time: "12 hours ago",
+                category: "Healthcare"
+            }
+        ];
+
+        const mockStocks = [
+            { symbol: 'AAPL', price: '$175.42', change: '+2.34%', positive: true },
+            { symbol: 'GOOGL', price: '$142.87', change: '+1.87%', positive: true },
+            { symbol: 'TSLA', price: '$248.92', change: '-1.23%', positive: false },
+            { symbol: 'MSFT', price: '$378.45', change: '+0.92%', positive: true },
+            { symbol: 'AMZN', price: '$156.78', change: '-0.45%', positive: false },
+            { symbol: 'NVDA', price: '$521.34', change: '+3.21%', positive: true }
+        ];
+
+        const trendingTopics = [
+            "AI Revolution in Finance",
+            "Green Energy Investments",
+            "Inflation Impact Analysis",
+            "Emerging Market Opportunities",
+            "Fintech Disruption",
+            "Supply Chain Recovery"
+        ];
+
+        let chart;
+
+        // Initialize chart
+        function initChart() {
+            const ctx = document.getElementById('stockChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: mockStockData['1D'].labels,
+                    datasets: [{
+                        label: 'Market Index',
+                        data: mockStockData['1D'].data,
+                        borderColor: '#ff6b35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#ff6b35',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#333'
+                            },
+                            ticks: {
+                                color: '#888'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#333'
+                            },
+                            ticks: {
+                                color: '#888'
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        // Update chart data
+        function updateChart(period) {
+            chart.data.labels = mockStockData[period].labels;
+            chart.data.datasets[0].data = mockStockData[period].data;
+            chart.update();
+        }
+
+        // Generate news cards
+        function generateNewsCards() {
+            const newsGrid = document.getElementById('newsGrid');
+            newsGrid.innerHTML = mockNews.map(news => `
+                <div class="news-card">
+                    <div class="news-image">📊</div>
+                    <div class="news-content">
+                        <h3 class="news-title">${news.title}</h3>
+                        <p class="news-excerpt">${news.excerpt}</p>
+                        <div class="news-meta">
+                            <span>${news.category}</span>
+                            <span>${news.time}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Generate stock list
+        function generateStockList() {
+            const stockList = document.getElementById('stockList');
+            stockList.innerHTML = mockStocks.map(stock => `
+                <div class="stock-item">
+                    <div>
+                        <div class="stock-symbol">${stock.symbol}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="stock-price">${stock.price}</div>
+                        <div class="stock-change ${stock.positive ? 'positive' : 'negative'}">${stock.change}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Generate trending topics
+        function generateTrendingTopics() {
+            const trendingContainer = document.getElementById('trendingTopics');
+            trendingContainer.innerHTML = trendingTopics.map(topic => `
+                <div class="trending-item">${topic}</div>
+            `).join('');
+        }
+
+        // Chart period controls
+        document.addEventListener('DOMContentLoaded', function() {
+            initChart();
+            generateNewsCards();
+            generateStockList();
+            generateTrendingTopics();
+
+            // Chart period buttons
+            document.querySelectorAll('.chart-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateChart(this.dataset.period);
+                });
+            });
+
+            // Simulate real-time updates
+            setInterval(() => {
+                // Update random stock prices
+                const stockItems = document.querySelectorAll('.stock-item');
+                stockItems.forEach(item => {
+                    const priceElement = item.querySelector('.stock-price');
+                    const changeElement = item.querySelector('.stock-change');
+
+                    if (Math.random() > 0.7) { // 30% chance to update
+                        const currentPrice = parseFloat(priceElement.textContent.replace('$', ''));
+                        const change = (Math.random() - 0.5) * 2; // Random change between -1 and 1
+                        const newPrice = (currentPrice + change).toFixed(2);
+                        const changePercent = ((change / currentPrice) * 100).toFixed(2);
+
+                        priceElement.textContent = `$${newPrice}`;
+                        changeElement.textContent = `${change >= 0 ? '+' : ''}${changePercent}%`;
+                        changeElement.className = `stock-change ${change >= 0 ? 'positive' : 'negative'}`;
+                    }
+                });
+            }, 5000); // Update every 5 seconds
+        });
+    </script>
+</body>
+</html>

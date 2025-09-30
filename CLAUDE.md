@@ -23,7 +23,14 @@ This is an Astro static site for Quarterly Systems' landing page, built with Tai
   - `status.astro` - Real-time operational status with Leaflet map integration
   - `admin/location.astro` - Admin interface for updating location data
   - `status/history.astro` - Historical activity data
+  - `labs/` - Experimental projects and prototypes
+    - `index.astro` - Labs landing page
+    - `animations.astro` - anime.js animation experiments
+    - `timeline.astro` - Interactive scrolling timeline
+    - `k5m.astro` - K5M dashboard experiments index
 - `public/` - Static assets including logos, images, and favicon
+- `public/labs/k5m/` - Static HTML files for K5M dashboard experiments
+- `k5m-labs-source/` - Source files for K5M experiments (copied to public/labs/k5m/)
 
 ### Key Technologies
 
