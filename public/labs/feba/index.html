@@ -35,7 +35,7 @@
         }
 
         .hud-item {
-            font-size: 12px;
+            font-size: 14px;
             color: #00ff00;
         }
 
@@ -89,13 +89,13 @@
 
         .unit {
             position: absolute;
-            width: 30px;
-            height: 30px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             z-index: 10;
@@ -155,15 +155,15 @@
 
         .drone {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 30px;
+            height: 30px;
             background: #00ffff;
             border: 1px solid #00aaaa;
             color: #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 8px;
+            font-size: 12px;
             font-weight: bold;
             cursor: pointer;
             z-index: 12;
@@ -232,7 +232,7 @@
         }
 
         .panel-title {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
             color: #00ff00;
             margin-bottom: 10px;
@@ -240,7 +240,7 @@
         }
 
         .unit-info {
-            font-size: 11px;
+            font-size: 13px;
             line-height: 1.4;
         }
 
@@ -263,7 +263,7 @@
             background: transparent;
             color: #00ff00;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 12px;
             font-family: inherit;
             transition: all 0.2s;
         }
@@ -305,7 +305,7 @@
         .battle-log {
             max-height: 150px;
             overflow-y: auto;
-            font-size: 10px;
+            font-size: 12px;
             line-height: 1.3;
         }
 
@@ -354,10 +354,10 @@
 
         .health-bar {
             position: absolute;
-            bottom: -8px;
+            bottom: -10px;
             left: 2px;
             right: 2px;
-            height: 4px;
+            height: 5px;
             background: #333;
             border: 1px solid #000;
         }
@@ -384,8 +384,8 @@
 
         .explosion {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: radial-gradient(circle, #ff4444, #ff8800, transparent);
             animation: explosion 0.5s ease-out;
@@ -479,7 +479,7 @@
             mode: 'select', // select, move, attack, defend, overwatch, deploy-drone
             selectedUnit: null,
             gridSize: { width: 20, height: 14 },
-            cellSize: 40,
+            cellSize: 60,
             units: [],
             drones: [],
             terrain: [],
@@ -831,9 +831,9 @@
                 battlefield.appendChild(unitElement);
             }
 
-            // Update position
-            unitElement.style.left = (unit.x * gameState.cellSize + 10) + 'px';
-            unitElement.style.top = (unit.y * gameState.cellSize + 10) + 'px';
+            // Update position (centered: (60-45)/2 = 7.5px offset)
+            unitElement.style.left = (unit.x * gameState.cellSize + 7.5) + 'px';
+            unitElement.style.top = (unit.y * gameState.cellSize + 7.5) + 'px';
             unitElement.textContent = unit.symbol;
 
             // Set visibility classes
@@ -1151,10 +1151,10 @@
             unit.y = targetY;
             unit.movesLeft -= distance;
 
-            // Update visual position
+            // Update visual position (centered)
             const unitElement = document.getElementById(`unit-${unit.id}`);
-            unitElement.style.left = (targetX * gameState.cellSize + 10) + 'px';
-            unitElement.style.top = (targetY * gameState.cellSize + 10) + 'px';
+            unitElement.style.left = (targetX * gameState.cellSize + 7.5) + 'px';
+            unitElement.style.top = (targetY * gameState.cellSize + 7.5) + 'px';
 
             addBattleLogEntry(`${unit.callsign}: Moved to ${targetX},${targetY}`, 'movement');
             
@@ -1245,8 +1245,8 @@
         function createExplosion(x, y) {
             const explosion = document.createElement('div');
             explosion.className = 'explosion';
-            explosion.style.left = (x * gameState.cellSize + 5) + 'px';
-            explosion.style.top = (y * gameState.cellSize + 5) + 'px';
+            explosion.style.left = (x * gameState.cellSize) + 'px';
+            explosion.style.top = (y * gameState.cellSize) + 'px';
             document.getElementById('battlefield').appendChild(explosion);
 
             setTimeout(() => {
