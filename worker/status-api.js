@@ -5,11 +5,21 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // Enable CORS for quarterly.systems
+    // Enable CORS for quarterly.systems and common variations
+    const origin = request.headers.get('Origin');
+    const allowedOrigins = [
+      'https://quarterly.systems',
+      'https://www.quarterly.systems',
+      'https://quarterly-systems-landing.pages.dev',
+      'http://localhost:4321', // Astro dev server
+      'http://localhost:3000'  // Alternative dev server
+    ];
+
     const corsHeaders = {
-      'Access-Control-Allow-Origin': 'https://quarterly.systems',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : 'https://quarterly.systems',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Max-Age': '86400',
     };
 
     if (request.method === 'OPTIONS') {
@@ -100,10 +110,11 @@ async function refreshData(env) {
 
   console.log('Refreshing status data...');
 
-  // Get current location context for geo-tagging
-  const cachedStatus = await env.STATUS_KV.get('status_data');
-  const currentStatus = cachedStatus ? JSON.parse(cachedStatus) : {};
-  const currentLocation = currentStatus.location?.name || 'Los Angeles, CA';
+  // Get current location for new activities
+  const currentLocationData = await env.STATUS_KV.get('current_location');
+  const currentLocation = currentLocationData ?
+    JSON.parse(currentLocationData) :
+    { name: 'Los Angeles, CA', coordinates: [34.0522, -118.2437], timestamp: new Date().toISOString() };
 
   // Fetch all data sources in parallel
   const [githubData, rssData] = await Promise.allSettled([
@@ -111,37 +122,58 @@ async function refreshData(env) {
     fetchRSSFeeds()
   ]);
 
-  const activities = [];
+  // Get existing activities (immutable records)
+  const existingActivities = await env.STATUS_KV.get('all_activities');
+  let allActivities = existingActivities ? JSON.parse(existingActivities) : [];
 
-  // Process GitHub data with location context
+  // Collect new activities to add
+  const newActivities = [];
+
+  // Process GitHub data - only add NEW items
   if (githubData.status === 'fulfilled' && githubData.value) {
-    const geoTaggedGithub = githubData.value.map(activity => ({
-      ...activity,
-      location: currentLocation
-    }));
-    activities.push(...geoTaggedGithub);
+    githubData.value.forEach(activity => {
+      // Only add if this ID doesn't already exist
+      if (!allActivities.some(existing => existing.id === activity.id)) {
+        newActivities.push({
+          ...activity,
+          location: currentLocation.name,
+          coordinates: currentLocation.coordinates,
+          locationTimestamp: currentLocation.timestamp
+        });
+      }
+    });
   }
 
-  // Process RSS data with location context
+  // Process RSS data - only add NEW items
   if (rssData.status === 'fulfilled' && rssData.value) {
-    const geoTaggedRSS = rssData.value.map(activity => ({
-      ...activity,
-      location: currentLocation
-    }));
-    activities.push(...geoTaggedRSS);
+    rssData.value.forEach(activity => {
+      // Only add if this ID doesn't already exist
+      if (!allActivities.some(existing => existing.id === activity.id)) {
+        newActivities.push({
+          ...activity,
+          location: currentLocation.name,
+          coordinates: currentLocation.coordinates,
+          locationTimestamp: currentLocation.timestamp
+        });
+      }
+    });
   }
 
-  // Sort activities by timestamp (newest first)
-  activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  // Add new activities to the permanent record
+  allActivities.unshift(...newActivities);
 
+  // Sort all activities by timestamp (newest first)
+  allActivities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  // Build status response using current location and recent activities
   const statusData = {
     lastUpdate: now,
     location: {
-      name: 'Los Angeles, CA',
-      coordinates: [34.0522, -118.2437],
-      lastSeen: new Date(now - 7200000).toISOString() // 2 hours ago
+      name: currentLocation.name,
+      coordinates: currentLocation.coordinates,
+      lastSeen: currentLocation.timestamp
     },
-    activities: activities.slice(0, 20), // Keep only latest 20
+    activities: allActivities.slice(0, 20), // Latest 20 for main feed
     services: {
       vibecode: { status: 'operational', uptime: '99.9%', responseTime: '142ms' },
       office: { status: 'operational', uptime: '99.8%', responseTime: '89ms' },
@@ -149,25 +181,15 @@ async function refreshData(env) {
     }
   };
 
-  // Cache the data
+  // Cache the status response
   await env.STATUS_KV.put('status_data', JSON.stringify(statusData), {
     expirationTtl: 1800 // 30 minutes
   });
 
-  // Update full activity history with new activities
-  const allActivities = await env.STATUS_KV.get('all_activities');
-  let fullHistory = allActivities ? JSON.parse(allActivities) : [];
+  // Store the complete immutable activity history
+  await env.STATUS_KV.put('all_activities', JSON.stringify(allActivities));
 
-  // Add new activities to history (avoid duplicates by checking IDs)
-  activities.forEach(activity => {
-    if (!fullHistory.some(existing => existing.id === activity.id)) {
-      fullHistory.unshift(activity);
-    }
-  });
-
-  await env.STATUS_KV.put('all_activities', JSON.stringify(fullHistory));
-
-  console.log('Status data refreshed:', activities.length, 'activities');
+  console.log('Status data refreshed:', newActivities.length, 'new activities added');
   return statusData;
 }
 
@@ -333,31 +355,43 @@ function parseGitHubRSSItems(xml, repositoryName) {
 
     // Extract commit data from GitHub Atom feed
     const title = extractXMLValue(entryXML, 'title');
-    const link = extractXMLValue(entryXML, 'link href') || extractXMLValue(entryXML, 'link');
-    const updated = extractXMLValue(entryXML, 'updated');
+    const updated = extractXMLValue(entryXML, 'updated') || extractXMLValue(entryXML, 'published');
     const id = extractXMLValue(entryXML, 'id');
     const author = extractXMLValue(entryXML, 'name');
 
-    if (title && link && updated && id) {
-      // Extract commit hash from the ID or link
-      const commitHash = id ? id.split('/').pop() || id.split(':').pop() :
-                       link ? link.split('/').pop() :
-                       'unknown';
+    // Extract link - GitHub uses different link formats
+    let link = extractXMLValue(entryXML, 'link');
+    if (!link) {
+      const linkMatch = entryXML.match(/<link[^>]+href="([^"]+)"/);
+      link = linkMatch ? linkMatch[1] : '';
+    }
+
+    if (title && updated && id) {
+      // Extract commit hash from the ID
+      let commitHash = 'unknown';
+      if (id.includes('Commit/')) {
+        commitHash = id.split('Commit/')[1] || 'unknown';
+      } else if (id.includes('push/')) {
+        commitHash = id.split('push/')[1] || 'unknown';
+      }
+
+      // Clean up title
+      const cleanTitle = title.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim();
 
       // Create activity object
       activities.push({
-        id: `github-commit-${commitHash}`,
+        id: `github-${commitHash}`,
         type: 'development',
         title: 'Development Activity',
         description: repositoryName === 'all-repositories' ?
-                    `${title}` :
-                    `Pushed commit to ${repositoryName}`,
+                    `${cleanTitle}` :
+                    `Pushed commit to ${repositoryName.split('/')[1] || repositoryName}`,
         timestamp: new Date(updated).toISOString(),
         source: 'GitHub',
         metadata: {
           repository: repositoryName,
-          commitHash: commitHash.substring(0, 7), // Short hash
-          commitMessage: title,
+          commitHash: commitHash.substring(0, 8), // Short hash
+          commitMessage: cleanTitle,
           link: link,
           author: author
         }
@@ -373,27 +407,29 @@ async function updateLocation(env, locationData) {
 
   // Simple location - just use what's provided (City, State format)
   const cityState = location.trim();
+  const locationTimestamp = timestamp || new Date().toISOString();
 
-  // Update current location in status data
-  const cachedStatus = await env.STATUS_KV.get('status_data');
-  let statusData = cachedStatus ? JSON.parse(cachedStatus) : {};
-
-  // Simple location storage
-  statusData.location = {
+  // Update current location state
+  const currentLocation = {
     name: cityState,
     coordinates: coordinates || [34.0522, -118.2437], // Default to LA if no coords
-    lastSeen: timestamp || new Date().toISOString()
+    timestamp: locationTimestamp
   };
 
-  // Create location activity
+  // Store current location in its own KV key
+  await env.STATUS_KV.put('current_location', JSON.stringify(currentLocation));
+
+  // Create location activity as immutable record
   const locationActivity = {
     id: `location-${Date.now()}`,
     type: 'location',
     title: activity ? 'Activity Update' : 'Location Update',
     description: activity ? `${activity} in ${cityState}` : `Arrived in ${cityState}`,
-    timestamp: timestamp || new Date().toISOString(),
+    timestamp: locationTimestamp,
     source: 'Manual',
     location: cityState,
+    coordinates: coordinates || [34.0522, -118.2437],
+    locationTimestamp: locationTimestamp,
     metadata: {
       location: cityState,
       activity: activity,
@@ -401,26 +437,37 @@ async function updateLocation(env, locationData) {
     }
   };
 
-  // Add to activities (if they exist)
-  if (!statusData.activities) {
-    statusData.activities = [];
-  }
-
-  // Add location activity to beginning and keep only latest 10 for main feed
-  statusData.activities.unshift(locationActivity);
-  statusData.activities = statusData.activities.slice(0, 10);
-
-  // Store all activities in separate key for history
+  // Get existing immutable activities
   const allActivities = await env.STATUS_KV.get('all_activities');
   let fullHistory = allActivities ? JSON.parse(allActivities) : [];
+
+  // Add new location activity to permanent record
   fullHistory.unshift(locationActivity);
 
-  // Update both caches
-  statusData.lastUpdate = Date.now();
+  // Sort all activities by timestamp (newest first)
+  fullHistory.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  // Update status data using current location and recent activities
+  const statusData = {
+    lastUpdate: Date.now(),
+    location: {
+      name: currentLocation.name,
+      coordinates: currentLocation.coordinates,
+      lastSeen: currentLocation.timestamp
+    },
+    activities: fullHistory.slice(0, 20), // Latest 20 for main feed
+    services: {
+      vibecode: { status: 'operational', uptime: '99.9%', responseTime: '142ms' },
+      office: { status: 'operational', uptime: '99.8%', responseTime: '89ms' },
+      main: { status: 'operational', uptime: '99.9%', responseTime: '76ms' }
+    }
+  };
+
+  // Store both the status response and immutable activity history
   await env.STATUS_KV.put('status_data', JSON.stringify(statusData));
   await env.STATUS_KV.put('all_activities', JSON.stringify(fullHistory));
 
-  console.log('Location updated:', location, 'at', timestamp);
+  console.log('Location updated:', cityState, 'at', locationTimestamp);
 }
 
 // Removed complex location parsing - now using simple City, State format
