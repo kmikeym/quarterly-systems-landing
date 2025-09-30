@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMIKEYM - Personal Equity Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-bg: #000000;
+            --secondary-bg: #111111;
+            --tertiary-bg: #1a1a1a;
+            --border-color: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #888888;
+            --accent-color: #00ff88;
+            --accent-secondary: #ff4757;
+            --accent-warning: #ffa502;
+            --mono-font: 'JetBrains Mono', monospace;
+            --sans-font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--sans-font);
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.4;
+            overflow-x: hidden;
+        }
+
+        /* Terminal Header */
+        .terminal-header {
+            background: var(--secondary-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ticker-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ticker-symbol {
+            font-family: var(--mono-font);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            letter-spacing: 0.1em;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .market-status {
+            display: flex;
+            gap: 2rem;
+            font-family: var(--mono-font);
+            font-size: 0.9rem;
+        }
+
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .status-label {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .status-change {
+            font-size: 0.8rem;
+        }
+
+        .positive { color: var(--accent-color); }
+        .negative { color: var(--accent-secondary); }
+
+        /* Main Dashboard Grid */
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-rows: auto auto 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Featured News Section */
+        .featured-news {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .featured-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 0;
+            min-height: 250px;
+        }
+
+        .featured-image {
+            position: relative;
+            overflow: hidden;
+            background: var(--tertiary-bg);
+        }
+
+        .membership-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter:
+                contrast(1.2)
+                brightness(0.8)
+                saturate(0.3)
+                sepia(0.3)
+                hue-rotate(90deg)
+                drop-shadow(0 0 2px var(--accent-color));
+        }
+
+        .featured-text {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .featured-timestamp {
+            font-family: var(--mono-font);
+            font-size: 0.7rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .featured-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-color), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .featured-excerpt {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .price-display {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .current-price {
+            font-family: var(--mono-font);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .price-change {
+            font-family: var(--mono-font);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-family: var(--sans-font);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+
+        /* Data Modules Grid */
+        .data-modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .module {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .module-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .module-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .module-status {
+            font-family: var(--mono-font);
+            font-size: 0.8rem;
+            color: var(--accent-color);
+        }
+
+        .module-content {
+            padding: 1.5rem;
+        }
+
+        /* Chart Module */
+        .chart-module {
+            grid-column: 1 / -1;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-btn {
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-family: var(--mono-font);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chart-btn.active,
+        .chart-btn:hover {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border-color: var(--accent-color);
+        }
+
+        #priceChart {
+            max-height: 300px;
+            margin-top: 1rem;
+        }
+
+        /* Governance Module */
+        .vote-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .vote-item:last-child {
+            border-bottom: none;
+        }
+
+        .vote-question {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .vote-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .vote-btn {
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .vote-btn:hover {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+        }
+
+        .vote-meta {
+            font-family: var(--mono-font);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Feed Module */
+        .feed-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .feed-item:last-child {
+            border-bottom: none;
+        }
+
+        .feed-timestamp {
+            font-family: var(--mono-font);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .feed-content {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .feed-excerpt {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            line-height: 1.4;
+        }
+
+        /* Vote Tags */
+        .vote-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .vote-tag {
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-family: var(--mono-font);
+            letter-spacing: 0.02em;
+        }
+
+        .vote-tag.governance {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .vote-tag.community {
+            background: rgba(255, 165, 2, 0.1);
+            border-color: var(--accent-warning);
+            color: var(--accent-warning);
+        }
+
+        .vote-tag.transparency {
+            background: rgba(255, 71, 87, 0.1);
+            border-color: var(--accent-secondary);
+            color: var(--accent-secondary);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-module {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-content {
+            padding: 1rem;
+        }
+
+        /* Shareholders Module */
+        .shareholder-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+
+        .shareholder-item:last-child {
+            border-bottom: none;
+        }
+
+        .shareholder-name {
+            font-weight: 500;
+        }
+
+        .shareholder-shares {
+            font-family: var(--mono-font);
+            color: var(--text-muted);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-family: var(--mono-font);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .metric-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Featured News Background Effects */
+        .featured-news::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 300px;
+            right: 0;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 20px,
+                    rgba(0, 255, 136, 0.02) 20px,
+                    rgba(0, 255, 136, 0.02) 21px
+                );
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .featured-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .data-modules {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-module {
+                grid-column: 1;
+            }
+
+            .featured-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: 200px 1fr;
+            }
+
+            .featured-title {
+                font-size: 2rem;
+            }
+
+            .featured-news::before {
+                left: 0;
+                top: 200px;
+            }
+
+            .market-status {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ticker-brand {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: center;
+            }
+
+            .ticker-brand .btn {
+                margin-left: 0;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--border-color);
+            border-top: 2px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            background: var(--secondary-bg);
+            border-top: 1px solid var(--border-color);
+            margin-top: 3rem;
+            padding: 3rem 0 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+
+        .footer-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            font-family: var(--mono-font);
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-bottom .ticker-symbol {
+            font-family: var(--mono-font);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            letter-spacing: 0.1em;
+        }
+
+        .footer-tagline {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: var(--mono-font);
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="terminal-header">
+        <div class="header-content">
+            <div class="ticker-brand">
+                <div class="ticker-symbol">KMIKEYM</div>
+                <div class="live-indicator">
+                    <div class="live-dot"></div>
+                    <span>LIVE</span>
+                </div>
+                <a href="https://kmikeym.com/buy" class="btn btn-primary" style="margin-left: 2rem; padding: 0.5rem 1rem; font-size: 0.9rem;">Buy Shares</a>
+            </div>
+
+            <div class="market-status">
+                <div class="status-item">
+                    <div class="status-label">Last Trade</div>
+                    <div class="status-value">$4.93</div>
+                    <div class="status-change positive">+0.41%</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Market Cap</div>
+                    <div class="status-value">$49.3K</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Shareholders</div>
+                    <div class="status-value">847</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Active Votes</div>
+                    <div class="status-value">3</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard">
+        <div class="main-content">
+            <!-- Featured News -->
+            <section class="featured-news">
+                <div class="featured-content">
+                    <div class="featured-image">
+                        <img src="https://news.kmikeym.com/wp-content/uploads/2025/08/memberhsip-plain.png" alt="KmikeyM Memberships" class="membership-image" />
+                    </div>
+                    <div class="featured-text">
+                        <div class="featured-timestamp">2025-08-30 • LATEST</div>
+                        <h1 class="featured-title">Membership Tiers Launched</h1>
+                        <p class="featured-excerpt">After an incredibly productive Build Week 2025, KmikeyM Memberships are here: a new system of shares and tiers that unlock trading tools, voting power, and insider access.</p>
+
+                        <div class="price-display">
+                            <span class="current-price">$4.93</span>
+                            <span class="price-change positive">+$0.02 (+0.41%)</span>
+                        </div>
+
+                        <div class="action-buttons">
+                            <a href="https://news.kmikeym.com/membership/" class="btn btn-primary">Read Full Post</a>
+                            <a href="https://kmikeym.com/vote" class="btn btn-secondary">Vote</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Modules -->
+            <div class="data-modules">
+                <!-- Price Chart -->
+                <div class="module chart-module">
+                    <div class="module-header">
+                        <div class="module-title">Price Performance</div>
+                        <div class="chart-controls">
+                            <button class="chart-btn active" data-period="1D">1D</button>
+                            <button class="chart-btn" data-period="1W">1W</button>
+                            <button class="chart-btn" data-period="1M">1M</button>
+                            <button class="chart-btn" data-period="3M">3M</button>
+                            <button class="chart-btn" data-period="1Y">1Y</button>
+                        </div>
+                    </div>
+                    <div class="module-content">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Governance -->
+                <div class="module">
+                    <div class="module-header">
+                        <div class="module-title">Governance</div>
+                        <div class="module-status">ACTIVE</div>
+                    </div>
+                    <div class="module-content">
+                        <div class="feed-item">
+                            <div class="feed-timestamp">Recent</div>
+                            <div class="feed-content">
+                                <a href="https://vote.kmikeym.com/k5m" target="_blank" style="color: var(--accent-color); text-decoration: none;">Membership Shares</a>
+                                <span style="color: var(--accent-color); font-family: var(--mono-font); font-size: 0.7rem; margin-left: 0.5rem;">✓ PASSED (81%)</span>
+                            </div>
+                            <div class="vote-tags">
+                                <span class="vote-tag governance">#Membership</span>
+                                <span class="vote-tag">#ShareStructure</span>
+                                <span class="vote-tag community">#Community</span>
+                            </div>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-timestamp">Recent</div>
+                            <div class="feed-content">
+                                <a href="https://vote.kmikeym.com/k5m" target="_blank" style="color: var(--accent-color); text-decoration: none;">Board Structure</a>
+                                <span style="color: var(--accent-color); font-family: var(--mono-font); font-size: 0.7rem; margin-left: 0.5rem;">✓ PASSED (82%)</span>
+                            </div>
+                            <div class="vote-tags">
+                                <span class="vote-tag governance">#BoardGovernance</span>
+                                <span class="vote-tag">#Structure</span>
+                                <span class="vote-tag transparency">#Directors</span>
+                            </div>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-timestamp">Recent</div>
+                            <div class="feed-content">
+                                <a href="https://vote.kmikeym.com/k5m" target="_blank" style="color: var(--accent-color); text-decoration: none;">Renounce Gumroad Investment</a>
+                                <span style="color: var(--accent-color); font-family: var(--mono-font); font-size: 0.7rem; margin-left: 0.5rem;">✓ PASSED (57%)</span>
+                            </div>
+                            <div class="vote-tags">
+                                <span class="vote-tag transparency">#Ethics</span>
+                                <span class="vote-tag">#Investment</span>
+                                <span class="vote-tag governance">#Divestment</span>
+                            </div>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-timestamp">Recent</div>
+                            <div class="feed-content">
+                                <a href="https://vote.kmikeym.com/k5m" target="_blank" style="color: var(--accent-color); text-decoration: none;">Privacy & Governance Policy</a>
+                                <span style="color: var(--accent-color); font-family: var(--mono-font); font-size: 0.7rem; margin-left: 0.5rem;">✓ PASSED (86%)</span>
+                            </div>
+                            <div class="vote-tags">
+                                <span class="vote-tag governance">#Privacy</span>
+                                <span class="vote-tag transparency">#Transparency</span>
+                                <span class="vote-tag">#Policy</span>
+                            </div>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-timestamp">Portal</div>
+                            <div class="feed-content"><a href="https://vote.kmikeym.com/k5m" target="_blank" style="color: var(--accent-color); text-decoration: none;">View All Votes</a> - Complete governance history</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Feed -->
+                <div class="module">
+                    <div class="module-header">
+                        <div class="module-title">Recent Activity</div>
+                        <div class="module-status">LIVE</div>
+                    </div>
+                    <div class="module-content">
+                        <div class="feed-item">
+                            <div class="feed-timestamp">2025-08-30</div>
+                            <div class="feed-content">
+                                <a href="https://news.kmikeym.com/membership/" target="_blank" style="color: var(--accent-color); text-decoration: none;">Membership</a>
+                                <div class="feed-excerpt">KmikeyM Memberships are here: a new system of shares and tiers that unlock trading tools, voting power, and insider access.</div>
+                            </div>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-timestamp">2025-08-02</div>
+                            <div class="feed-content">
+                                <a href="https://news.kmikeym.com/privacy-and-governance/" target="_blank" style="color: var(--accent-color); text-decoration: none;">Privacy and Governance</a>
+                                <div class="feed-excerpt">A proposal for governance of confidential projects, reflecting on the challenges faced after 17 years as a publicly traded person.</div>
+                            </div>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-timestamp">2025-07-28</div>
+                            <div class="feed-content">
+                                <a href="https://news.kmikeym.com/blippo/" target="_blank" style="color: var(--accent-color); text-decoration: none;">Blippo+</a>
+                                <div class="feed-excerpt">Blippo+ has launched on Playdate. It's a surreal streaming service from Planet Blip, part sci-fi TV experiment, and part video game.</div>
+                            </div>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-timestamp">2025-07-13</div>
+                            <div class="feed-content">
+                                <a href="https://news.kmikeym.com/sahil-lavingia-doge/" target="_blank" style="color: var(--accent-color); text-decoration: none;">Trapped in UnSAFE Conditions</a>
+                                <div class="feed-excerpt">When I learned that Sahil Lavingia, founder of Gumroad, volunteered with DOGE to help gut services at the VA, I faced an ethical crisis.</div>
+                            </div>
+                        </div>
+                        <div class="feed-item">
+                            <div class="feed-timestamp">2025-06-25</div>
+                            <div class="feed-content">
+                                <a href="https://news.kmikeym.com/m-i-k-e-community-bond-program-draft/" target="_blank" style="color: var(--accent-color); text-decoration: none;">M.I.K.E. Community Bond Program</a>
+                                <div class="feed-excerpt">The MIKE trust protocol extends the KmikeyM community spirit through a new endorsement system.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Key Metrics -->
+            <div class="sidebar-module">
+                <div class="sidebar-header">Performance Metrics</div>
+                <div class="sidebar-content">
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-value">94%</div>
+                            <div class="metric-label">Goal Completion</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">847</div>
+                            <div class="metric-label">Shareholders</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">12.4K</div>
+                            <div class="metric-label">Discord Members</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">73%</div>
+                            <div class="metric-label">Avg Vote Participation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Shareholders -->
+            <div class="sidebar-module">
+                <div class="sidebar-header">Top Shareholders</div>
+                <div class="sidebar-content">
+                    <div class="shareholder-item">
+                        <div class="shareholder-name">Douglas Dollars</div>
+                        <div class="shareholder-shares">2,775.74 shares</div>
+                    </div>
+                    <div class="shareholder-item">
+                        <div class="shareholder-name">Patticus</div>
+                        <div class="shareholder-shares">1,933.00 shares</div>
+                    </div>
+                    <div class="shareholder-item">
+                        <div class="shareholder-name">Josh Berezin</div>
+                        <div class="shareholder-shares">832.68 shares</div>
+                    </div>
+                    <div class="shareholder-item">
+                        <div class="shareholder-name">chrishiggins</div>
+                        <div class="shareholder-shares">752.31 shares</div>
+                    </div>
+                    <div class="shareholder-item">
+                        <div class="shareholder-name">tsanth</div>
+                        <div class="shareholder-shares">552.00 shares</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Projects -->
+            <div class="sidebar-module">
+                <div class="sidebar-header">Recent Projects</div>
+                <div class="sidebar-content">
+                    <div class="feed-item">
+                        <div class="feed-timestamp">Video Game</div>
+                        <div class="feed-content"><a href="https://blippo.plus" target="_blank" style="color: var(--text-secondary); text-decoration: none;">Blippo+</a></div>
+                    </div>
+                    <div class="feed-item">
+                        <div class="feed-timestamp">Podcast</div>
+                        <div class="feed-content"><a href="https://hamburgerbusinessreview.com" target="_blank" style="color: var(--text-secondary); text-decoration: none;">Hamburger Business Review</a></div>
+                    </div>
+                    <div class="feed-item">
+                        <div class="feed-timestamp">Head of Content</div>
+                        <div class="feed-content"><a href="https://vibes.diy" target="_blank" style="color: var(--text-secondary); text-decoration: none;">Vibes.DIY</a></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Start -->
+            <div class="sidebar-module">
+                <div class="sidebar-header">Getting Started</div>
+                <div class="sidebar-content">
+                    <div class="feed-item">
+                        <div class="feed-timestamp">Guide</div>
+                        <div class="feed-content"><a href="https://news.kmikeym.com/kmikeym-quick-start-guide/" target="_blank" style="color: var(--text-secondary); text-decoration: none;">Quick Start Guide</a></div>
+                    </div>
+                    <div class="feed-item">
+                        <div class="feed-timestamp">FAQ</div>
+                        <div class="feed-content"><a href="https://kmikeym.com/about" target="_blank" style="color: var(--text-secondary); text-decoration: none;">About & FAQ</a></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4 class="footer-title">Exchange</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://kmikeym.com/offers" target="_blank">Trade</a></li>
+                        <li><a href="https://kmikeym.com/vote" target="_blank">Vote</a></li>
+                        <li><a href="https://kmikeym.com/buy" target="_blank">Buy Shares</a></li>
+                        <li><a href="https://kmikeym.com/pricing" target="_blank">Pricing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Shareholder</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://kmikeym.com/trades" target="_blank">Completed Trades</a></li>
+                        <li><a href="https://kmikeym.com/users/leaderboard" target="_blank">Leaderboard</a></li>
+                        <li><a href="https://kmikeym.com/users" target="_blank">User Directory</a></li>
+                        <li><a href="https://kmikeym.com/discord" target="_blank">Discord</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Communications</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://news.kmikeym.com/kmikeym-quick-start-guide/" target="_blank">Quick Start Guide</a></li>
+                        <li><a href="https://kmikeym.com/press" target="_blank">Press Request</a></li>
+                        <li><a href="https://kmikeym.com/about" target="_blank">About & FAQ</a></li>
+                        <li><a href="https://news.kmikeym.com/" target="_blank">Blog</a></li>
+                        <li><a href="https://kmikeym.com/podcasts" target="_blank">Podcasts</a></li>
+                        <li><a href="https://kmikeym.com/newsletter" target="_blank">Newsletter</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">Connect</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://youtube.com/@kmikeym" target="_blank">YouTube</a></li>
+                        <li><a href="https://instagram.com/kmikeym" target="_blank">Instagram</a></li>
+                        <li><a href="https://bsky.app/profile/kmikeym.com" target="_blank">Bluesky</a></li>
+                        <li><a href="https://x.com/kmikeym" target="_blank">X (Twitter)</a></li>
+                        <li><a href="https://substack.com/@kmikeym" target="_blank">Substack</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="ticker-symbol">KMIKEYM</div>
+                <div class="footer-tagline">Publicly Traded Individual • Experimental Governance</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Real price data based on current KMIKEYM price
+        const priceData = {
+            '1D': {
+                labels: ['9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00'],
+                data: [4.85, 4.87, 4.82, 4.89, 4.86, 4.91, 4.93, 4.88, 4.92, 4.89, 4.94, 4.93, 4.95, 4.93]
+            },
+            '1W': {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                data: [4.78, 4.83, 4.87, 4.89, 4.93]
+            },
+            '1M': {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                data: [4.65, 4.72, 4.81, 4.93]
+            },
+            '3M': {
+                labels: ['Oct', 'Nov', 'Dec', 'Jan'],
+                data: [4.12, 4.35, 4.68, 4.93]
+            },
+            '1Y': {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                data: [3.45, 3.78, 4.23, 4.93]
+            }
+        };
+
+        let chart;
+
+        // Initialize chart
+        function initChart() {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: priceData['1D'].labels,
+                    datasets: [{
+                        label: 'KMIKEYM Price',
+                        data: priceData['1D'].data,
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.1,
+                        pointBackgroundColor: '#00ff88',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 1,
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#333333',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#888888',
+                                font: {
+                                    family: 'JetBrains Mono'
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#333333',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#888888',
+                                font: {
+                                    family: 'JetBrains Mono'
+                                },
+                                callback: function(value) {
+                                    return '$' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        // Update chart data
+        function updateChart(period) {
+            chart.data.labels = priceData[period].labels;
+            chart.data.datasets[0].data = priceData[period].data;
+            chart.update();
+        }
+
+        // Real-time price updates
+        function updatePrice() {
+            const currentPrice = 4.93;
+            const change = (Math.random() - 0.5) * 0.1; // Random change between -0.05 and 0.05
+            const newPrice = Math.max(0, currentPrice + change);
+            const changePercent = ((change / currentPrice) * 100);
+
+            // Update header
+            const statusValue = document.querySelector('.status-item .status-value');
+            const statusChange = document.querySelector('.status-item .status-change');
+
+            if (statusValue && statusChange) {
+                statusValue.textContent = '$' + newPrice.toFixed(2);
+                statusChange.textContent = (change >= 0 ? '+' : '') + changePercent.toFixed(2) + '%';
+                statusChange.className = 'status-change ' + (change >= 0 ? 'positive' : 'negative');
+            }
+
+            // Update hero section
+            const currentPriceEl = document.querySelector('.current-price');
+            const priceChangeEl = document.querySelector('.price-change');
+
+            if (currentPriceEl && priceChangeEl) {
+                currentPriceEl.textContent = '$' + newPrice.toFixed(2);
+                priceChangeEl.textContent = (change >= 0 ? '+' : '') + '$' + Math.abs(change).toFixed(2) + ' (' + (change >= 0 ? '+' : '') + changePercent.toFixed(2) + '%)';
+                priceChangeEl.className = 'price-change ' + (change >= 0 ? 'positive' : 'negative');
+            }
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            initChart();
+
+            // Chart period controls
+            document.querySelectorAll('.chart-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateChart(this.dataset.period);
+                });
+            });
+
+            // Vote button interactions
+            document.querySelectorAll('.vote-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Simple voting interaction
+                    this.style.background = '#00ff88';
+                    this.style.color = '#000000';
+                    this.textContent += ' ✓';
+                    this.disabled = true;
+                });
+            });
+
+            // Simulate real-time updates every 10 seconds
+            setInterval(updatePrice, 10000);
+        });
+    </script>
+</body>
+</html>

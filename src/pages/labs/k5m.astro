@@ -1,0 +1,167 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="K5M Experiments - Quarterly Labs">
+	<nav class="bg-white border-b border-gray-200">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="flex justify-between items-center h-16">
+				<div class="flex items-center">
+					<a href="/" class="text-xl font-bold text-gray-900">Quarterly Systems</a>
+					<span class="ml-4 text-sm text-gray-500">Labs</span>
+				</div>
+				<div class="hidden md:block">
+					<div class="ml-10 flex items-baseline space-x-4">
+						<a href="/apps" class="text-gray-600 hover:text-purple-600 hover:shadow-lg hover:shadow-purple-500/25 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200">Apps</a>
+						<a href="https://base.quarterly.systems" class="text-gray-600 hover:text-purple-600 hover:shadow-lg hover:shadow-purple-500/25 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200">Knowledge Base</a>
+						<a href="/labs" class="text-purple-600 hover:text-purple-700 hover:shadow-lg hover:shadow-purple-500/25 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200">Labs</a>
+						<a href="/waitlist" class="text-gray-600 hover:text-purple-600 hover:shadow-lg hover:shadow-purple-500/25 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200">Contact</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Hero Section -->
+	<section class="bg-gradient-to-br from-green-50 to-emerald-50 py-16">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="mb-8">
+				<a href="/labs" class="inline-flex items-center text-green-600 hover:text-green-700 font-medium">
+					<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+					</svg>
+					Back to Labs
+				</a>
+			</div>
+			<h1 class="text-4xl font-bold text-gray-900 mb-4">
+				K5M Dashboard Experiments
+			</h1>
+			<p class="text-xl text-gray-600 max-w-3xl">
+				Collection of experimental dashboard interfaces and UI prototypes exploring different design patterns and use cases.
+			</p>
+		</div>
+	</section>
+
+	<!-- Experiments Grid -->
+	<section class="py-16 bg-white">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+				<!-- Financial News Hub -->
+				<a href="/labs/k5m/financial-news-hub.html" target="_blank" class="group bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-green-500 hover:shadow-xl transition-all duration-300">
+					<div class="flex items-center mb-4">
+						<div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+							<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+							</svg>
+						</div>
+						<h3 class="text-xl font-bold text-gray-900">Financial News Hub</h3>
+					</div>
+					<p class="text-gray-600 mb-4">
+						Dashboard interface for aggregating and displaying financial news and market data.
+					</p>
+					<div class="flex items-center text-green-600 font-medium">
+						<span>View prototype</span>
+						<svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+						</svg>
+					</div>
+				</a>
+
+				<!-- K10M Dashboard -->
+				<a href="/labs/k5m/K10M.html" target="_blank" class="group bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-green-500 hover:shadow-xl transition-all duration-300">
+					<div class="flex items-center mb-4">
+						<div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+							<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+							</svg>
+						</div>
+						<h3 class="text-xl font-bold text-gray-900">K10M Dashboard</h3>
+					</div>
+					<p class="text-gray-600 mb-4">
+						Experimental personal metrics and analytics dashboard with comprehensive data visualization.
+					</p>
+					<div class="flex items-center text-green-600 font-medium">
+						<span>View prototype</span>
+						<svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+						</svg>
+					</div>
+				</a>
+
+				<!-- KmikeyM Dashboard -->
+				<a href="/labs/k5m/kmikeym-dashboard.html" target="_blank" class="group bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-green-500 hover:shadow-xl transition-all duration-300">
+					<div class="flex items-center mb-4">
+						<div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+							<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+							</svg>
+						</div>
+						<h3 class="text-xl font-bold text-gray-900">Personal Dashboard</h3>
+					</div>
+					<p class="text-gray-600 mb-4">
+						Personalized dashboard interface exploring different approaches to activity tracking and visualization.
+					</p>
+					<div class="flex items-center text-green-600 font-medium">
+						<span>View prototype</span>
+						<svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+						</svg>
+					</div>
+				</a>
+
+				<!-- Sci-Fi Theme -->
+				<a href="/labs/k5m/scifi.html" target="_blank" class="group bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-green-500 hover:shadow-xl transition-all duration-300">
+					<div class="flex items-center mb-4">
+						<div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+							<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+							</svg>
+						</div>
+						<h3 class="text-xl font-bold text-gray-900">Sci-Fi Interface</h3>
+					</div>
+					<p class="text-gray-600 mb-4">
+						Futuristic themed dashboard exploring sci-fi aesthetics and unconventional UI patterns.
+					</p>
+					<div class="flex items-center text-green-600 font-medium">
+						<span>View prototype</span>
+						<svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+						</svg>
+					</div>
+				</a>
+
+			</div>
+		</div>
+	</section>
+
+	<!-- Note Section -->
+	<section class="bg-gray-50 py-12">
+		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+			<p class="text-gray-600">
+				These are experimental prototypes created to explore different interface designs and user experience patterns.
+				They may contain placeholder data and incomplete functionality.
+			</p>
+		</div>
+	</section>
+
+	<!-- Footer -->
+	<footer class="bg-white border-t border-gray-200">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+			<div class="flex flex-col md:flex-row justify-between items-center">
+				<div class="mb-4 md:mb-0">
+					<span class="text-sm text-gray-500">© 2025 Quarterly Systems</span>
+					<br>
+					<span class="text-xs text-gray-400">a <a href="https://kmikeym.com" class="hover:text-gray-600 transition-colors">K5M</a> company</span>
+				</div>
+				<div class="flex space-x-6">
+					<a href="/about" class="text-sm text-gray-500 hover:text-gray-900">About</a>
+					<span class="text-gray-300">·</span>
+					<a href="/waitlist" class="text-sm text-gray-500 hover:text-gray-900">Contact</a>
+					<span class="text-gray-300">·</span>
+					<a href="/status" class="text-sm text-gray-500 hover:text-gray-900">Status</a>
+				</div>
+			</div>
+		</div>
+	</footer>
+</Layout>

@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMIKEYM - Publicly Traded Individual</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --primary-blue: #0ea5e9;
+            --primary-blue-light: #38bdf8;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-orange: #f97316;
+
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            color: var(--gray-900);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* Simple Navigation */
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: 0.1em;
+        }
+
+        .nav-price {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: var(--font-sans);
+            font-weight: 600;
+        }
+
+        .price-value {
+            font-size: 1.25rem;
+            color: var(--primary-dark);
+        }
+
+        .price-change {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .price-change.positive {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .price-change.negative {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: var(--primary-dark);
+            color: white;
+            padding: 8rem 0 6rem;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--primary-blue);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4);
+        }
+
+        .hero-cta:hover {
+            background: var(--primary-blue-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.5);
+        }
+
+        /* Animated background pattern */
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(1deg); }
+            66% { transform: translate(-20px, 20px) rotate(-1deg); }
+        }
+
+        /* Market Status Section */
+        .market-status {
+            background: var(--gray-50);
+            padding: 4rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .status-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .status-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .status-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+        }
+
+        .status-subtitle {
+            font-size: 1.125rem;
+            color: var(--gray-600);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        /* Chart Section */
+        .chart-container {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--gray-300);
+            background: white;
+            color: var(--gray-600);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chart-btn:hover,
+        .chart-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        #priceChart {
+            height: 200px;
+            max-height: 200px;
+        }
+
+        /* Engagement Section */
+        .engagement-section {
+            background: white;
+            padding: 4rem 0;
+        }
+
+        .engagement-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .engagement-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .engagement-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+        }
+
+        .engagement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .engagement-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .engagement-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .engagement-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-blue);
+            border-radius: 12px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .engagement-card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+        }
+
+        .engagement-description {
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+        }
+
+        .engagement-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-blue);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .engagement-btn:hover {
+            background: var(--primary-blue-light);
+            transform: translateY(-1px);
+        }
+
+        /* Recent Decisions Section */
+        .decisions-section {
+            background: var(--gray-50);
+            padding: 4rem 0;
+        }
+
+        .decisions-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .decisions-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .decisions-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+        }
+
+        .decisions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .decision-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .decision-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .decision-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .decision-date {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .decision-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-passed {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .status-active {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .decision-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .decision-result {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+        }
+
+        .decision-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .decision-tag {
+            padding: 0.25rem 0.5rem;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Live Feed Section */
+        .feed-section {
+            background: white;
+            padding: 4rem 0;
+        }
+
+        .feed-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .feed-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .feed-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+        }
+
+        .feed-item {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .feed-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .feed-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .feed-date {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .feed-type {
+            padding: 0.25rem 0.75rem;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .feed-title-text {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .feed-excerpt {
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+
+        .feed-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .feed-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .main-footer {
+            background: var(--primary-dark);
+            color: white;
+            padding: 3rem 0 2rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+        }
+
+        .footer-tagline {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .nav-price {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-end;
+            }
+
+            .hero-container,
+            .status-container,
+            .engagement-container,
+            .decisions-container,
+            .feed-container {
+                padding: 0 1rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .engagement-grid,
+            .decisions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Scroll animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .animate-on-scroll.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <div class="nav-logo">KMIKEYM</div>
+            <div class="nav-price">
+                <span class="price-value">$4.93</span>
+                <span class="price-change positive">+0.41%</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="hero-badge">
+                <div class="live-dot"></div>
+                <span>Live Trading</span>
+            </div>
+            <h1 class="hero-title">Publicly Traded Individual</h1>
+            <p class="hero-subtitle">Buy shares, vote on decisions, and participate in the governance of a real person's life and career.</p>
+            <a href="https://kmikeym.com/buy" class="hero-cta">
+                <span>Buy Shares</span>
+                <span>→</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Market Status -->
+    <section class="market-status">
+        <div class="status-container">
+            <div class="status-header animate-on-scroll">
+                <h2 class="status-title">Current Market Status</h2>
+                <p class="status-subtitle">Real-time data from the KmikeyM marketplace</p>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card animate-on-scroll">
+                    <div class="metric-label">Share Price</div>
+                    <div class="metric-value">$4.93</div>
+                    <div class="metric-change positive">+$0.02 (+0.41%)</div>
+                </div>
+                <div class="metric-card animate-on-scroll">
+                    <div class="metric-label">Market Cap</div>
+                    <div class="metric-value">$49.3K</div>
+                    <div class="metric-change positive">Growing</div>
+                </div>
+                <div class="metric-card animate-on-scroll">
+                    <div class="metric-label">Shareholders</div>
+                    <div class="metric-value">847</div>
+                    <div class="metric-change positive">+12 this week</div>
+                </div>
+                <div class="metric-card animate-on-scroll">
+                    <div class="metric-label">Active Votes</div>
+                    <div class="metric-value">4</div>
+                    <div class="metric-change">Participate now</div>
+                </div>
+            </div>
+
+            <div class="chart-container animate-on-scroll">
+                <div class="chart-header">
+                    <h3 class="chart-title">Price Performance</h3>
+                    <div class="chart-controls">
+                        <button class="chart-btn active" data-period="1D">1D</button>
+                        <button class="chart-btn" data-period="1W">1W</button>
+                        <button class="chart-btn" data-period="1M">1M</button>
+                        <button class="chart-btn" data-period="1Y">1Y</button>
+                    </div>
+                </div>
+                <canvas id="priceChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Engagement Options -->
+    <section class="engagement-section">
+        <div class="engagement-container">
+            <div class="engagement-header animate-on-scroll">
+                <h2 class="engagement-title">How to Participate</h2>
+            </div>
+
+            <div class="engagement-grid">
+                <div class="engagement-card animate-on-scroll">
+                    <div class="engagement-icon">💰</div>
+                    <h3 class="engagement-card-title">Buy Shares</h3>
+                    <p class="engagement-description">Own a piece of Mike's future. Purchase shares and benefit from his success.</p>
+                    <a href="https://kmikeym.com/buy" class="engagement-btn">
+                        <span>Start Investing</span>
+                        <span>→</span>
+                    </a>
+                </div>
+                <div class="engagement-card animate-on-scroll">
+                    <div class="engagement-icon">🗳️</div>
+                    <h3 class="engagement-card-title">Vote on Decisions</h3>
+                    <p class="engagement-description">Help shape major life decisions through shareholder governance.</p>
+                    <a href="https://vote.kmikeym.com/k5m" class="engagement-btn">
+                        <span>Cast Your Vote</span>
+                        <span>→</span>
+                    </a>
+                </div>
+                <div class="engagement-card animate-on-scroll">
+                    <div class="engagement-icon">💬</div>
+                    <h3 class="engagement-card-title">Join Community</h3>
+                    <p class="engagement-description">Connect with other shareholders and stay updated on all developments.</p>
+                    <a href="https://kmikeym.com/discord" class="engagement-btn">
+                        <span>Join Discord</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Decisions -->
+    <section class="decisions-section">
+        <div class="decisions-container">
+            <div class="decisions-header animate-on-scroll">
+                <h2 class="decisions-title">Recent Decisions</h2>
+            </div>
+
+            <div class="decisions-grid">
+                <div class="decision-card animate-on-scroll">
+                    <div class="decision-meta">
+                        <span class="decision-date">Aug 2025</span>
+                        <span class="decision-status status-passed">Passed 81%</span>
+                    </div>
+                    <h3 class="decision-title">Membership Share System</h3>
+                    <p class="decision-result">Shareholders approved new membership tiers with enhanced trading tools and voting power.</p>
+                    <div class="decision-tags">
+                        <span class="decision-tag">Governance</span>
+                        <span class="decision-tag">Membership</span>
+                        <span class="decision-tag">Community</span>
+                    </div>
+                </div>
+
+                <div class="decision-card animate-on-scroll">
+                    <div class="decision-meta">
+                        <span class="decision-date">Aug 2025</span>
+                        <span class="decision-status status-passed">Passed 82%</span>
+                    </div>
+                    <h3 class="decision-title">Board Structure Reform</h3>
+                    <p class="decision-result">Established formal board of directors with specific composition and oversight rules.</p>
+                    <div class="decision-tags">
+                        <span class="decision-tag">Governance</span>
+                        <span class="decision-tag">Board</span>
+                        <span class="decision-tag">Structure</span>
+                    </div>
+                </div>
+
+                <div class="decision-card animate-on-scroll">
+                    <div class="decision-meta">
+                        <span class="decision-date">Jul 2025</span>
+                        <span class="decision-status status-passed">Passed 57%</span>
+                    </div>
+                    <h3 class="decision-title">Gumroad Divestment</h3>
+                    <p class="decision-result">Shareholders voted to sever investment ties with Gumroad due to ethical concerns.</p>
+                    <div class="decision-tags">
+                        <span class="decision-tag">Ethics</span>
+                        <span class="decision-tag">Investment</span>
+                        <span class="decision-tag">Divestment</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Feed -->
+    <section class="feed-section">
+        <div class="feed-container">
+            <div class="feed-header animate-on-scroll">
+                <h2 class="feed-title">Live Activity Feed</h2>
+            </div>
+
+            <div class="feed-item animate-on-scroll">
+                <div class="feed-meta">
+                    <span class="feed-date">Aug 30, 2025</span>
+                    <span class="feed-type">Launch</span>
+                </div>
+                <h3 class="feed-title-text">Membership System Live</h3>
+                <p class="feed-excerpt">
+                    New membership tiers are now active, providing enhanced access to trading tools, voting power, and insider insights.
+                    <a href="https://news.kmikeym.com/membership/" class="feed-link" target="_blank">Read the full announcement →</a>
+                </p>
+            </div>
+
+            <div class="feed-item animate-on-scroll">
+                <div class="feed-meta">
+                    <span class="feed-date">Jul 28, 2025</span>
+                    <span class="feed-type">Project</span>
+                </div>
+                <h3 class="feed-title-text">Blippo+ Released</h3>
+                <p class="feed-excerpt">
+                    Launched surreal streaming service for Playdate. Part sci-fi TV experiment, part interactive video game.
+                    <a href="https://news.kmikeym.com/blippo/" class="feed-link" target="_blank">Learn more →</a>
+                </p>
+            </div>
+
+            <div class="feed-item animate-on-scroll">
+                <div class="feed-meta">
+                    <span class="feed-date">Jul 13, 2025</span>
+                    <span class="feed-type">Analysis</span>
+                </div>
+                <h3 class="feed-title-text">Ethics in Investment</h3>
+                <p class="feed-excerpt">
+                    Published analysis on ethical investment decisions and the challenges of public governance.
+                    <a href="https://news.kmikeym.com/sahil-lavingia-doge/" class="feed-link" target="_blank">Read the piece →</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-logo">KMIKEYM</div>
+            <p class="footer-tagline">Experimental governance. Real transparency. Your participation matters.</p>
+            <div class="footer-links">
+                <a href="https://kmikeym.com/buy" class="footer-link">Buy Shares</a>
+                <a href="https://vote.kmikeym.com/k5m" class="footer-link">Vote</a>
+                <a href="https://news.kmikeym.com/" class="footer-link">Blog</a>
+                <a href="https://kmikeym.com/discord" class="footer-link">Discord</a>
+                <a href="https://news.kmikeym.com/kmikeym-quick-start-guide/" class="footer-link">Quick Start</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Price data
+        const priceData = {
+            '1D': {
+                labels: ['9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00'],
+                data: [4.85, 4.87, 4.82, 4.89, 4.86, 4.91, 4.93, 4.88, 4.92, 4.89, 4.94, 4.93, 4.95, 4.93]
+            },
+            '1W': {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                data: [4.78, 4.83, 4.87, 4.89, 4.93]
+            },
+            '1M': {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                data: [4.65, 4.72, 4.81, 4.93]
+            },
+            '1Y': {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                data: [3.45, 3.78, 4.23, 4.93]
+            }
+        };
+
+        let chart;
+
+        // Initialize chart
+        function initChart() {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: priceData['1D'].labels,
+                    datasets: [{
+                        label: 'KMIKEYM Price',
+                        data: priceData['1D'].data,
+                        borderColor: '#0ea5e9',
+                        backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#0ea5e9',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#e2e8f0',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#64748b',
+                                font: {
+                                    family: 'Inter'
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#e2e8f0',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#64748b',
+                                font: {
+                                    family: 'Inter'
+                                },
+                                callback: function(value) {
+                                    return '$' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        // Update chart data
+        function updateChart(period) {
+            chart.data.labels = priceData[period].labels;
+            chart.data.datasets[0].data = priceData[period].data;
+            chart.update();
+        }
+
+        // Real-time price updates
+        function updatePrice() {
+            const currentPrice = 4.93;
+            const change = (Math.random() - 0.5) * 0.1;
+            const newPrice = Math.max(0, currentPrice + change);
+            const changePercent = ((change / currentPrice) * 100);
+
+            // Update navigation price
+            const priceValue = document.querySelector('.price-value');
+            const priceChange = document.querySelector('.price-change');
+
+            if (priceValue && priceChange) {
+                priceValue.textContent = '$' + newPrice.toFixed(2);
+                priceChange.textContent = (change >= 0 ? '+' : '') + changePercent.toFixed(2) + '%';
+                priceChange.className = 'price-change ' + (change >= 0 ? 'positive' : 'negative');
+            }
+
+            // Update metric cards
+            const metricValue = document.querySelector('.metric-value');
+            const metricChangeEl = document.querySelector('.metric-change');
+
+            if (metricValue && metricChangeEl) {
+                metricValue.textContent = '$' + newPrice.toFixed(2);
+                metricChangeEl.textContent = (change >= 0 ? '+' : '') + '$' + Math.abs(change).toFixed(2) + ' (' + (change >= 0 ? '+' : '') + changePercent.toFixed(2) + '%)';
+                metricChangeEl.className = 'metric-change ' + (change >= 0 ? 'positive' : 'negative');
+            }
+        }
+
+        // Scroll animations
+        function handleScrollAnimations() {
+            const elements = document.querySelectorAll('.animate-on-scroll');
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('in-view');
+                }
+            });
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            initChart();
+
+            // Chart period controls
+            document.querySelectorAll('.chart-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateChart(this.dataset.period);
+                });
+            });
+
+            // Scroll animations
+            window.addEventListener('scroll', handleScrollAnimations);
+            handleScrollAnimations(); // Initial check
+
+            // Real-time updates every 15 seconds
+            setInterval(updatePrice, 15000);
+        });
+    </script>
+</body>
+</html>
