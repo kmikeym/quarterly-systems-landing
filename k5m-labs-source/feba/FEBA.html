@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>FEBA - Tactical Wargaming Simulator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            overflow: hidden;
+        }
+
+        .hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 2px solid #00ff00;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 100;
+        }
+
+        .hud-left, .hud-center, .hud-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hud-item {
+            font-size: 12px;
+            color: #00ff00;
+        }
+
+        .hud-value {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .battlefield {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 250px;
+            bottom: 0;
+            background: #2d4a2d;
+            overflow: hidden;
+        }
+
+        .grid-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .grid-cell {
+            position: absolute;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            box-sizing: border-box;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .grid-cell:hover {
+            background-color: rgba(0, 255, 0, 0.1);
+        }
+
+        .grid-cell.selected {
+            background-color: rgba(255, 255, 0, 0.3);
+            border-color: #ffff00;
+        }
+
+        .grid-cell.movement-range {
+            background-color: rgba(0, 0, 255, 0.2);
+            border-color: #0080ff;
+        }
+
+        .grid-cell.attack-range {
+            background-color: rgba(255, 0, 0, 0.2);
+            border-color: #ff4040;
+        }
+
+        .unit {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s;
+            border: 2px solid;
+        }
+
+        .unit.friendly {
+            background: #0066ff;
+            border-color: #00aaff;
+            color: white;
+        }
+
+        .unit.enemy {
+            background: #ff0000;
+            border-color: #ff4444;
+            color: white;
+        }
+
+        .unit.selected {
+            transform: scale(1.2);
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+        }
+
+        .unit.autopilot {
+            border-style: dashed;
+            animation: autopilot-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes autopilot-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .unit.damaged {
+            opacity: 0.7;
+        }
+
+        .unit.destroyed {
+            opacity: 0.3;
+            background: #666;
+        }
+
+        .unit.hidden {
+            display: none;
+        }
+
+        .unit.spotted {
+            animation: pulse 2s ease-in-out;
+        }
+
+        .unit.last-known {
+            opacity: 0.6;
+            border-style: dashed;
+            filter: grayscale(50%);
+        }
+
+        .drone {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #00ffff;
+            border: 1px solid #00aaaa;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 12;
+            transition: all 0.3s;
+            border-radius: 3px;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        .drone.low-battery {
+            background: #ffaa00;
+            border-color: #cc8800;
+            animation: blink 1s infinite;
+        }
+
+        .drone.destroyed {
+            opacity: 0.3;
+            background: #666;
+            box-shadow: none;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+
+        .grid-cell.fog {
+            background-color: rgba(0, 0, 0, 0.4);
+            border-color: rgba(0, 255, 0, 0.1);
+        }
+
+        .grid-cell.visible {
+            background-color: rgba(0, 255, 0, 0.05);
+        }
+
+        .vision-range {
+            position: absolute;
+            border: 1px dashed rgba(0, 255, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 7;
+            background: radial-gradient(circle, transparent 60%, rgba(0, 255, 255, 0.1) 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .control-panel {
+            position: fixed;
+            top: 60px;
+            right: 0;
+            width: 250px;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            border-left: 2px solid #00ff00;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .panel-section {
+            margin-bottom: 20px;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #00ff00;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .unit-info {
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .unit-info .stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 3px 0;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 4px;
+            border: 1px solid #00ff00;
+            background: transparent;
+            color: #00ff00;
+            cursor: pointer;
+            font-size: 10px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .action-btn.active {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .terrain {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .terrain.forest {
+            background: radial-gradient(circle, #228B22 60%, transparent 60%);
+            opacity: 0.6;
+        }
+
+        .terrain.hill {
+            background: radial-gradient(circle, #8B4513 70%, transparent 70%);
+            opacity: 0.4;
+        }
+
+        .terrain.water {
+            background: radial-gradient(circle, #4169E1 80%, transparent 80%);
+            opacity: 0.5;
+        }
+
+        .battle-log {
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 10px;
+            line-height: 1.3;
+        }
+
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px;
+            border-left: 2px solid #00ff00;
+            padding-left: 5px;
+        }
+
+        .log-entry.combat {
+            border-left-color: #ff4444;
+            color: #ffaaaa;
+        }
+
+        .log-entry.movement {
+            border-left-color: #4444ff;
+            color: #aaaaff;
+        }
+
+        .turn-controls {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .turn-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #00ff00;
+            background: transparent;
+            color: #00ff00;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+        }
+
+        .turn-btn:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .turn-btn.end-turn {
+            border-color: #ff6600;
+            color: #ff6600;
+        }
+
+        .health-bar {
+            position: absolute;
+            bottom: -8px;
+            left: 2px;
+            right: 2px;
+            height: 4px;
+            background: #333;
+            border: 1px solid #000;
+        }
+
+        .health-fill {
+            height: 100%;
+            background: #00ff00;
+            transition: width 0.3s;
+        }
+
+        .health-fill.damaged {
+            background: #ffaa00;
+        }
+
+        .health-fill.critical {
+            background: #ff4444;
+        }
+
+        @keyframes explosion {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(2); opacity: 0.8; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        .explosion {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ff4444, #ff8800, transparent);
+            animation: explosion 0.5s ease-out;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .objective-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ffff00;
+            border: 2px solid #000;
+            transform: rotate(45deg);
+            z-index: 5;
+        }
+
+        .range-indicator {
+            position: absolute;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 8;
+        }
+    </style>
+</head>
+<body>
+    <div class="hud">
+        <div class="hud-left">
+            <div class="hud-item">TURN: <span class="hud-value" id="turn-counter">1</span></div>
+            <div class="hud-item">PHASE: <span class="hud-value" id="current-phase">BLUE</span></div>
+            <div class="hud-item">UNITS: <span class="hud-value" id="unit-count">6/6</span></div>
+        </div>
+        <div class="hud-center">
+            <div class="hud-item" style="font-size: 16px; font-weight: bold;">FEBA - TACTICAL OPS</div>
+        </div>
+        <div class="hud-right">
+            <div class="hud-item">STATUS: <span class="hud-value" id="game-status">ACTIVE</span></div>
+            <div class="hud-item">GRID: <span class="hud-value">20x14</span></div>
+        </div>
+    </div>
+
+    <div class="battlefield">
+        <div class="grid-container" id="battlefield"></div>
+    </div>
+
+    <div class="control-panel">
+        <div class="panel-section">
+            <div class="panel-title">SELECTED UNIT</div>
+            <div class="unit-info" id="unit-info">
+                <div>No unit selected</div>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-title">ACTIONS</div>
+            <div class="action-buttons">
+                <button class="action-btn" id="move-btn" onclick="setMode('move')">MOVE</button>
+                <button class="action-btn" id="attack-btn" onclick="setMode('attack')">ATTACK</button>
+                <button class="action-btn" id="recon-btn" onclick="setMode('recon')">RECON</button>
+                <button class="action-btn" id="drone-btn" onclick="setMode('deploy-drone')">DEPLOY DRONE</button>
+            </div>
+            <div style="margin-top: 10px;">
+                <button class="action-btn" id="autopilot-btn" onclick="toggleAutopilot()" 
+                        style="width: 100%; border-color: #ff6600; color: #ff6600;">
+                    AUTO-PILOT: OFF
+                </button>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-title">BATTLE LOG</div>
+            <div class="battle-log" id="battle-log">
+                <div class="log-entry">Mission initiated. Secure objectives Alpha and Bravo.</div>
+                <div class="log-entry">Blue forces deployed. Awaiting orders...</div>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="turn-controls">
+                <button class="turn-btn end-turn" onclick="endTurn()">END TURN</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            turn: 1,
+            phase: 'BLUE', // BLUE or RED
+            mode: 'select', // select, move, attack, defend, overwatch, deploy-drone
+            selectedUnit: null,
+            gridSize: { width: 20, height: 14 },
+            cellSize: 40,
+            units: [],
+            drones: [],
+            terrain: [],
+            objectives: [],
+            battleLog: []
+        };
+
+        // Unit Types
+        const unitTypes = {
+            infantry: { name: 'Infantry', symbol: 'I', health: 100, attack: 60, defense: 40, range: 2, movement: 2, vision: 3, cost: 1 },
+            armor: { name: 'Armor', symbol: 'A', health: 150, attack: 100, defense: 80, range: 3, movement: 3, vision: 2, cost: 3 },
+            artillery: { name: 'Artillery', symbol: 'R', health: 80, attack: 120, defense: 20, range: 5, movement: 1, vision: 1, cost: 2 },
+            recon: { name: 'Recon', symbol: 'S', health: 70, attack: 40, defense: 30, range: 2, movement: 4, vision: 5, drones: 2, cost: 1 }
+        };
+
+        // Drone Properties
+        const droneSpec = {
+            health: 20,
+            movement: 3,
+            vision: 2,
+            symbol: '◊',
+            patrolRadius: 4,
+            lifespan: 8 // turns before battery runs out
+        };
+
+        // Initialize Game
+        function initGame() {
+            createBattlefield();
+            deployUnits();
+            addTerrain();
+            addObjectives();
+            updateFogOfWar();
+            updateHUD();
+            addBattleLogEntry('Game initialized. Blue forces move first.');
+            addBattleLogEntry('Recon units (S) have maximum vision. Use them to scout enemy positions!');
+        }
+
+        // Fog of War Functions
+        function updateFogOfWar() {
+            // Reset all enemy unit visibility
+            gameState.units.forEach(unit => {
+                if (unit.side === 'enemy') {
+                    unit.isVisible = false;
+                }
+            });
+
+            // Check what each friendly unit can see
+            gameState.units.forEach(friendlyUnit => {
+                if (friendlyUnit.side === 'friendly' && friendlyUnit.health > 0) {
+                    spotEnemiesInRange(friendlyUnit);
+                }
+            });
+
+            // Update visual representation
+            gameState.units.forEach(unit => renderUnit(unit));
+            gameState.drones.forEach(drone => renderDrone(drone));
+            updateGridFog();
+        }
+
+        // Drone Functions
+        function createDrone(deployerUnit, targetX, targetY) {
+            const drone = {
+                id: Math.random().toString(36).substr(2, 9),
+                x: deployerUnit.x,
+                y: deployerUnit.y,
+                targetX: targetX,
+                targetY: targetY,
+                side: deployerUnit.side,
+                health: droneSpec.health,
+                maxHealth: droneSpec.health,
+                vision: droneSpec.vision,
+                movement: droneSpec.movement,
+                symbol: droneSpec.symbol,
+                deployerCallsign: deployerUnit.callsign,
+                turnsRemaining: droneSpec.lifespan,
+                patrolPoints: generatePatrolRoute(targetX, targetY, droneSpec.patrolRadius),
+                currentPatrolIndex: 0,
+                isVisible: true,
+                lastSeenTurn: gameState.turn
+            };
+
+            gameState.drones.push(drone);
+            deployerUnit.dronesLeft--;
+            
+            addBattleLogEntry(`${deployerUnit.callsign} deployed drone to patrol ${targetX},${targetY}`, 'movement');
+            return drone;
+        }
+
+        function generatePatrolRoute(centerX, centerY, radius) {
+            const points = [];
+            const numPoints = 6; // Hexagonal patrol pattern
+            
+            for (let i = 0; i < numPoints; i++) {
+                const angle = (i * 2 * Math.PI) / numPoints;
+                const x = Math.round(centerX + radius * Math.cos(angle));
+                const y = Math.round(centerY + radius * Math.sin(angle));
+                
+                // Keep within bounds
+                const clampedX = Math.max(0, Math.min(gameState.gridSize.width - 1, x));
+                const clampedY = Math.max(0, Math.min(gameState.gridSize.height - 1, y));
+                points.push({ x: clampedX, y: clampedY });
+            }
+            return points;
+        }
+
+        function renderDrone(drone) {
+            const battlefield = document.getElementById('battlefield');
+            let droneElement = document.getElementById(`drone-${drone.id}`);
+            
+            if (!droneElement) {
+                droneElement = document.createElement('div');
+                droneElement.id = `drone-${drone.id}`;
+                droneElement.className = 'drone';
+                battlefield.appendChild(droneElement);
+            }
+
+            // Update position
+            droneElement.style.left = (drone.x * gameState.cellSize + 15) + 'px';
+            droneElement.style.top = (drone.y * gameState.cellSize + 15) + 'px';
+            droneElement.textContent = drone.symbol;
+
+            // Update battery status
+            droneElement.classList.remove('low-battery');
+            if (drone.turnsRemaining <= 2) {
+                droneElement.classList.add('low-battery');
+            }
+
+            if (drone.health <= 0) {
+                droneElement.classList.add('destroyed');
+            }
+        }
+
+        function moveDronesAutomatically() {
+            gameState.drones = gameState.drones.filter(drone => {
+                if (drone.health <= 0 || drone.turnsRemaining <= 0) {
+                    // Remove destroyed or expired drones
+                    const element = document.getElementById(`drone-${drone.id}`);
+                    if (element) element.remove();
+                    
+                    if (drone.turnsRemaining <= 0) {
+                        addBattleLogEntry(`Drone from ${drone.deployerCallsign} battery depleted`, 'movement');
+                    }
+                    return false;
+                }
+
+                // Move to next patrol point
+                const targetPoint = drone.patrolPoints[drone.currentPatrolIndex];
+                const dx = Math.sign(targetPoint.x - drone.x);
+                const dy = Math.sign(targetPoint.y - drone.y);
+                
+                // Move one step towards target
+                if (dx !== 0 || dy !== 0) {
+                    drone.x = Math.max(0, Math.min(gameState.gridSize.width - 1, drone.x + dx));
+                    drone.y = Math.max(0, Math.min(gameState.gridSize.height - 1, drone.y + dy));
+                }
+
+                // Check if reached current patrol point
+                if (drone.x === targetPoint.x && drone.y === targetPoint.y) {
+                    drone.currentPatrolIndex = (drone.currentPatrolIndex + 1) % drone.patrolPoints.length;
+                }
+
+                // Decrease battery
+                drone.turnsRemaining--;
+                
+                return true;
+            });
+
+            // Update drone vision
+            gameState.drones.forEach(drone => {
+                if (drone.side === 'friendly' && drone.health > 0) {
+                    spotEnemiesInRange(drone);
+                }
+            });
+
+            // Re-render drones
+            gameState.drones.forEach(drone => renderDrone(drone));
+        }
+
+        function deployDrone(deployerUnit, targetX, targetY) {
+            if (deployerUnit.dronesLeft <= 0) {
+                addBattleLogEntry(`${deployerUnit.callsign}: No drones remaining`, 'movement');
+                return false;
+            }
+
+            const distance = Math.abs(targetX - deployerUnit.x) + Math.abs(targetY - deployerUnit.y);
+            if (distance > 8) { // Max deployment range
+                addBattleLogEntry(`${deployerUnit.callsign}: Drone deployment range exceeded`, 'movement');
+                return false;
+            }
+
+            createDrone(deployerUnit, targetX, targetY);
+            return true;
+        }
+
+        function spotEnemiesInRange(spotter) {
+            const visionRange = spotter.vision;
+            
+            gameState.units.forEach(unit => {
+                if (unit.side === 'enemy' && unit.health > 0) {
+                    const distance = Math.abs(unit.x - spotter.x) + Math.abs(unit.y - spotter.y);
+                    
+                    if (distance <= visionRange) {
+                        if (!unit.isVisible) {
+                            // First time spotting this unit
+                            unit.isVisible = true;
+                            unit.isSpotted = true;
+                            unit.lastSeenTurn = gameState.turn;
+                            addBattleLogEntry(`${spotter.callsign} spotted enemy ${unit.callsign} at ${unit.x},${unit.y}!`, 'movement');
+                            
+                            // Add pulse animation
+                            setTimeout(() => {
+                                const unitElement = document.getElementById(`unit-${unit.id}`);
+                                if (unitElement) {
+                                    unitElement.classList.remove('spotted');
+                                }
+                            }, 2000);
+                        } else {
+                            // Update last seen turn
+                            unit.lastSeenTurn = gameState.turn;
+                            unit.isVisible = true;
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateGridFog() {
+            // Calculate visible areas for visual feedback
+            const visibleCells = new Set();
+            
+            gameState.units.forEach(friendlyUnit => {
+                if (friendlyUnit.side === 'friendly' && friendlyUnit.health > 0) {
+                    const range = friendlyUnit.vision;
+                    
+                    for (let dy = -range; dy <= range; dy++) {
+                        for (let dx = -range; dx <= range; dx++) {
+                            const distance = Math.abs(dx) + Math.abs(dy);
+                            if (distance <= range) {
+                                const x = friendlyUnit.x + dx;
+                                const y = friendlyUnit.y + dy;
+                                if (x >= 0 && x < gameState.gridSize.width && y >= 0 && y < gameState.gridSize.height) {
+                                    visibleCells.add(`${x},${y}`);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Update grid cell classes
+            document.querySelectorAll('.grid-cell').forEach(cell => {
+                const x = parseInt(cell.dataset.x);
+                const y = parseInt(cell.dataset.y);
+                const key = `${x},${y}`;
+                
+                cell.classList.remove('fog', 'visible');
+                if (visibleCells.has(key)) {
+                    cell.classList.add('visible');
+                } else {
+                    cell.classList.add('fog');
+                }
+            });
+        }
+
+        function createBattlefield() {
+            const battlefield = document.getElementById('battlefield');
+            battlefield.innerHTML = '';
+            
+            for (let y = 0; y < gameState.gridSize.height; y++) {
+                for (let x = 0; x < gameState.gridSize.width; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.style.left = (x * gameState.cellSize) + 'px';
+                    cell.style.top = (y * gameState.cellSize) + 'px';
+                    cell.style.width = gameState.cellSize + 'px';
+                    cell.style.height = gameState.cellSize + 'px';
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+                    cell.onclick = () => handleCellClick(x, y);
+                    battlefield.appendChild(cell);
+                }
+            }
+        }
+
+        function deployUnits() {
+            // Blue forces (friendly) - deployed on left side of larger map
+            gameState.units = [
+                createUnit('infantry', 1, 10, 'friendly', 'ALPHA-1'),
+                createUnit('infantry', 2, 12, 'friendly', 'ALPHA-2'),
+                createUnit('armor', 0, 8, 'friendly', 'BRAVO-1'),
+                createUnit('artillery', 1, 6, 'friendly', 'CHARLIE-1'),
+                createUnit('recon', 3, 9, 'friendly', 'DELTA-1'),
+                createUnit('recon', 2, 7, 'friendly', 'DELTA-2'),
+                createUnit('infantry', 2, 11, 'friendly', 'ECHO-1'),
+                createUnit('infantry', 1, 13, 'friendly', 'ECHO-2')
+            ];
+
+            // Red forces (enemy) - deployed on right side of larger map
+            gameState.units.push(
+                createUnit('infantry', 18, 3, 'enemy', 'RED-1'),
+                createUnit('infantry', 17, 5, 'enemy', 'RED-2'),
+                createUnit('armor', 19, 2, 'enemy', 'RED-3'),
+                createUnit('artillery', 16, 4, 'enemy', 'RED-4'),
+                createUnit('recon', 18, 6, 'enemy', 'RED-5'),
+                createUnit('infantry', 17, 8, 'enemy', 'RED-6'),
+                createUnit('infantry', 19, 7, 'enemy', 'RED-7'),
+                createUnit('recon', 16, 9, 'enemy', 'RED-8')
+            );
+
+            gameState.units.forEach(unit => renderUnit(unit));
+        }
+
+        function createUnit(type, x, y, side, callsign) {
+            const unitData = unitTypes[type];
+            return {
+                id: Math.random().toString(36).substr(2, 9),
+                type: type,
+                callsign: callsign,
+                x: x,
+                y: y,
+                side: side,
+                health: unitData.health,
+                maxHealth: unitData.health,
+                attack: unitData.attack,
+                defense: unitData.defense,
+                range: unitData.range,
+                movement: unitData.movement,
+                vision: unitData.vision,
+                dronesLeft: unitData.drones || 0,
+                maxDrones: unitData.drones || 0,
+                movesLeft: unitData.movement,
+                hasAttacked: false,
+                mode: 'normal', // normal, defending, overwatch
+                autopilot: false, // AI controlled when true
+                symbol: unitData.symbol,
+                isVisible: side === 'friendly', // Friendly units always visible to player
+                lastSeenTurn: side === 'friendly' ? 0 : -1,
+                isSpotted: side === 'friendly' // Player always knows own units
+            };
+        }
+
+        function renderUnit(unit) {
+            const battlefield = document.getElementById('battlefield');
+            let unitElement = document.getElementById(`unit-${unit.id}`);
+            
+            if (!unitElement) {
+                unitElement = document.createElement('div');
+                unitElement.id = `unit-${unit.id}`;
+                battlefield.appendChild(unitElement);
+            }
+
+            // Update position
+            unitElement.style.left = (unit.x * gameState.cellSize + 10) + 'px';
+            unitElement.style.top = (unit.y * gameState.cellSize + 10) + 'px';
+            unitElement.textContent = unit.symbol;
+
+            // Set visibility classes
+            let classes = [`unit`, unit.side];
+            
+            if (!unit.isVisible) {
+                classes.push('hidden');
+            } else if (unit.lastSeenTurn < gameState.turn - 1 && unit.side === 'enemy') {
+                classes.push('last-known');
+            }
+            
+            if (unit.health <= 0) classes.push('destroyed');
+            else if (unit.health < unit.maxHealth * 0.5) classes.push('damaged');
+            
+            if (unit.autopilot) classes.push('autopilot');
+            
+            unitElement.className = classes.join(' ');
+            unitElement.onclick = (e) => {
+                e.stopPropagation();
+                
+                // If we're in attack mode and this is an enemy unit, attack it
+                if (gameState.mode === 'attack' && gameState.selectedUnit && 
+                    unit.side !== gameState.selectedUnit.side) {
+                    attackTarget(gameState.selectedUnit, unit.x, unit.y);
+                } else {
+                    // Otherwise, select the unit
+                    selectUnit(unit);
+                }
+            };
+
+            // Add health bar
+            const healthBar = document.createElement('div');
+            healthBar.className = 'health-bar';
+            const healthFill = document.createElement('div');
+            healthFill.className = 'health-fill';
+            const healthPercent = (unit.health / unit.maxHealth) * 100;
+            healthFill.style.width = healthPercent + '%';
+            
+            if (healthPercent > 60) healthFill.className = 'health-fill';
+            else if (healthPercent > 30) healthFill.className = 'health-fill damaged';
+            else healthFill.className = 'health-fill critical';
+
+            healthBar.appendChild(healthFill);
+            unitElement.appendChild(healthBar);
+
+            battlefield.appendChild(unitElement);
+        }
+
+        function addTerrain() {
+            // Add terrain features for larger battlefield
+            const terrainFeatures = [
+                { type: 'forest', x: 6, y: 3 },
+                { type: 'forest', x: 7, y: 3 },
+                { type: 'forest', x: 8, y: 4 },
+                { type: 'hill', x: 10, y: 6 },
+                { type: 'hill', x: 11, y: 7 },
+                { type: 'hill', x: 12, y: 6 },
+                { type: 'water', x: 5, y: 1 },
+                { type: 'water', x: 6, y: 1 },
+                { type: 'water', x: 7, y: 1 },
+                { type: 'forest', x: 14, y: 9 },
+                { type: 'forest', x: 15, y: 10 },
+                { type: 'hill', x: 4, y: 8 },
+                { type: 'forest', x: 9, y: 12 },
+                { type: 'forest', x: 10, y: 11 },
+                { type: 'water', x: 13, y: 2 },
+                { type: 'water', x: 14, y: 2 },
+                { type: 'hill', x: 16, y: 7 },
+                { type: 'hill', x: 8, y: 9 }
+            ];
+
+            terrainFeatures.forEach(terrain => {
+                const terrainElement = document.createElement('div');
+                terrainElement.className = `terrain ${terrain.type}`;
+                terrainElement.style.left = (terrain.x * gameState.cellSize) + 'px';
+                terrainElement.style.top = (terrain.y * gameState.cellSize) + 'px';
+                terrainElement.style.width = gameState.cellSize + 'px';
+                terrainElement.style.height = gameState.cellSize + 'px';
+                document.getElementById('battlefield').appendChild(terrainElement);
+            });
+        }
+
+        function addObjectives() {
+            const objectives = [
+                { name: 'Alpha', x: 12, y: 4 },
+                { name: 'Bravo', x: 15, y: 8 },
+                { name: 'Charlie', x: 8, y: 10 }
+            ];
+
+            objectives.forEach(obj => {
+                const objElement = document.createElement('div');
+                objElement.className = 'objective-marker';
+                objElement.style.left = (obj.x * gameState.cellSize + 15) + 'px';
+                objElement.style.top = (obj.y * gameState.cellSize + 15) + 'px';
+                objElement.title = `Objective ${obj.name}`;
+                document.getElementById('battlefield').appendChild(objElement);
+            });
+        }
+
+        function selectUnit(unit) {
+            // Check if it's the player's turn and unit belongs to player
+            if (gameState.phase === 'BLUE' && unit.side !== 'friendly') return;
+            if (gameState.phase === 'RED' && unit.side !== 'enemy') return;
+
+            // Clear previous selection
+            document.querySelectorAll('.unit').forEach(u => u.classList.remove('selected'));
+            document.querySelectorAll('.grid-cell').forEach(c => {
+                c.classList.remove('selected', 'movement-range', 'attack-range');
+            });
+
+            gameState.selectedUnit = unit;
+            document.getElementById(`unit-${unit.id}`).classList.add('selected');
+            
+            updateUnitInfo();
+            
+            // Auto-select MOVE mode if unit has movement left
+            if (unit.movesLeft > 0 && !unit.autopilot) {
+                gameState.mode = 'move';
+                showMovementRange();
+            } else {
+                gameState.mode = 'select';
+            }
+            updateActionButtons();
+        }
+
+        function updateUnitInfo() {
+            const infoPanel = document.getElementById('unit-info');
+            const unit = gameState.selectedUnit;
+            
+            if (!unit) {
+                infoPanel.innerHTML = '<div>No unit selected</div>';
+                return;
+            }
+
+            const droneInfo = unit.maxDrones > 0 ? 
+                `<div class="stat"><span>Drones:</span><span>${unit.dronesLeft}/${unit.maxDrones}</span></div>` : '';
+            
+            const autopilotStatus = unit.autopilot ? 'AUTO-PILOT' : unit.mode.toUpperCase();
+            
+            infoPanel.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 5px;">${unit.callsign}</div>
+                <div class="stat"><span>Type:</span><span>${unitTypes[unit.type].name}</span></div>
+                <div class="stat"><span>Health:</span><span>${unit.health}/${unit.maxHealth}</span></div>
+                <div class="stat"><span>Attack:</span><span>${unit.attack}</span></div>
+                <div class="stat"><span>Defense:</span><span>${unit.defense}</span></div>
+                <div class="stat"><span>Range:</span><span>${unit.range}</span></div>
+                <div class="stat"><span>Vision:</span><span>${unit.vision}</span></div>
+                ${droneInfo}
+                <div class="stat"><span>Movement:</span><span>${unit.movesLeft}/${unit.movement}</span></div>
+                <div class="stat"><span>Status:</span><span style="color: ${unit.autopilot ? '#ff6600' : 'inherit'}">${autopilotStatus}</span></div>
+            `;
+        }
+
+        function showMovementRange() {
+            if (!gameState.selectedUnit) return;
+            
+            const unit = gameState.selectedUnit;
+            const range = unit.movesLeft;
+            
+            for (let dy = -range; dy <= range; dy++) {
+                for (let dx = -range; dx <= range; dx++) {
+                    const distance = Math.abs(dx) + Math.abs(dy);
+                    if (distance <= range && distance > 0) {
+                        const x = unit.x + dx;
+                        const y = unit.y + dy;
+                        if (x >= 0 && x < gameState.gridSize.width && y >= 0 && y < gameState.gridSize.height) {
+                            if (!isOccupied(x, y)) {
+                                const cell = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                                if (cell) cell.classList.add('movement-range');
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function showAttackRange() {
+            if (!gameState.selectedUnit) return;
+            
+            const unit = gameState.selectedUnit;
+            const range = unit.range;
+            
+            for (let dy = -range; dy <= range; dy++) {
+                for (let dx = -range; dx <= range; dx++) {
+                    const distance = Math.abs(dx) + Math.abs(dy);
+                    if (distance <= range && distance > 0) {
+                        const x = unit.x + dx;
+                        const y = unit.y + dy;
+                        if (x >= 0 && x < gameState.gridSize.width && y >= 0 && y < gameState.gridSize.height) {
+                            const cell = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                            if (cell) cell.classList.add('attack-range');
+                        }
+                    }
+                }
+            }
+        }
+
+        function showVisionRange() {
+            if (!gameState.selectedUnit) return;
+            
+            const unit = gameState.selectedUnit;
+            const range = unit.vision;
+            
+            // Remove existing vision range indicators
+            document.querySelectorAll('.vision-range').forEach(el => el.remove());
+            
+            // Create circular vision range indicator
+            const visionIndicator = document.createElement('div');
+            visionIndicator.className = 'vision-range';
+            const diameter = (range * 2 + 1) * gameState.cellSize;
+            visionIndicator.style.width = diameter + 'px';
+            visionIndicator.style.height = diameter + 'px';
+            visionIndicator.style.left = ((unit.x - range) * gameState.cellSize) + 'px';
+            visionIndicator.style.top = ((unit.y - range) * gameState.cellSize) + 'px';
+            document.getElementById('battlefield').appendChild(visionIndicator);
+
+            // Highlight cells in vision range with cyan tint
+            for (let dy = -range; dy <= range; dy++) {
+                for (let dx = -range; dx <= range; dx++) {
+                    const distance = Math.abs(dx) + Math.abs(dy);
+                    if (distance <= range) {
+                        const x = unit.x + dx;
+                        const y = unit.y + dy;
+                        if (x >= 0 && x < gameState.gridSize.width && y >= 0 && y < gameState.gridSize.height) {
+                            const cell = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                            if (cell) cell.style.backgroundColor = 'rgba(0, 255, 255, 0.15)';
+                        }
+                    }
+                }
+            }
+
+            // Auto-clear after 3 seconds
+            setTimeout(() => {
+                document.querySelectorAll('.vision-range').forEach(el => el.remove());
+                document.querySelectorAll('.grid-cell').forEach(cell => {
+                    if (cell.style.backgroundColor === 'rgba(0, 255, 255, 0.15)') {
+                        cell.style.backgroundColor = '';
+                    }
+                });
+            }, 3000);
+        }
+
+        function showDroneDeploymentRange() {
+            if (!gameState.selectedUnit) return;
+            
+            const unit = gameState.selectedUnit;
+            const range = 8; // Max drone deployment range
+            
+            for (let dy = -range; dy <= range; dy++) {
+                for (let dx = -range; dx <= range; dx++) {
+                    const distance = Math.abs(dx) + Math.abs(dy);
+                    if (distance <= range && distance > 0) {
+                        const x = unit.x + dx;
+                        const y = unit.y + dy;
+                        if (x >= 0 && x < gameState.gridSize.width && y >= 0 && y < gameState.gridSize.height) {
+                            const cell = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                            if (cell) {
+                                cell.style.backgroundColor = 'rgba(0, 255, 255, 0.2)';
+                                cell.style.borderColor = '#00ffff';
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Auto-clear after 5 seconds
+            setTimeout(() => {
+                document.querySelectorAll('.grid-cell').forEach(cell => {
+                    if (cell.style.backgroundColor === 'rgba(0, 255, 255, 0.2)') {
+                        cell.style.backgroundColor = '';
+                        cell.style.borderColor = '';
+                    }
+                });
+            }, 5000);
+        }
+
+        function isOccupied(x, y) {
+            return gameState.units.some(unit => unit.x === x && unit.y === y && unit.health > 0);
+        }
+
+        function getUnitAt(x, y) {
+            return gameState.units.find(unit => unit.x === x && unit.y === y && unit.health > 0);
+        }
+
+        function handleCellClick(x, y) {
+            if (!gameState.selectedUnit) return;
+
+            if (gameState.mode === 'move') {
+                moveUnit(gameState.selectedUnit, x, y);
+            } else if (gameState.mode === 'attack') {
+                attackTarget(gameState.selectedUnit, x, y);
+            } else if (gameState.mode === 'deploy-drone') {
+                if (deployDrone(gameState.selectedUnit, x, y)) {
+                    gameState.mode = 'select';
+                    updateActionButtons();
+                }
+            }
+        }
+
+        function moveUnit(unit, targetX, targetY) {
+            const distance = Math.abs(targetX - unit.x) + Math.abs(targetY - unit.y);
+            
+            if (distance > unit.movesLeft) {
+                addBattleLogEntry(`${unit.callsign}: Insufficient movement points`, 'movement');
+                return;
+            }
+
+            if (isOccupied(targetX, targetY)) {
+                addBattleLogEntry(`${unit.callsign}: Position occupied`, 'movement');
+                return;
+            }
+
+            // Move unit
+            unit.x = targetX;
+            unit.y = targetY;
+            unit.movesLeft -= distance;
+
+            // Update visual position
+            const unitElement = document.getElementById(`unit-${unit.id}`);
+            unitElement.style.left = (targetX * gameState.cellSize + 10) + 'px';
+            unitElement.style.top = (targetY * gameState.cellSize + 10) + 'px';
+
+            addBattleLogEntry(`${unit.callsign}: Moved to ${targetX},${targetY}`, 'movement');
+            
+            // Update fog of war after movement
+            updateFogOfWar();
+            
+            // Clear ranges and reselect to show updated movement
+            document.querySelectorAll('.grid-cell').forEach(c => {
+                c.classList.remove('movement-range', 'attack-range');
+            });
+            
+            if (unit.movesLeft > 0) {
+                showMovementRange();
+            }
+            
+            updateUnitInfo();
+            gameState.mode = 'select';
+            updateActionButtons();
+        }
+
+        function attackTarget(attacker, targetX, targetY) {
+            const target = getUnitAt(targetX, targetY);
+            if (!target) {
+                addBattleLogEntry(`${attacker.callsign}: No target at position`, 'combat');
+                return;
+            }
+
+            if (target.side === attacker.side) {
+                addBattleLogEntry(`${attacker.callsign}: Cannot attack friendly units`, 'combat');
+                return;
+            }
+
+            const distance = Math.abs(targetX - attacker.x) + Math.abs(targetY - attacker.y);
+            if (distance > attacker.range) {
+                addBattleLogEntry(`${attacker.callsign}: Target out of range`, 'combat');
+                return;
+            }
+
+            // Combat calculation
+            const attackRoll = Math.random() * attacker.attack;
+            const defenseRoll = Math.random() * target.defense;
+            let damage = Math.max(10, attackRoll - defenseRoll);
+
+            // Terrain modifier (simple)
+            if (hasTerrainCover(targetX, targetY)) {
+                damage *= 0.7;
+            }
+
+            damage = Math.floor(damage);
+            target.health = Math.max(0, target.health - damage);
+
+            // Create explosion effect
+            createExplosion(targetX, targetY);
+
+            addBattleLogEntry(`${attacker.callsign} attacks ${target.callsign} for ${damage} damage`, 'combat');
+
+            if (target.health <= 0) {
+                addBattleLogEntry(`${target.callsign} destroyed!`, 'combat');
+                document.getElementById(`unit-${target.id}`).classList.add('destroyed');
+            }
+
+            // Update target health bar
+            updateUnitHealthBar(target);
+            
+            attacker.hasAttacked = true;
+            gameState.mode = 'select';
+            updateActionButtons();
+            
+            // Clear attack range
+            document.querySelectorAll('.grid-cell').forEach(c => {
+                c.classList.remove('attack-range');
+            });
+        }
+
+        function hasTerrainCover(x, y) {
+            // Simplified terrain cover check
+            const terrainElements = document.querySelectorAll('.terrain');
+            for (let terrain of terrainElements) {
+                const terrainX = parseInt(terrain.style.left) / gameState.cellSize;
+                const terrainY = parseInt(terrain.style.top) / gameState.cellSize;
+                if (terrainX === x && terrainY === y) {
+                    return terrain.classList.contains('forest') || terrain.classList.contains('hill');
+                }
+            }
+            return false;
+        }
+
+        function createExplosion(x, y) {
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.style.left = (x * gameState.cellSize + 5) + 'px';
+            explosion.style.top = (y * gameState.cellSize + 5) + 'px';
+            document.getElementById('battlefield').appendChild(explosion);
+
+            setTimeout(() => {
+                if (explosion.parentNode) {
+                    explosion.parentNode.removeChild(explosion);
+                }
+            }, 500);
+        }
+
+        function updateUnitHealthBar(unit) {
+            const unitElement = document.getElementById(`unit-${unit.id}`);
+            const healthFill = unitElement.querySelector('.health-fill');
+            const healthPercent = (unit.health / unit.maxHealth) * 100;
+            healthFill.style.width = healthPercent + '%';
+            
+            if (healthPercent > 60) healthFill.className = 'health-fill';
+            else if (healthPercent > 30) healthFill.className = 'health-fill damaged';
+            else healthFill.className = 'health-fill critical';
+        }
+
+        function setMode(mode) {
+            if (!gameState.selectedUnit) return;
+            
+            gameState.mode = mode;
+            updateActionButtons();
+
+            // Clear previous range indicators
+            document.querySelectorAll('.grid-cell').forEach(c => {
+                c.classList.remove('movement-range', 'attack-range');
+            });
+
+            if (mode === 'move') {
+                showMovementRange();
+            } else if (mode === 'attack') {
+                showAttackRange();
+            } else if (mode === 'recon') {
+                showVisionRange();
+            } else if (mode === 'deploy-drone') {
+                showDroneDeploymentRange();
+            }
+        }
+
+        function updateActionButtons() {
+            const unit = gameState.selectedUnit;
+            document.querySelectorAll('.action-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if (!unit) return;
+
+            // Update button states
+            document.getElementById('move-btn').disabled = unit.movesLeft <= 0 || unit.autopilot;
+            document.getElementById('attack-btn').disabled = unit.hasAttacked || unit.autopilot;
+            document.getElementById('drone-btn').disabled = unit.dronesLeft <= 0 || unit.autopilot;
+            
+            // Update autopilot button
+            const autopilotBtn = document.getElementById('autopilot-btn');
+            autopilotBtn.textContent = unit.autopilot ? 'AUTO-PILOT: ON' : 'AUTO-PILOT: OFF';
+            autopilotBtn.style.color = unit.autopilot ? '#00ff00' : '#ff6600';
+            autopilotBtn.style.borderColor = unit.autopilot ? '#00ff00' : '#ff6600';
+            
+            if (gameState.mode !== 'select') {
+                const modeBtn = gameState.mode === 'deploy-drone' ? 'drone-btn' : gameState.mode + '-btn';
+                const btnElement = document.getElementById(modeBtn);
+                if (btnElement) btnElement.classList.add('active');
+            }
+        }
+
+        function toggleAutopilot() {
+            const unit = gameState.selectedUnit;
+            if (!unit) return;
+            
+            unit.autopilot = !unit.autopilot;
+            
+            if (unit.autopilot) {
+                addBattleLogEntry(`${unit.callsign}: Autopilot engaged`, 'info');
+                gameState.mode = 'select';
+            } else {
+                addBattleLogEntry(`${unit.callsign}: Autopilot disengaged - manual control resumed`, 'info');
+            }
+            
+            updateActionButtons();
+            updateGrid();
+        }
+
+        function executeAutopilotActions() {
+            const currentSideFriendly = gameState.phase === 'BLUE';
+            const sideToCheck = currentSideFriendly ? 'friendly' : 'enemy';
+            
+            const autopilotUnits = gameState.units.filter(u => 
+                u.side === sideToCheck && u.health > 0 && u.autopilot && 
+                (u.movesLeft > 0 || !u.hasAttacked)
+            );
+            
+            if (autopilotUnits.length === 0) return;
+            
+            autopilotUnits.forEach((unit, index) => {
+                setTimeout(() => {
+                    executeUnitAutopilot(unit);
+                }, index * 800);
+            });
+        }
+
+        function executeUnitAutopilot(unit) {
+            if (!unit.autopilot || unit.health <= 0) return;
+            
+            // Priority 1: Attack nearby enemies if possible
+            if (!unit.hasAttacked) {
+                const enemySide = unit.side === 'friendly' ? 'enemy' : 'friendly';
+                const nearbyEnemies = gameState.units.filter(u => 
+                    u.side === enemySide && u.health > 0 &&
+                    Math.abs(u.x - unit.x) + Math.abs(u.y - unit.y) <= unit.range
+                );
+                
+                if (nearbyEnemies.length > 0) {
+                    // Attack the weakest nearby enemy
+                    const target = nearbyEnemies.reduce((prev, curr) => 
+                        prev.health < curr.health ? prev : curr
+                    );
+                    
+                    selectUnit(unit);
+                    setTimeout(() => {
+                        attackTarget(unit, target.x, target.y);
+                        addBattleLogEntry(`${unit.callsign}: Autopilot engaged target`, 'combat');
+                    }, 200);
+                    return;
+                }
+            }
+            
+            // Priority 2: Move towards objectives or enemies
+            if (unit.movesLeft > 0) {
+                let targetX, targetY;
+                
+                // Find nearest enemy for movement targeting
+                const enemySide = unit.side === 'friendly' ? 'enemy' : 'friendly';
+                const allEnemies = gameState.units.filter(u => u.side === enemySide && u.health > 0);
+                
+                if (allEnemies.length > 0) {
+                    const nearestEnemy = allEnemies.reduce((prev, curr) => {
+                        const prevDist = Math.abs(prev.x - unit.x) + Math.abs(prev.y - unit.y);
+                        const currDist = Math.abs(curr.x - unit.x) + Math.abs(curr.y - unit.y);
+                        return prevDist < currDist ? prev : curr;
+                    });
+                    
+                    // Move towards nearest enemy (but not too close)
+                    const dx = nearestEnemy.x - unit.x;
+                    const dy = nearestEnemy.y - unit.y;
+                    const moveX = dx > 0 ? 1 : (dx < 0 ? -1 : 0);
+                    const moveY = dy > 0 ? 1 : (dy < 0 ? -1 : 0);
+                    
+                    targetX = Math.max(0, Math.min(gameState.gridSize.width - 1, unit.x + moveX));
+                    targetY = Math.max(0, Math.min(gameState.gridSize.height - 1, unit.y + moveY));
+                } else {
+                    // No enemies, move towards center or randomly
+                    const centerX = Math.floor(gameState.gridSize.width / 2);
+                    const centerY = Math.floor(gameState.gridSize.height / 2);
+                    const dx = centerX - unit.x;
+                    const dy = centerY - unit.y;
+                    const moveX = dx > 0 ? 1 : (dx < 0 ? -1 : 0);
+                    const moveY = dy > 0 ? 1 : (dy < 0 ? -1 : 0);
+                    
+                    targetX = Math.max(0, Math.min(gameState.gridSize.width - 1, unit.x + moveX));
+                    targetY = Math.max(0, Math.min(gameState.gridSize.height - 1, unit.y + moveY));
+                }
+                
+                // Only move if target position is not occupied
+                if (!isOccupied(targetX, targetY) && (targetX !== unit.x || targetY !== unit.y)) {
+                    selectUnit(unit);
+                    setTimeout(() => {
+                        moveUnit(unit, targetX, targetY);
+                        addBattleLogEntry(`${unit.callsign}: Autopilot repositioning`, 'movement');
+                    }, 400);
+                }
+            }
+        }
+
+        function endTurn() {
+            // Reset unit actions for the current side
+            gameState.units.forEach(unit => {
+                const isCurrentSide = (gameState.phase === 'BLUE' && unit.side === 'friendly') ||
+                                     (gameState.phase === 'RED' && unit.side === 'enemy');
+                if (isCurrentSide) {
+                    unit.movesLeft = unit.movement;
+                    unit.hasAttacked = false;
+                }
+            });
+
+            // Switch phases
+            gameState.phase = gameState.phase === 'BLUE' ? 'RED' : 'BLUE';
+            
+            if (gameState.phase === 'BLUE') {
+                gameState.turn++;
+            }
+
+            // Clear selections
+            gameState.selectedUnit = null;
+            document.querySelectorAll('.unit').forEach(u => u.classList.remove('selected'));
+            document.querySelectorAll('.grid-cell').forEach(c => {
+                c.classList.remove('selected', 'movement-range', 'attack-range');
+            });
+
+            // Move drones automatically
+            moveDronesAutomatically();
+            
+            updateHUD();
+            updateUnitInfo();
+            updateFogOfWar();
+            addBattleLogEntry(`Turn ${gameState.turn}, ${gameState.phase} phase begins`);
+
+            // Execute autopilot for friendly units during BLUE phase
+            if (gameState.phase === 'BLUE') {
+                setTimeout(executeAutopilotActions, 1000);
+            }
+            
+            // Simple AI for enemy turn
+            if (gameState.phase === 'RED') {
+                setTimeout(executeEnemyTurn, 1000);
+            }
+        }
+
+        function executeEnemyTurn() {
+            const enemyUnits = gameState.units.filter(u => u.side === 'enemy' && u.health > 0);
+            let actionCount = 0;
+
+            enemyUnits.forEach((unit, index) => {
+                setTimeout(() => {
+                    // Simple AI: move towards objectives or attack nearby enemies
+                    const nearbyEnemies = gameState.units.filter(u => 
+                        u.side === 'friendly' && u.health > 0 &&
+                        Math.abs(u.x - unit.x) + Math.abs(u.y - unit.y) <= unit.range
+                    );
+
+                    if (nearbyEnemies.length > 0 && !unit.hasAttacked) {
+                        // Attack closest enemy
+                        const target = nearbyEnemies[0];
+                        const distance = Math.abs(target.x - unit.x) + Math.abs(target.y - unit.y);
+                        if (distance <= unit.range) {
+                            selectUnit(unit);
+                            setTimeout(() => attackTarget(unit, target.x, target.y), 500);
+                        }
+                    } else if (unit.movesLeft > 0) {
+                        // Move towards center of map
+                        const targetX = Math.max(0, Math.min(gameState.gridSize.width - 1, 
+                            unit.x + (Math.random() < 0.5 ? -1 : 1)));
+                        const targetY = Math.max(0, Math.min(gameState.gridSize.height - 1, 
+                            unit.y + (Math.random() < 0.5 ? -1 : 1)));
+                        
+                        if (!isOccupied(targetX, targetY)) {
+                            selectUnit(unit);
+                            setTimeout(() => moveUnit(unit, targetX, targetY), 300);
+                        }
+                    }
+
+                    actionCount++;
+                    if (actionCount === enemyUnits.length) {
+                        setTimeout(endTurn, 2000);
+                    }
+                }, index * 1000);
+            });
+
+            if (enemyUnits.length === 0) {
+                setTimeout(endTurn, 1000);
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById('turn-counter').textContent = gameState.turn;
+            document.getElementById('current-phase').textContent = gameState.phase;
+            
+            const aliveUnits = gameState.units.filter(u => u.health > 0);
+            const friendlyCount = aliveUnits.filter(u => u.side === 'friendly').length;
+            const enemyCount = aliveUnits.filter(u => u.side === 'enemy').length;
+            document.getElementById('unit-count').textContent = `${friendlyCount}/${enemyCount}`;
+
+            // Check win conditions
+            if (friendlyCount === 0) {
+                document.getElementById('game-status').textContent = 'DEFEAT';
+                addBattleLogEntry('Mission failed - all friendly units eliminated');
+            } else if (enemyCount === 0) {
+                document.getElementById('game-status').textContent = 'VICTORY';
+                addBattleLogEntry('Mission accomplished - all enemy units eliminated');
+            }
+        }
+
+        function addBattleLogEntry(message, type = 'general') {
+            const log = document.getElementById('battle-log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = message;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+
+            // Keep log manageable
+            if (log.children.length > 50) {
+                log.removeChild(log.firstChild);
+            }
+        }
+
+        // Initialize game on load
+        window.onload = function() {
+            initGame();
+        };
+
+        // Handle window resize
+        window.onresize = function() {
+            // Could add responsive adjustments here
+        };
+    </script>
+</body>
+</html>

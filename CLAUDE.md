@@ -30,7 +30,9 @@ This is an Astro static site for Quarterly Systems' landing page, built with Tai
     - `k5m.astro` - K5M dashboard experiments index
 - `public/` - Static assets including logos, images, and favicon
 - `public/labs/k5m/` - Static HTML files for K5M dashboard experiments
+- `public/labs/feba/` - FEBA tactical wargaming simulator game
 - `k5m-labs-source/` - Source files for K5M experiments (copied to public/labs/k5m/)
+- `k5m-labs-source/feba/` - Source files for FEBA game (copied to public/labs/feba/)
 
 ### Key Technologies
 
@@ -74,3 +76,4 @@ The site positions Quarterly Systems as a business platform provider with three 
 
 The messaging focuses on "business-grade vibe coding" and operational transformation themes.
 - After making changes locally always ask if I want to push to production
+- Make all commits to github using kmikeym@kmikeym.com
