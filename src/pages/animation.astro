@@ -127,91 +127,77 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-	import anime from 'animejs';
+	import { animate, createTimeline, set, remove, easings } from 'animejs';
 
 	// Hero Animation
 	function playHeroAnimation() {
-		anime.timeline()
-			.add({
-				targets: '.hero-title .char',
+		const timeline = createTimeline();
+
+		timeline
+			.add(animate('.hero-title .char', {
 				translateY: [-100, 0],
 				opacity: [0, 1],
-				easing: "easeOutExpo",
+				easing: easings.outExpo,
 				duration: 1200,
 				delay: (el, i) => 50 * i
-			})
-			.add({
-				targets: '.subtitle',
+			}))
+			.add(animate('.subtitle', {
 				opacity: [0, 1],
 				translateY: [30, 0],
-				easing: "easeOutQuad",
+				easing: easings.outQuad,
 				duration: 800
-			}, '-=600')
-			.add({
-				targets: '.cta-button',
+			}), 600)
+			.add(animate('.cta-button', {
 				scale: [0, 1],
-				easing: "easeOutElastic(1, .8)",
+				easing: easings.outElastic,
 				duration: 1200
-			}, '-=400');
+			}), 800);
 	}
 
 	// Card Animation
 	function playCardAnimation() {
-		anime.timeline()
-			.add({
-				targets: '.section-title',
+		const timeline = createTimeline();
+
+		timeline
+			.add(animate('.section-title', {
 				opacity: [0, 1],
 				translateY: [30, 0],
-				easing: "easeOutQuad",
+				easing: easings.outQuad,
 				duration: 600
-			})
-			.add({
-				targets: '.feature-card',
+			}))
+			.add(animate('.feature-card', {
 				translateY: [80, 0],
 				opacity: [0, 1],
-				easing: "easeOutExpo",
+				easing: easings.outExpo,
 				duration: 1000,
 				delay: (el, i) => 200 * i
-			}, '-=300')
-			.add({
-				targets: '.card-icon',
+			}), 300)
+			.add(animate('.card-icon', {
 				rotateY: [90, 0],
-				easing: "easeOutBack(1.7)",
+				easing: easings.outBack,
 				duration: 800,
 				delay: (el, i) => 100 * i
-			}, '-=800');
+			}), 500);
 	}
 
 	// Morph Animation
 	function playMorphAnimation() {
-		anime({
-			targets: '.morph-shape',
-			borderRadius: [
-				{value: '50%', duration: 1000, easing: 'easeInOutQuad'},
-				{value: '0%', duration: 1000, easing: 'easeInOutQuad'},
-				{value: '50%', duration: 1000, easing: 'easeInOutQuad'}
-			],
-			rotate: [
-				{value: 180, duration: 1000, easing: 'easeInOutQuad'},
-				{value: 360, duration: 1000, easing: 'easeInOutQuad'},
-				{value: 0, duration: 1000, easing: 'easeInOutQuad'}
-			],
-			scale: [
-				{value: 1.2, duration: 1000, easing: 'easeInOutQuad'},
-				{value: 0.8, duration: 1000, easing: 'easeInOutQuad'},
-				{value: 1, duration: 1000, easing: 'easeInOutQuad'}
-			],
+		animate('.morph-shape', {
+			borderRadius: ['50%', '0%', '50%'],
+			rotate: [0, 180, 360, 0],
+			scale: [1, 1.2, 0.8, 1],
+			easing: easings.inOutQuad,
+			duration: 3000,
 			delay: (el, i) => 200 * i
 		});
 	}
 
 	// Typewriter Animation
 	function playTypewriterAnimation() {
-		anime({
-			targets: '.typewriter-char',
+		animate('.typewriter-char', {
 			opacity: [0, 1],
 			translateY: [20, 0],
-			easing: "easeOutQuad",
+			easing: easings.outQuad,
 			duration: 50,
 			delay: (el, i) => 100 * i
 		});
@@ -219,39 +205,36 @@ import Layout from '../layouts/Layout.astro';
 
 	// Bounce Animation
 	function playBounceAnimation() {
-		anime.timeline()
-			.add({
-				targets: '.bounce-text',
+		const timeline = createTimeline();
+
+		timeline
+			.add(animate('.bounce-text', {
 				opacity: [0, 1],
 				scale: [0.5, 1],
-				easing: "easeOutElastic(1, .8)",
+				easing: easings.outElastic,
 				duration: 1000
-			})
-			.add({
-				targets: '.bounce-char',
+			}))
+			.add(animate('.bounce-char', {
 				translateY: [0, -20, 0],
-				easing: "easeInOutQuad",
+				easing: easings.inOutQuad,
 				duration: 600,
-				delay: (el, i) => 100 * i,
-				loop: 2
-			}, '-=500');
+				delay: (el, i) => 100 * i
+			}), 500);
 	}
 
 	// Reset function
 	function resetAllAnimations() {
-		anime.remove(['.hero-title .char', '.subtitle', '.cta-button', '.section-title', '.feature-card', '.card-icon', '.morph-shape', '.typewriter-char', '.bounce-text', '.bounce-char']);
-
 		// Reset all elements to initial state
-		anime.set('.hero-title .char', { translateY: 0, opacity: 1 });
-		anime.set('.subtitle', { opacity: 0, translateY: 30 });
-		anime.set('.cta-button', { scale: 0 });
-		anime.set('.section-title', { opacity: 0, translateY: 30 });
-		anime.set('.feature-card', { translateY: 80, opacity: 0 });
-		anime.set('.card-icon', { rotateY: 0 });
-		anime.set('.morph-shape', { borderRadius: '50%', rotate: 0, scale: 1 });
-		anime.set('.typewriter-char', { opacity: 0, translateY: 20 });
-		anime.set('.bounce-text', { opacity: 0, scale: 0.5 });
-		anime.set('.bounce-char', { translateY: 0 });
+		set('.hero-title .char', { translateY: 0, opacity: 1 });
+		set('.subtitle', { opacity: 0, translateY: 30 });
+		set('.cta-button', { scale: 0 });
+		set('.section-title', { opacity: 0, translateY: 30 });
+		set('.feature-card', { translateY: 80, opacity: 0 });
+		set('.card-icon', { rotateY: 0 });
+		set('.morph-shape', { borderRadius: '50%', rotate: 0, scale: 1 });
+		set('.typewriter-char', { opacity: 0, translateY: 20 });
+		set('.bounce-text', { opacity: 0, scale: 0.5 });
+		set('.bounce-char', { translateY: 0 });
 	}
 
 	// Make functions global for onclick handlers
