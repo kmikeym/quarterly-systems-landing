@@ -1,0 +1,353 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Animation Tests - Quarterly Systems">
+	<nav class="bg-white border-b border-gray-200">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="flex justify-between items-center h-16">
+				<div class="flex items-center">
+					<a href="/" class="text-xl font-bold text-gray-900">Quarterly Systems</a>
+					<span class="ml-4 text-sm text-gray-500">Animation Lab</span>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+		<!-- Hero Animation Test -->
+		<section class="text-center mb-20">
+			<h1 class="text-6xl font-bold text-gray-900 mb-6 hero-title">
+				<span class="char">A</span><span class="char">n</span><span class="char">i</span><span class="char">m</span><span class="char">a</span><span class="char">t</span><span class="char">i</span><span class="char">o</span><span class="char">n</span>
+				<br>
+				<span class="char">L</span><span class="char">a</span><span class="char">b</span><span class="char">o</span><span class="char">r</span><span class="char">a</span><span class="char">t</span><span class="char">o</span><span class="char">r</span><span class="char">y</span>
+			</h1>
+			<p class="text-xl text-gray-600 subtitle opacity-0">
+				Testing next-level animations for the Quarterly Systems platform
+			</p>
+			<div class="mt-8">
+				<button class="bg-purple-600 text-white px-8 py-4 rounded-lg hover:bg-purple-700 transition-colors cta-button transform scale-0">
+					Start Animation
+				</button>
+			</div>
+		</section>
+
+		<!-- Card Grid Animation Test -->
+		<section class="mb-20">
+			<h2 class="text-3xl font-bold text-gray-900 mb-8 section-title opacity-0">Feature Cards</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+				<div class="feature-card bg-white p-8 rounded-2xl shadow-sm border border-gray-200 transform translate-y-20 opacity-0">
+					<div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 card-icon">
+						<svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+							<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+						</svg>
+					</div>
+					<h3 class="text-xl font-semibold text-gray-900 mb-2">Smooth Transitions</h3>
+					<p class="text-gray-600">Elegant animations that enhance user experience without overwhelming the interface.</p>
+				</div>
+
+				<div class="feature-card bg-white p-8 rounded-2xl shadow-sm border border-gray-200 transform translate-y-20 opacity-0">
+					<div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 card-icon">
+						<svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+							<path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+						</svg>
+					</div>
+					<h3 class="text-xl font-semibold text-gray-900 mb-2">Interactive Elements</h3>
+					<p class="text-gray-600">Hover effects and micro-interactions that provide immediate visual feedback.</p>
+				</div>
+
+				<div class="feature-card bg-white p-8 rounded-2xl shadow-sm border border-gray-200 transform translate-y-20 opacity-0">
+					<div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 card-icon">
+						<svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+							<path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+						</svg>
+					</div>
+					<h3 class="text-xl font-semibold text-gray-900 mb-2">Performance Optimized</h3>
+					<p class="text-gray-600">Hardware-accelerated animations that maintain 60fps across all devices.</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Morphing Shapes Test -->
+		<section class="mb-20">
+			<h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Morphing Elements</h2>
+			<div class="flex justify-center items-center space-x-12">
+				<div class="morph-shape w-20 h-20 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"></div>
+				<div class="morph-shape w-20 h-20 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-lg"></div>
+				<div class="morph-shape w-20 h-20 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full"></div>
+			</div>
+		</section>
+
+		<!-- Text Animation Showcase -->
+		<section class="mb-20">
+			<h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Text Effects</h2>
+			<div class="text-center">
+				<p class="text-2xl text-gray-700 mb-4 typewriter-text">
+					<span class="typewriter-char">T</span><span class="typewriter-char">r</span><span class="typewriter-char">a</span><span class="typewriter-char">n</span><span class="typewriter-char">s</span><span class="typewriter-char">f</span><span class="typewriter-char">o</span><span class="typewriter-char">r</span><span class="typewriter-char">m</span>
+					<span class="typewriter-char"> </span>
+					<span class="typewriter-char">I</span><span class="typewriter-char">d</span><span class="typewriter-char">e</span><span class="typewriter-char">a</span><span class="typewriter-char">s</span>
+					<span class="typewriter-char"> </span>
+					<span class="typewriter-char">I</span><span class="typewriter-char">n</span><span class="typewriter-char">t</span><span class="typewriter-char">o</span>
+					<span class="typewriter-char"> </span>
+					<span class="typewriter-char">O</span><span class="typewriter-char">p</span><span class="typewriter-char">e</span><span class="typewriter-char">r</span><span class="typewriter-char">a</span><span class="typewriter-char">t</span><span class="typewriter-char">i</span><span class="typewriter-char">o</span><span class="typewriter-char">n</span><span class="typewriter-char">a</span><span class="typewriter-char">l</span>
+					<span class="typewriter-char"> </span>
+					<span class="typewriter-char">S</span><span class="typewriter-char">y</span><span class="typewriter-char">s</span><span class="typewriter-char">t</span><span class="typewriter-char">e</span><span class="typewriter-char">m</span><span class="typewriter-char">s</span>
+				</p>
+				<div class="bounce-text text-4xl font-bold text-purple-600 opacity-0">
+					<span class="bounce-char">✨</span> <span class="bounce-char">A</span><span class="bounce-char">n</span><span class="bounce-char">i</span><span class="bounce-char">m</span><span class="bounce-char">a</span><span class="bounce-char">t</span><span class="bounce-char">e</span><span class="bounce-char">d</span> <span class="bounce-char">✨</span>
+				</div>
+			</div>
+		</section>
+
+		<!-- Control Panel -->
+		<section class="bg-gray-50 rounded-2xl p-8">
+			<h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Animation Controls</h2>
+			<div class="flex flex-wrap justify-center gap-4">
+				<button onclick="playHeroAnimation()" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
+					Hero Animation
+				</button>
+				<button onclick="playCardAnimation()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+					Card Reveal
+				</button>
+				<button onclick="playMorphAnimation()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+					Morph Shapes
+				</button>
+				<button onclick="playTypewriterAnimation()" class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors">
+					Typewriter Effect
+				</button>
+				<button onclick="playBounceAnimation()" class="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition-colors">
+					Bounce Text
+				</button>
+				<button onclick="resetAllAnimations()" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+					Reset All
+				</button>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<script>
+	import anime from 'animejs/lib/anime.es.js';
+
+	// Hero Animation
+	function playHeroAnimation() {
+		anime.timeline()
+			.add({
+				targets: '.hero-title .char',
+				translateY: [-100, 0],
+				opacity: [0, 1],
+				easing: "easeOutExpo",
+				duration: 1200,
+				delay: (el, i) => 50 * i
+			})
+			.add({
+				targets: '.subtitle',
+				opacity: [0, 1],
+				translateY: [30, 0],
+				easing: "easeOutQuad",
+				duration: 800
+			}, '-=600')
+			.add({
+				targets: '.cta-button',
+				scale: [0, 1],
+				easing: "easeOutElastic(1, .8)",
+				duration: 1200
+			}, '-=400');
+	}
+
+	// Card Animation
+	function playCardAnimation() {
+		anime.timeline()
+			.add({
+				targets: '.section-title',
+				opacity: [0, 1],
+				translateY: [30, 0],
+				easing: "easeOutQuad",
+				duration: 600
+			})
+			.add({
+				targets: '.feature-card',
+				translateY: [80, 0],
+				opacity: [0, 1],
+				easing: "easeOutExpo",
+				duration: 1000,
+				delay: (el, i) => 200 * i
+			}, '-=300')
+			.add({
+				targets: '.card-icon',
+				rotateY: [90, 0],
+				easing: "easeOutBack(1.7)",
+				duration: 800,
+				delay: (el, i) => 100 * i
+			}, '-=800');
+	}
+
+	// Morph Animation
+	function playMorphAnimation() {
+		anime({
+			targets: '.morph-shape',
+			borderRadius: [
+				{value: '50%', duration: 1000, easing: 'easeInOutQuad'},
+				{value: '0%', duration: 1000, easing: 'easeInOutQuad'},
+				{value: '50%', duration: 1000, easing: 'easeInOutQuad'}
+			],
+			rotate: [
+				{value: 180, duration: 1000, easing: 'easeInOutQuad'},
+				{value: 360, duration: 1000, easing: 'easeInOutQuad'},
+				{value: 0, duration: 1000, easing: 'easeInOutQuad'}
+			],
+			scale: [
+				{value: 1.2, duration: 1000, easing: 'easeInOutQuad'},
+				{value: 0.8, duration: 1000, easing: 'easeInOutQuad'},
+				{value: 1, duration: 1000, easing: 'easeInOutQuad'}
+			],
+			delay: (el, i) => 200 * i
+		});
+	}
+
+	// Typewriter Animation
+	function playTypewriterAnimation() {
+		anime({
+			targets: '.typewriter-char',
+			opacity: [0, 1],
+			translateY: [20, 0],
+			easing: "easeOutQuad",
+			duration: 50,
+			delay: (el, i) => 100 * i
+		});
+	}
+
+	// Bounce Animation
+	function playBounceAnimation() {
+		anime.timeline()
+			.add({
+				targets: '.bounce-text',
+				opacity: [0, 1],
+				scale: [0.5, 1],
+				easing: "easeOutElastic(1, .8)",
+				duration: 1000
+			})
+			.add({
+				targets: '.bounce-char',
+				translateY: [0, -20, 0],
+				easing: "easeInOutQuad",
+				duration: 600,
+				delay: (el, i) => 100 * i,
+				loop: 2
+			}, '-=500');
+	}
+
+	// Reset function
+	function resetAllAnimations() {
+		anime.remove(['.hero-title .char', '.subtitle', '.cta-button', '.section-title', '.feature-card', '.card-icon', '.morph-shape', '.typewriter-char', '.bounce-text', '.bounce-char']);
+
+		// Reset all elements to initial state
+		anime.set('.hero-title .char', { translateY: 0, opacity: 1 });
+		anime.set('.subtitle', { opacity: 0, translateY: 30 });
+		anime.set('.cta-button', { scale: 0 });
+		anime.set('.section-title', { opacity: 0, translateY: 30 });
+		anime.set('.feature-card', { translateY: 80, opacity: 0 });
+		anime.set('.card-icon', { rotateY: 0 });
+		anime.set('.morph-shape', { borderRadius: '50%', rotate: 0, scale: 1 });
+		anime.set('.typewriter-char', { opacity: 0, translateY: 20 });
+		anime.set('.bounce-text', { opacity: 0, scale: 0.5 });
+		anime.set('.bounce-char', { translateY: 0 });
+	}
+
+	// Make functions global for onclick handlers
+	window.playHeroAnimation = playHeroAnimation;
+	window.playCardAnimation = playCardAnimation;
+	window.playMorphAnimation = playMorphAnimation;
+	window.playTypewriterAnimation = playTypewriterAnimation;
+	window.playBounceAnimation = playBounceAnimation;
+	window.resetAllAnimations = resetAllAnimations;
+
+	// Auto-play initial animation on page load
+	document.addEventListener('DOMContentLoaded', function() {
+		setTimeout(() => {
+			playHeroAnimation();
+		}, 500);
+	});
+</script>
+
+<style>
+	/* Reset initial states for animations */
+	.hero-title .char {
+		display: inline-block;
+		transform: translateY(-100px);
+		opacity: 0;
+	}
+
+	.subtitle {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+
+	.cta-button {
+		transform: scale(0);
+	}
+
+	.section-title {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+
+	.feature-card {
+		transform: translateY(80px);
+		opacity: 0;
+		transition: transform 0.3s ease, box-shadow 0.3s ease;
+	}
+
+	.feature-card:hover {
+		transform: translateY(-5px);
+		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+	}
+
+	.card-icon {
+		transition: transform 0.3s ease;
+	}
+
+	.feature-card:hover .card-icon {
+		transform: scale(1.1) rotateY(10deg);
+	}
+
+	.morph-shape {
+		transition: all 0.3s ease;
+		cursor: pointer;
+	}
+
+	.morph-shape:hover {
+		transform: scale(1.1);
+	}
+
+	.typewriter-char {
+		display: inline-block;
+		opacity: 0;
+		transform: translateY(20px);
+	}
+
+	.bounce-text {
+		opacity: 0;
+		transform: scale(0.5);
+	}
+
+	.bounce-char {
+		display: inline-block;
+	}
+
+	/* Additional hover effects */
+	button {
+		transition: all 0.3s ease;
+		position: relative;
+		overflow: hidden;
+	}
+
+	button:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+	}
+
+	button:active {
+		transform: translateY(0);
+	}
+</style>
