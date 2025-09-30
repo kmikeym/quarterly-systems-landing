@@ -73,3 +73,4 @@ The site positions Quarterly Systems as a business platform provider with three 
 3. **Operational Status** (Beta) - Real-time transparency dashboard
 
 The messaging focuses on "business-grade vibe coding" and operational transformation themes.
+- After making changes locally always ask if I want to push to production
