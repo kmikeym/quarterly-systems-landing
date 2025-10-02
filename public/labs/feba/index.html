@@ -1232,17 +1232,16 @@
                 });
 
                 if (unit.movesLeft > 0) {
-                    gameState.mode = 'move';
                     showMovementRange();
-                } else {
-                    gameState.mode = 'select';
                 }
 
                 updateUnitInfo();
-                updateActionButtons();
             });
 
             addBattleLogEntry(`${unit.callsign}: Moved to ${targetX},${targetY}`, 'movement');
+
+            gameState.mode = 'select';
+            updateActionButtons();
         }
 
         function animateAttack(attacker, target, damage, callback) {

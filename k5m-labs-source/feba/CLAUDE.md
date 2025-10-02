@@ -4,256 +4,235 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Game Overview
 
-**FEBA (Forward Edge of Battle Area)** is a tactical wargaming simulator built as a single-file HTML5 game with no external dependencies. It features hex-grid-based tactical combat with fog of war, autonomous drones, and AI-controlled units.
+**FEBA (Forward Edge of Battle Area)** is a minimal tactical exploration game built as a single-file HTML5 game. The player controls one unit exploring a grid with fog of war until encountering and defeating a single hidden enemy unit.
+
+## Core Design Philosophy
+
+**ABSOLUTE MINIMUM VIABLE GAME**
+- 1 player unit vs 1 enemy unit
+- Click to move, click enemy to attack
+- Enemy counter-attacks automatically
+- First to die loses
+- That's it. Nothing more.
 
 ## Architecture
 
 **Single File**: `FEBA.html` - Complete game in one self-contained HTML file
-**Size**: ~59KB
-**Dependencies**: None - pure vanilla JavaScript, HTML, CSS
+**Size Target**: ~500 lines (was 1700+, now simplified)
+**Dependencies**: anime.js v4 (CDN) for animations
 **Deployment**: Copy to `public/labs/feba/index.html` for web hosting
 
 ## Game Mechanics
 
-### Core Systems
+### Core Loop
 
-**Turn-Based Combat**
-- Two-phase turns: BLUE (player) and RED (enemy)
-- Each unit can move and attack once per turn
-- Movement range and attack range vary by unit type
+1. **Player clicks their unit** → Movement range highlights (blue cells, 3-cell radius)
+2. **Player clicks destination** → Unit slides there smoothly with anime.js
+3. **Fog of war updates** → Enemy appears if within vision range (3 cells)
+4. **Player clicks enemy** (when visible) → Attack sequence plays
+5. **Enemy counter-attacks** automatically if still alive
+6. **First unit to 0 health** → Game over (Victory/Defeat alert, auto-restart)
 
-**Fog of War**
-- Enemy units only visible within friendly unit vision range
-- Last known positions shown as ghost units
-- Recon units have extended vision (5 hexes)
-- Drones provide additional reconnaissance capability
+### Units
 
-**Unit Types**
-- **Infantry (I)**: Balanced unit with moderate stats (Health: 100, Attack: 60, Defense: 40, Range: 2, Movement: 2, Vision: 3)
-- **Armor (A)**: Heavy unit with high attack (Health: 150, Attack: 100, Defense: 80, Range: 3, Movement: 3, Vision: 2)
-- **Artillery (R)**: Long-range support (Health: 80, Attack: 120, Defense: 20, Range: 5, Movement: 1, Vision: 1)
-- **Recon (S)**: Scout unit with drones (Health: 70, Attack: 40, Defense: 30, Range: 2, Movement: 4, Vision: 5, Drones: 2)
+**Player Unit**
+- Type: Infantry
+- Position: Fixed at (2, 7)
+- Stats: Health 100, Attack 60, Defense 40, Range 2, Vision 3
+- Callsign: "PLAYER"
 
-**Drone System**
-- Recon units can deploy autonomous drones
-- Drones patrol in hexagonal patterns around target coordinates
-- 8-turn battery life with low-battery warning at 2 turns
-- Provide vision radius of 2 hexes
-- Can be destroyed by enemy fire
+**Enemy Unit**
+- Type: Random (Infantry/Armor/Artillery/Recon)
+- Position: Random (x: 16-19, y: 2-11)
+- Stats: Varies by type
+- Callsign: "ENEMY"
+- Hidden by fog of war until discovered
 
-**Autopilot Mode**
-- Units can be set to AI control
-- AI prioritizes: 1) Attack nearby enemies, 2) Move towards objectives/enemies
-- Useful for managing multiple units simultaneously
+### Fog of War
 
-### Terrain Features
+- Enemy hidden until player unit gets within 3 cells
+- Enemy stays visible once spotted
+- Simple boolean: visible or not
 
-- **Forest**: Provides cover, reduces damage by 30%
-- **Hill**: Provides cover, reduces damage by 30%
-- **Water**: Impassable terrain (decorative in current version)
+### Combat
 
-### Combat System
-
-**Damage Calculation**:
+**Damage Formula**:
 ```javascript
 attackRoll = random() * attacker.attack
 defenseRoll = random() * target.defense
 damage = max(10, attackRoll - defenseRoll)
-// Apply terrain modifier: damage *= 0.7 if in cover
+damage = floor(damage)
 ```
 
-**Health System**:
-- Units have max health and current health
-- Health bars show: Green (>60%), Yellow (30-60%), Red (<30%)
-- Units destroyed at 0 health
+**Attack Sequence** (anime.js):
+1. Attacker flash (scale 1→1.15→1, brightness pulse) - 100ms
+2. Projectile streak (colored dot animates attacker→target) - 100ms
+3. Target shake (translateX wiggle) - 100ms
+4. Damage number floats up (translateY + fade) - 400ms
+5. Explosion effect (existing CSS animation) - 500ms
 
-### UI Components
+**Projectile Colors**:
+- Infantry: Yellow (#ffff00)
+- Armor: Orange (#ff8800)
+- Artillery: Red (#ff0000)
+- Recon: Cyan (#00ffff)
 
-**HUD (Top Bar)**:
-- Turn counter
-- Current phase (BLUE/RED)
-- Unit counts (Friendly/Enemy)
-- Game status
+### Grid
 
-**Control Panel (Right Side)**:
-- Selected unit information and stats
-- Action buttons: Move, Attack, Recon, Deploy Drone
-- Autopilot toggle
-- Battle log with categorized entries
-- End Turn button
+- Size: 20 cells wide × 14 cells tall
+- Cell size: 60px × 60px
+- Layout: Simple square grid (not hex despite game name)
+- Click detection via data-x/data-y attributes
 
-**Battlefield (Main Area)**:
-- 20x14 hex grid (40px cells)
-- Units rendered as colored circles with symbols
-- Terrain overlays (semi-transparent)
-- Objective markers (yellow diamonds)
-- Range indicators (movement, attack, vision)
-- Explosion effects
+## What's Removed
+
+**NO** turn system - continuous play
+**NO** phases (BLUE/RED) - just player and enemy
+**NO** End Turn button - movement happens immediately
+**NO** action buttons - direct click interaction only
+**NO** multiple units - just 1v1
+**NO** drones - removed complexity
+**NO** terrain - plain grid
+**NO** objectives - just defeat enemy
+**NO** autopilot - no AI for player
+**NO** movement points - unlimited movement in 3-cell range
+**NO** attack limits - can attack repeatedly
 
 ## Code Structure
 
-### Game State Object
-```javascript
-gameState = {
-    turn: number,
-    phase: 'BLUE' | 'RED',
-    mode: 'select' | 'move' | 'attack' | 'recon' | 'deploy-drone',
-    selectedUnit: Unit | null,
-    gridSize: { width: 20, height: 14 },
-    cellSize: 40,
-    units: Unit[],
-    drones: Drone[],
-    terrain: TerrainFeature[],
-    objectives: Objective[],
-    battleLog: string[]
-}
+### HTML Elements
+
+```html
+<div class="hud">
+  - Turn counter (can remove)
+  - Unit counts
+  - New Game button
+</div>
+
+<div class="battlefield">
+  - Grid cells (generated)
+  - Units (rendered)
+</div>
+
+<div class="control-panel">
+  - Selected unit info
+  - Battle log
+</div>
 ```
 
 ### Key Functions
 
 **Game Initialization**:
-- `initGame()` - Master initialization
-- `createBattlefield()` - Generates grid cells
-- `deployUnits()` - Places initial forces
-- `addTerrain()` - Places terrain features
-- `addObjectives()` - Places objective markers
+- `initGame()` - Creates grid, spawns units, sets up fog
+- `restartGame()` - Clears state and reinitializes
+- `deployUnits()` - Creates 1 player unit + 1 random enemy
 
 **Unit Management**:
 - `createUnit(type, x, y, side, callsign)` - Unit factory
-- `renderUnit(unit)` - Visual representation
-- `selectUnit(unit)` - Unit selection handler
-- `updateUnitInfo()` - Panel UI update
+- `renderUnit(unit)` - Visual representation with health bar
+- `selectUnit(unit)` - Selection handler (only friendly units)
 
-**Combat & Movement**:
-- `moveUnit(unit, x, y)` - Movement validation and execution
-- `attackTarget(attacker, x, y)` - Combat resolution
-- `hasTerrainCover(x, y)` - Cover calculation
+**Interaction**:
+- `handleCellClick(x, y)` - Smart detection: move or attack
+- `moveUnit(unit, x, y)` - Updates position, triggers animation
+- `attackTarget(attacker, x, y)` - Combat calculation + animation
+- `counterAttack(attacker, target)` - Automatic retaliation
+
+**Animations** (anime.js):
+- `animateMovement(unit, x, y, callback)` - Smooth position change
+- `animateAttack(attacker, target, damage, callback)` - Full attack sequence
 
 **Fog of War**:
-- `updateFogOfWar()` - Master visibility update
-- `spotEnemiesInRange(spotter)` - Vision calculation
-- `updateGridFog()` - Visual fog overlay
+- `updateFogOfWar()` - Shows/hides enemy based on distance
+- Vision check: `distance <= 3 cells` from player unit
 
-**Drone System**:
-- `createDrone(deployer, x, y)` - Drone factory
-- `generatePatrolRoute(x, y, radius)` - Hexagonal patrol pattern
-- `moveDronesAutomatically()` - Autonomous drone movement
-- `renderDrone(drone)` - Visual representation
+**Win/Loss**:
+- Checked after every attack/counter-attack
+- `alert()` message + `restartGame()` after 1 second
 
-**AI System**:
-- `executeEnemyTurn()` - Enemy AI controller
-- `executeAutopilotActions()` - Friendly autopilot
-- `executeUnitAutopilot(unit)` - Single unit AI logic
+### Game State
 
-**Turn Management**:
-- `endTurn()` - Phase transition and cleanup
-- `updateHUD()` - Status display refresh
+```javascript
+gameState = {
+  units: [playerUnit, enemyUnit],  // Just 2 units
+  selectedUnit: null,               // Currently selected
+  gridSize: { width: 20, height: 14 },
+  cellSize: 60,
+  battleLog: []
+}
+```
 
-## Styling System
+## Styling
 
 **Color Scheme**:
 - Background: Dark (#1a1a1a)
-- Friendly Units: Blue (#0066ff)
-- Enemy Units: Red (#ff0000)
-- UI Accents: Green (#00ff00)
-- Drones: Cyan (#00ffff)
-- Objectives: Yellow (#ffff00)
+- Grid cells: Green borders (rgba(0, 255, 0, 0.2))
+- Movement highlights: Blue (rgba(0, 0, 255, 0.2))
+- Friendly unit: Blue (#0066ff)
+- Enemy unit: Red (#ff0000)
+- Fog: Dark overlay (#000 50% opacity)
 
-**Visual Effects**:
-- Unit pulse animation when spotted
-- Health bar color transitions
-- Explosion animations (scale + fade)
-- Autopilot pulse effect
-- Low battery blink on drones
-
-**Layout**:
-- Fixed HUD at top (60px height)
-- Battlefield fills left side
-- Control panel fixed right (250px width)
-- Responsive grid with absolute positioning
+**Animations**:
+- All via anime.js for smooth 60fps performance
+- Durations: 100-400ms for snappy feel
+- Easing: easeOutQuad for natural motion
 
 ## Development Guidelines
 
 ### When Modifying FEBA
 
-**Adding New Unit Types**:
-1. Add entry to `unitTypes` object with stats
-2. Update `createUnit()` if new properties needed
-3. Add symbol character for unit
-4. Update control panel styling if needed
-
-**Adding New Terrain**:
-1. Add to `addTerrain()` with x,y coordinates
-2. Add CSS class in `<style>` section
-3. Update `hasTerrainCover()` if affects combat
+**Adding Features**:
+- Don't. The game is intentionally minimal.
+- If absolutely necessary, document why in CLAUDE.md first
 
 **Balancing Combat**:
 - Adjust unit stats in `unitTypes` object
-- Modify damage formula in `attackTarget()`
-- Change terrain modifier multipliers
+- Keep damage formula simple (no terrain modifiers)
 
-**Extending AI**:
-- Modify `executeUnitAutopilot()` for friendly AI
-- Modify `executeEnemyTurn()` for enemy AI
-- Add new decision factors to priority system
+**Bug Fixes**:
+- Always test: select unit → move → discover enemy → attack → counter-attack → victory
+- Verify fog of war reveals enemy at correct distance
+- Ensure game restarts properly after win/loss
 
-### Testing Considerations
+### Testing Checklist
 
-**Manual Testing Focus**:
-- Unit movement and pathfinding
-- Combat damage calculations
-- Fog of war visibility
-- Drone patrol behavior
-- AI decision making
-- Turn phase transitions
-- Win/loss conditions
-
-**Known Limitations**:
-- No pathfinding (movement is direct line)
-- No formations or unit stacking
-- Simple terrain system (no complex modifiers)
-- Basic AI (no strategic planning)
-- No multiplayer support
-- No save/load functionality
+1. Click player unit → see blue movement cells
+2. Click blue cell → unit moves immediately (no delays)
+3. Move right 4-5 times → enemy should appear
+4. Click enemy → attack plays, enemy counter-attacks
+5. Keep attacking → eventually someone dies
+6. Verify win/loss alert shows
+7. Click "New Game" → fresh random enemy spawns
 
 ## Deployment
 
 **To Update Production**:
 1. Edit `FEBA.html` in this directory
 2. Copy to `public/labs/feba/index.html`
-3. Commit both files
-4. Push to GitHub (auto-deploys to Cloudflare Pages)
+3. Test locally by opening index.html in browser
+4. Commit both files
+5. Push to GitHub (auto-deploys to Cloudflare Pages)
 
 **Deployment URL**: https://quarterly.systems/labs/feba
 
-## Future Enhancement Ideas
-
-- Save/load game state to localStorage
-- Multiple difficulty levels for AI
-- Unit experience and upgrades
-- More terrain types with complex effects
-- Campaign mode with multiple missions
-- Unit production and resources
-- Multiplayer hot-seat mode
-- Mobile touch controls optimization
-- Sound effects and music
-- Custom map editor
-- Different victory conditions
-- Reinforcements and reserves
-
 ## Technical Notes
 
-- Uses absolute positioning for grid-based layout
-- DOM manipulation for unit/terrain rendering
-- CSS animations for visual effects
-- No canvas - pure HTML/CSS rendering
-- setTimeout() for turn-based AI sequencing
-- Event delegation for grid cell clicks
-- classList for dynamic state management
+- Uses anime.js v4 from CDN (imported as ES module)
+- DOM manipulation for all rendering (no canvas)
+- Click delegation via cell data attributes
+- Simple collision: check if cell occupied before move
+- No pathfinding: direct distance calculation only
+- Alert-based game over (can improve to modal later)
 
 ## Performance
 
-- Handles 20+ units without issues
-- Grid size limited by screen space, not performance
-- Could optimize with canvas for 50+ units
-- DOM updates throttled during AI turns
+- Handles 2 units easily (obviously)
+- Grid size limited by screen space
+- Anime.js handles 60fps animations smoothly
+- No performance concerns with this minimal scope
+
+## File Size
+
+Target: ~500 lines total
+Current: Way too much (1700+)
+Next step: Rewrite from scratch following this spec exactly
