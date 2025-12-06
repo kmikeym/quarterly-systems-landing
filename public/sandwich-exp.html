@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 2rem;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .image-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .image-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .image-card figcaption {
+            padding: 1rem;
+            color: #555;
+            font-size: 0.95rem;
+        }
+        .error {
+            text-align: center;
+            color: #c00;
+            padding: 2rem;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Gallery</h1>
+    <div id="gallery" class="gallery">
+        <p class="loading">Loading images...</p>
+    </div>
+
+    <script>
+        (function() {
+            const gallery = document.getElementById('gallery');
+
+            fetch('images.json')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Failed to load images.json');
+                    }
+                    return response.json();
+                })
+                .then(function(images) {
+                    gallery.innerHTML = '';
+
+                    if (!Array.isArray(images) || images.length === 0) {
+                        gallery.innerHTML = '<p class="error">No images found.</p>';
+                        return;
+                    }
+
+                    images.forEach(function(image) {
+                        var figure = document.createElement('figure');
+                        figure.className = 'image-card';
+                        figure.id = image.id;
+
+                        var img = document.createElement('img');
+                        img.src = image.url;
+                        img.alt = image.caption;
+                        img.loading = 'lazy';
+
+                        var caption = document.createElement('figcaption');
+                        caption.textContent = image.caption;
+
+                        figure.appendChild(img);
+                        figure.appendChild(caption);
+                        gallery.appendChild(figure);
+                    });
+                })
+                .catch(function(error) {
+                    gallery.innerHTML = '<p class="error">Error: ' + error.message + '</p>';
+                });
+        })();
+    </script>
+</body>
+</html>
