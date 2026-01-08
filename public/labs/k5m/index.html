@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>$K5M — Publicly Traded Person</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --obsidian: #0a0a0b;
+      --graphite: #141416;
+      --slate: #1e1e22;
+      --champagne: #f5f0e8;
+      --champagne-muted: #a39e94;
+      --amber: #d4a053;
+      --amber-glow: #e8b866;
+      --sage: #7a9e7a;
+      --sage-muted: #5a7a5a;
+      --terracotta: #c17a6a;
+      --terracotta-muted: #a05a4a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--obsidian);
+      color: var(--champagne);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+    }
+
+    /* Left column - Identity */
+    .identity {
+      padding: 4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .ticker-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--slate);
+      border: 1px solid rgba(212, 160, 83, 0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 2px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--amber);
+      width: fit-content;
+      margin-bottom: 2rem;
+      animation: fadeSlideIn 0.8s ease-out 0.2s both;
+    }
+
+    .ticker-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--amber);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .person-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(4rem, 10vw, 8rem);
+      font-weight: 400;
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+      animation: fadeSlideIn 0.8s ease-out 0.4s both;
+    }
+
+    .person-name span {
+      display: block;
+      font-style: italic;
+      color: var(--champagne-muted);
+    }
+
+    .person-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      color: var(--champagne-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 3rem;
+      animation: fadeSlideIn 0.8s ease-out 0.6s both;
+    }
+
+    .bio-excerpt {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      line-height: 1.6;
+      color: var(--champagne);
+      max-width: 480px;
+      border-left: 2px solid var(--amber);
+      padding-left: 1.5rem;
+      margin-bottom: 3rem;
+      animation: fadeSlideIn 0.8s ease-out 0.8s both;
+    }
+
+    /* Photo treatment */
+    .identity {
+      position: relative;
+    }
+
+    .identity::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('mycopy.jpg') center center / cover no-repeat;
+      opacity: 0.12;
+      filter: grayscale(100%) contrast(1.1);
+      z-index: -1;
+    }
+
+    .portrait-frame {
+      position: relative;
+      width: 280px;
+      height: 350px;
+      margin-bottom: 2.5rem;
+      animation: fadeSlideIn 0.8s ease-out 0.1s both;
+    }
+
+    .portrait-frame::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      right: 8px;
+      bottom: 8px;
+      border: 1px solid var(--amber);
+      opacity: 0.4;
+      z-index: 1;
+    }
+
+    .portrait-frame::after {
+      content: 'PHOTO: CHRIS BUCK / WIRED 2013';
+      position: absolute;
+      bottom: -24px;
+      left: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.5rem;
+      color: var(--champagne-muted);
+      letter-spacing: 0.15em;
+      opacity: 0.5;
+    }
+
+    .portrait-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(20%) contrast(1.05);
+      transition: filter 0.5s ease;
+    }
+
+    .portrait-frame:hover .portrait-img {
+      filter: grayscale(0%) contrast(1.1);
+    }
+
+    .portrait-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(212, 160, 83, 0.1) 0%,
+        transparent 50%,
+        rgba(10, 10, 11, 0.4) 100%
+      );
+      pointer-events: none;
+    }
+
+    .portrait-data {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.625rem;
+      color: var(--amber);
+      background: rgba(10, 10, 11, 0.8);
+      padding: 0.25rem 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* Media logos */
+    .media-section {
+      margin-top: 1rem;
+      animation: fadeSlideIn 0.8s ease-out 1s both;
+    }
+
+    .media-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.5625rem;
+      color: var(--champagne-muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      opacity: 0.6;
+    }
+
+    .media-logos {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .media-logo {
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+      cursor: default;
+    }
+
+    .media-logo:hover {
+      opacity: 0.9;
+    }
+
+    /* Individual logo styles */
+    .logo-wired {
+      font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--champagne);
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+
+    .logo-today {
+      font-family: 'Georgia', serif;
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--champagne);
+      font-style: italic;
+    }
+
+    .logo-today span {
+      font-style: normal;
+      font-weight: 700;
+    }
+
+    .logo-vice {
+      font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--champagne);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .logo-playboy {
+      font-family: 'Georgia', serif;
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--champagne);
+      font-style: italic;
+      letter-spacing: 0.02em;
+    }
+
+    .media-logo {
+      text-decoration: none;
+    }
+
+    /* Notable Votes */
+    .votes-section {
+      margin-top: 2rem;
+      margin-bottom: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(212, 160, 83, 0.15);
+      animation: fadeSlideIn 0.8s ease-out 0.85s both;
+    }
+
+    .votes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .votes-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6875rem;
+      color: var(--champagne-muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .votes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .vote-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: rgba(0,0,0,0.3);
+      border-left: 2px solid var(--champagne-muted);
+      transition: all 0.2s ease;
+    }
+
+    .vote-item:hover {
+      background: rgba(0,0,0,0.4);
+      transform: translateX(4px);
+    }
+
+    .vote-item.passed {
+      border-left-color: var(--sage);
+    }
+
+    .vote-item.rejected {
+      border-left-color: var(--terracotta);
+    }
+
+    .vote-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .vote-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      color: var(--champagne);
+    }
+
+    .vote-tally {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.625rem;
+      color: var(--champagne-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .vote-result {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.5rem;
+      border-radius: 2px;
+    }
+
+    .vote-result.passed {
+      background: rgba(122, 158, 122, 0.2);
+      color: var(--sage);
+    }
+
+    .vote-result.rejected {
+      background: rgba(193, 122, 106, 0.2);
+      color: var(--terracotta);
+    }
+
+    /* Right column - Financial data */
+    .financials {
+      background: var(--graphite);
+      padding: 4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .financials::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        var(--amber) 20%,
+        var(--amber) 80%,
+        transparent
+      );
+      opacity: 0.3;
+    }
+
+    /* Grid pattern background */
+    .financials::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image:
+        linear-gradient(rgba(212, 160, 83, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 160, 83, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .price-section {
+      position: relative;
+      z-index: 1;
+      animation: fadeSlideIn 0.8s ease-out 0.3s both;
+    }
+
+    .price-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6875rem;
+      color: var(--champagne-muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .price-display {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .currency {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      color: var(--champagne-muted);
+    }
+
+    .price-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(4rem, 8vw, 6rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--champagne);
+      line-height: 1;
+    }
+
+    .price-change {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: 2px;
+      margin-bottom: 3rem;
+    }
+
+    .price-change.positive {
+      background: rgba(122, 158, 122, 0.15);
+      color: var(--sage);
+    }
+
+    .price-change.negative {
+      background: rgba(193, 122, 106, 0.15);
+      color: var(--terracotta);
+    }
+
+    .price-change .arrow {
+      font-size: 0.75rem;
+    }
+
+    /* Sparkline chart */
+    .chart-container {
+      margin-bottom: 3rem;
+      animation: fadeSlideIn 0.8s ease-out 0.5s both;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .chart-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6875rem;
+      color: var(--champagne-muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .chart-period {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .period-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.625rem;
+      padding: 0.25rem 0.5rem;
+      background: transparent;
+      border: 1px solid var(--slate);
+      color: var(--champagne-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .period-btn.active,
+    .period-btn:hover {
+      background: var(--slate);
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+
+    .sparkline {
+      height: 80px;
+      position: relative;
+      background: rgba(0,0,0,0.3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .sparkline svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .sparkline-path {
+      fill: none;
+      stroke: var(--amber);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .sparkline-area {
+      fill: url(#sparkline-gradient);
+    }
+
+    /* Stats grid - compact inline */
+    .stats-grid {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      padding: 1rem 0;
+      border-top: 1px solid rgba(212, 160, 83, 0.1);
+      border-bottom: 1px solid rgba(212, 160, 83, 0.1);
+      animation: fadeSlideIn 0.8s ease-out 0.7s both;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+    }
+
+    .stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.5rem;
+      color: var(--champagne-muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--champagne);
+    }
+
+    .stat-value.highlight {
+      color: var(--amber);
+    }
+
+    /* CTA */
+    .cta-group {
+      display: flex;
+      gap: 1rem;
+      animation: fadeSlideIn 0.8s ease-out 0.9s both;
+    }
+
+    .btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 1rem 2rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: var(--amber);
+      color: var(--obsidian);
+    }
+
+    .btn-primary:hover {
+      background: var(--amber-glow);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(212, 160, 83, 0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--champagne-muted);
+      color: var(--champagne);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--champagne);
+      background: rgba(245, 240, 232, 0.05);
+    }
+
+    /* Live indicator */
+    .live-tag {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.625rem;
+      color: var(--sage);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      z-index: 10;
+    }
+
+    .live-tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--sage);
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* Animations */
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.5;
+        transform: scale(0.9);
+      }
+    }
+
+    @keyframes tickerScroll {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    /* Ticker tape */
+    .ticker-tape {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--obsidian);
+      border-top: 1px solid rgba(212, 160, 83, 0.2);
+      padding: 0.75rem 0;
+      overflow: hidden;
+    }
+
+    .ticker-content {
+      display: flex;
+      animation: tickerScroll 30s linear infinite;
+      white-space: nowrap;
+    }
+
+    .ticker-item {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6875rem;
+      color: var(--champagne-muted);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ticker-item .symbol {
+      color: var(--amber);
+      font-weight: 600;
+    }
+
+    .ticker-item .positive { color: var(--sage); }
+    .ticker-item .negative { color: var(--terracotta); }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .identity, .financials {
+        padding: 3rem 2rem;
+      }
+
+      .ticker-tape {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .person-name {
+        font-size: 3rem;
+      }
+
+      .price-value {
+        font-size: 3rem;
+      }
+
+      .stats-grid {
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .cta-group {
+        flex-direction: column;
+      }
+
+      .portrait-frame {
+        width: 200px;
+        height: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <!-- Left: Identity -->
+    <div class="identity">
+      <div class="ticker-badge">
+        <span>KmikeyM: $K5M</span>
+      </div>
+
+      <div class="portrait-frame">
+        <img src="mycopy.jpg" alt="K. Mike Merrill" class="portrait-img">
+        <div class="portrait-overlay"></div>
+        <div class="portrait-data">EST. 2008</div>
+      </div>
+
+      <h1 class="person-name">
+        K. Mike
+        <span>Merrill</span>
+      </h1>
+
+      <p class="person-title">The World's First Publicly Traded Person</p>
+
+      <p class="bio-excerpt">
+        Since 2008, shareholders have voted on my life decisions — from career moves to relationships.
+        Your investment is a stake in human potential.
+      </p>
+
+      <div class="media-section">
+        <p class="media-label">Featured In</p>
+        <div class="media-logos">
+          <a href="https://www.wired.com/2013/03/ipo-man/" target="_blank" rel="noopener" class="media-logo logo-wired">Wired</a>
+          <a href="https://www.today.com/video/one-man-ipo-man-sells-shares-in-his-own-life-23803459584" target="_blank" rel="noopener" class="media-logo logo-today"><span>TODAY</span> Show</a>
+          <a href="https://www.vice.com/en/article/mike-merrill-is-a-publicly-traded-person/" target="_blank" rel="noopener" class="media-logo logo-vice">Vice</a>
+          <a href="https://www.playboy.com/magazine/articles/2017/09/the-publicly-traded-human-goes-nsfw/" target="_blank" rel="noopener" class="media-logo logo-playboy">Playboy</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Financial Data -->
+    <div class="financials">
+      <div class="live-tag">Market Open</div>
+
+      <div class="price-section">
+        <p class="price-label">Current Share Price</p>
+        <div class="price-display">
+          <span class="currency">$</span>
+          <span class="price-value" id="price">6.24</span>
+        </div>
+        <div class="price-change positive">
+          <span class="arrow">▲</span>
+          <span>+0.18 (+2.97%)</span>
+          <span style="opacity: 0.6; margin-left: 0.5rem;">Today</span>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-header">
+          <span class="chart-title">Price History</span>
+          <div class="chart-period">
+            <button class="period-btn">1D</button>
+            <button class="period-btn">1W</button>
+            <button class="period-btn active">1M</button>
+            <button class="period-btn">1Y</button>
+            <button class="period-btn">ALL</button>
+          </div>
+        </div>
+        <div class="sparkline">
+          <svg viewBox="0 0 400 80" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sparkline-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color: rgba(212, 160, 83, 0.3)" />
+                <stop offset="100%" style="stop-color: rgba(212, 160, 83, 0)" />
+              </linearGradient>
+            </defs>
+            <path class="sparkline-area" d="M0,60 L20,55 L40,58 L60,52 L80,48 L100,50 L120,45 L140,42 L160,38 L180,40 L200,35 L220,32 L240,30 L260,28 L280,25 L300,22 L320,20 L340,18 L360,15 L380,12 L400,10 L400,80 L0,80 Z" />
+            <path class="sparkline-path" d="M0,60 L20,55 L40,58 L60,52 L80,48 L100,50 L120,45 L140,42 L160,38 L180,40 L200,35 L220,32 L240,30 L260,28 L280,25 L300,22 L320,20 L340,18 L360,15 L380,12 L400,10" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <p class="stat-label">Market Cap</p>
+          <p class="stat-value highlight">$62,400</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-label">Shares Outstanding</p>
+          <p class="stat-value">10,000</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-label">Shareholders</p>
+          <p class="stat-value">892</p>
+        </div>
+        <div class="stat-item">
+          <p class="stat-label">Decisions Made</p>
+          <p class="stat-value">247</p>
+        </div>
+      </div>
+
+      <div class="votes-section">
+        <div class="votes-header">
+          <span class="votes-title">Notable Shareholder Votes</span>
+        </div>
+        <div class="votes-list">
+          <div class="vote-item rejected">
+            <div class="vote-content">
+              <span class="vote-title">Get a Vasectomy</span>
+              <span class="vote-tally">46% Yes — 54% No</span>
+            </div>
+            <span class="vote-result rejected">Rejected</span>
+          </div>
+          <div class="vote-item passed">
+            <div class="vote-content">
+              <span class="vote-title">Try Polyphasic Sleep</span>
+              <span class="vote-tally">63% Yes — 37% No</span>
+            </div>
+            <span class="vote-result passed">Passed</span>
+          </div>
+          <div class="vote-item passed">
+            <div class="vote-content">
+              <span class="vote-title">Become Vegetarian</span>
+              <span class="vote-tally">58% Yes — 42% No</span>
+            </div>
+            <span class="vote-result passed">Passed</span>
+          </div>
+          <div class="vote-item passed">
+            <div class="vote-content">
+              <span class="vote-title">Register as Republican</span>
+              <span class="vote-tally">52% Yes — 48% No</span>
+            </div>
+            <span class="vote-result passed">Passed</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-group">
+        <button class="btn btn-primary">Buy Shares</button>
+        <button class="btn btn-secondary">View Prospectus</button>
+      </div>
+    </div>
+
+    <!-- Ticker Tape -->
+    <div class="ticker-tape">
+      <div class="ticker-content">
+        <div class="ticker-item"><span class="symbol">$K5M</span> 6.24 <span class="positive">+2.97%</span></div>
+        <div class="ticker-item">Vol: 142</div>
+        <div class="ticker-item">52W High: 8.50</div>
+        <div class="ticker-item">52W Low: 4.12</div>
+        <div class="ticker-item">P/E: N/A</div>
+        <div class="ticker-item">Div Yield: 0%</div>
+        <div class="ticker-item">Next Vote: Jan 15</div>
+        <div class="ticker-item"><span class="symbol">$K5M</span> 6.24 <span class="positive">+2.97%</span></div>
+        <div class="ticker-item">Vol: 142</div>
+        <div class="ticker-item">52W High: 8.50</div>
+        <div class="ticker-item">52W Low: 4.12</div>
+        <div class="ticker-item">P/E: N/A</div>
+        <div class="ticker-item">Div Yield: 0%</div>
+        <div class="ticker-item">Next Vote: Jan 15</div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Subtle price fluctuation animation
+    const priceEl = document.getElementById('price');
+    const basePrice = 6.24;
+
+    function animatePrice() {
+      const fluctuation = (Math.random() - 0.5) * 0.02;
+      const newPrice = (basePrice + fluctuation).toFixed(2);
+      priceEl.textContent = newPrice;
+    }
+
+    // Occasional price updates for realism
+    setInterval(animatePrice, 3000);
+
+    // Period button interaction
+    document.querySelectorAll('.period-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
