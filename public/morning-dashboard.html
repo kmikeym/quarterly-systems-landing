@@ -1,3 +1,108 @@
+<!--
+  ============================================================================
+  MORNING DASHBOARD — AI Agent Team
+  ============================================================================
+  Animated dashboard for the "AI Morning Routine" YouTube Short.
+  Screen-recorded on Mike's phone as a prop for the video.
+
+  PURPOSE: Show each AI agent "coming online" and populating a dashboard
+  with real-looking data. Used as a visual insert during the Short's
+  sit-down-at-desk beat (see: AI Morning Routine Short — Script.md).
+
+  HOSTED AT: quarterly.systems/morning-dashboard.html
+  SOURCE: Agenting/Assets/morning-routine-dashboard.html
+  DEPLOY: Copy to quarterly-systems-landing/public/morning-dashboard.html,
+          commit & push. Cloudflare Pages auto-deploys in ~60s.
+
+  ============================================================================
+  HOW THE ANIMATION SYSTEM WORKS
+  ============================================================================
+
+  Everything is driven by a single async function: runAnimation().
+  It runs sequentially using `await delay(ms)` between each step.
+  Each step either shows an element, hides an element, or updates text.
+
+  KEY PATTERN — The "status line":
+    The header has a status line (#statusText) with a green pulsing dot.
+    Before each card fills in, the status line updates to describe what's
+    happening: "Pulling health data...", "Checking calendar...", etc.
+    This creates a sense of the system working in real-time.
+    To update it: document.getElementById('statusText').textContent = '...';
+
+  KEY PATTERN — Empty → Filled cards:
+    Each status card has TWO content areas:
+      1. .card-empty  — placeholder text shown when card first appears
+      2. .xxx-content — the real content, hidden with display:none
+
+    To transition from empty → filled:
+      hideEmpty('healthEmpty');     // hides the placeholder
+      activate('healthContent');    // switches display:none → display:flex
+    Then show() individual rows inside the content area one at a time.
+
+  KEY PATTERN — show/hide:
+    show(id)  → adds .visible class (triggers CSS opacity/transform transition)
+    hide(id)  → removes .visible, adds .hidden (fades out)
+    All elements start invisible (opacity:0) and animate in via CSS transitions.
+
+  KEY PATTERN — The gauge:
+    animateGauge(87) fills the SVG circle to 87% and counts up the number.
+    Uses stroke-dashoffset on an SVG circle + requestAnimationFrame for the %.
+
+  ============================================================================
+  ANIMATION SEQUENCE (currently: Sequence 1 — Sid only)
+  ============================================================================
+
+  Phase 0: "Agents initializing..." text centered on black screen (2.5s)
+  Phase 1: Dashboard header + agent counter fade in
+  Phase 2: Three EMPTY status cards appear one by one (200ms apart)
+  Phase 3: Sid comes online — counter goes to 1, greeting appears below cards
+  Phase 4: HEALTH SCORE card fills — Sleep → HRV → Weight → gauge to 87%
+           Status line: "Pulling health data..."
+  Phase 5: UPCOMING card fills — meeting info + Zoom link
+           Status line: "Checking calendar..."
+  Phase 6: FOCUS TASKS card fills — 3 items one at a time
+           Status line: "Building priority list..."
+  Done:    Status line: "Morning briefing ready"
+
+  TODO: Sequence 2+ — Colbert, Seshat, K5M.bot, Thalberg report in as
+  agent messages in the feed area below the cards.
+
+  ============================================================================
+  HOW TO MAKE CHANGES
+  ============================================================================
+
+  CHANGE TIMING:
+    All delays are in the runAnimation() function at the bottom.
+    await delay(600) = 600ms pause. Adjust the number.
+    Speed controls (0.5x–4x) multiply all delays for testing.
+
+  CHANGE CONTENT:
+    Card data is hardcoded in the HTML. Search for the card ID
+    (cardHealth, cardUpcoming, cardFocus) and edit the content inside.
+
+  CHANGE STATUS LINE MESSAGES:
+    Search for 'statusText' in runAnimation(). Each line sets the
+    status text that appears next to the green pulsing dot.
+
+  ADD A NEW CARD:
+    1. Add HTML inside .status-cards (copy an existing card structure)
+    2. Add .card-empty and .xxx-content divs
+    3. Add show/hide/activate steps in runAnimation()
+    4. Update grid-template-columns if changing from 3 columns
+
+  ADD A NEW AGENT SEQUENCE:
+    1. Add agent message data to the agentData array in <script>
+    2. Add addAgentToFeed() calls at the end of runAnimation()
+    3. Agent messages prepend to the feed (newest at top)
+
+  MOBILE SCALING:
+    viewport is set to width=1080. Phones scale the 1080px layout
+    to fit their screen width. No responsive CSS needed.
+
+  CAPTION SAFE ZONE:
+    Bottom 35% of screen is kept empty for subtitle overlay.
+    All content must fit in the upper 65% (~1248px of 1920px height).
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -620,6 +725,8 @@
 <div class="caption-safe"></div>
 
 <script>
+  // Speed control — all delay() calls are divided by this multiplier.
+  // Use the 0.5x–4x buttons to test timing without editing code.
   let speedMultiplier = 1;
   let timeouts = [];
 
@@ -636,20 +743,27 @@
     event.target.classList.add('active');
   }
 
+  // show(id) — Fade in an element. All animated elements start with
+  // opacity:0 in CSS. Adding .visible triggers the CSS transition.
   function show(id) {
     document.getElementById(id).classList.add('visible');
   }
 
+  // hide(id) — Fade out an element (removes .visible, adds .hidden).
   function hide(id) {
     const el = document.getElementById(id);
     el.classList.remove('visible');
     el.classList.add('hidden');
   }
 
+  // activate(id) — Switch a content panel from display:none to display:flex.
+  // Used to swap from the empty placeholder to the real card content.
   function activate(id) {
     document.getElementById(id).classList.add('active');
   }
 
+  // hideEmpty(id) — Hide a card's placeholder text. Pair with activate()
+  // to transition: hideEmpty('healthEmpty') → activate('healthContent')
   function hideEmpty(id) {
     document.getElementById(id).classList.add('hidden');
   }
@@ -659,8 +773,12 @@
     el.textContent = n;
   }
 
+  // animateGauge(pct) — Fill the SVG circle gauge to a percentage and
+  // count up the number display. The circle uses stroke-dashoffset to
+  // reveal the arc (CSS transition handles the smooth fill). The number
+  // counts up by 2 each animation frame. Change the +2 for speed.
   function animateGauge(pct) {
-    const circumference = 2 * Math.PI * 44; // ~276.5
+    const circumference = 2 * Math.PI * 44; // r=44, circumference ~276.5
     const offset = circumference * (1 - pct / 100);
     document.getElementById('gaugeFill').style.strokeDashoffset = offset;
     let current = 0;
