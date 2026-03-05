@@ -49,23 +49,29 @@
     Uses stroke-dashoffset on an SVG circle + requestAnimationFrame for the %.
 
   ============================================================================
-  ANIMATION SEQUENCE (currently: Sequence 1 — Sid only)
+  ANIMATION SEQUENCES
   ============================================================================
 
-  Phase 0: "Agents initializing..." text centered on black screen (2.5s)
-  Phase 1: Dashboard header + agent counter fade in
-  Phase 2: Three EMPTY status cards appear one by one (200ms apart)
-  Phase 3: Sid comes online — counter goes to 1, greeting appears below cards
-  Phase 4: HEALTH SCORE card fills — Sleep → HRV → Weight → gauge to 87%
-           Status line: "Pulling health data..."
-  Phase 5: UPCOMING card fills — meeting info + Zoom link
-           Status line: "Checking calendar..."
-  Phase 6: FOCUS TASKS card fills — 3 items one at a time
-           Status line: "Building priority list..."
-  Done:    Status line: "Morning briefing ready"
+  SEQUENCE 1 — Sid (Daily Ops)
+    Phase 0: "Agents initializing..." text centered on black screen (2.5s)
+    Phase 1: Dashboard header + agent counter fade in
+    Phase 2: Three EMPTY status cards appear one by one (200ms apart)
+    Phase 3: Sid comes online — counter goes to 1, greeting in feed
+    Phase 4: HEALTH SCORE card fills — Sleep → HRV → Weight → gauge to 87%
+    Phase 5: UPCOMING card fills — meeting info + Zoom link
+    Phase 6: FOCUS TASKS card fills — 3 items one at a time
+    End:     "Morning briefing ready"
 
-  TODO: Sequence 2+ — Colbert, Seshat, K5M.bot, Thalberg report in as
-  agent messages in the feed area below the cards.
+  SEQUENCE 2 — Colbert, Seshat, K5M.bot (6:48 AM)
+    Colbert:  Subscription charge warning (orange warning style)
+    Seshat:   Book analysis delivered to K5M.bot
+    K5M.bot:  Share price + overnight trading summary
+    End:      "4 of 5 agents reporting"
+
+  SEQUENCE 3 — Thalberg (6:49 AM)
+    Thalberg: Daily production status (shipped/blocked/in-edit)
+    Thalberg: Script notes follow-up (second message)
+    End:      "All agents online — ready when you are"
 
   ============================================================================
   HOW TO MAKE CHANGES
@@ -326,7 +332,7 @@
     text-align: center;
   }
   .gauge-pct {
-    font-size: 34px;
+    font-size: 26px;
     font-weight: 800;
     color: var(--green);
     line-height: 1;
@@ -602,6 +608,8 @@
   .agent-k5m { --agent-color: rgba(63,185,80,0.4); }
   .agent-sid .agent-avatar { background: rgba(88,166,255,0.15); color: var(--blue); }
   .agent-sid { --agent-color: rgba(88,166,255,0.4); }
+  .agent-thalberg .agent-avatar { background: rgba(248,81,73,0.15); color: var(--red); }
+  .agent-thalberg { --agent-color: rgba(248,81,73,0.4); }
 
   /* ========== CAPTION SAFE ZONE ========== */
   .caption-safe {
@@ -1029,7 +1037,6 @@
     await delay(3500);
 
     // --- K5M.BOT: share price + overnight trading ---
-    updateClock('6:49 AM');
     document.getElementById('statusText').textContent = 'K5M.bot online';
     updateCounter(4);
     await delay(800);
@@ -1039,13 +1046,50 @@
       name: 'K5M.bot',
       role: 'Investor Relations',
       text: 'Share price: <strong>$4.00 ▼$0.25.</strong> 3 trades overnight — two buys (12 shares total) and one sell (5 shares). 1,247 shareholders notified. Market update posted to Discord.',
-      time: '6:49 AM'
+      time: '6:48 AM'
     });
     document.getElementById('statusText').textContent = 'K5M.bot posted market update';
     await delay(2500);
 
-    // ===== SEQUENCE 2 COMPLETE =====
+    // ===== SEQUENCE 2 COMPLETE — pause before Sequence 3 =====
     document.getElementById('statusText').textContent = '4 of 5 agents reporting';
+    await delay(3000);
+
+    // =================================================================
+    // SEQUENCE 3 — Thalberg reports in (The Producer)
+    // Two messages: daily production status, then script notes follow-up.
+    // =================================================================
+
+    // --- THALBERG: daily production status ---
+    updateClock('6:49 AM');
+    document.getElementById('statusText').textContent = 'Thalberg online';
+    updateCounter(5);
+    await delay(800);
+    addAgentToFeed({
+      cls: 'agent-thalberg',
+      avatar: 'T',
+      name: 'Thalberg',
+      role: 'The Producer',
+      text: '<strong>Yesterday:</strong> AIEP Issue #1 shipped, dashboard deployed, Albanik edit handoff complete. <strong>Blocked:</strong> J. Chris interview (2 days overdue) — holds up 3 blog posts + 6 shorts. <strong>In edit:</strong> AI Morning Routine Short, shareholder update draft.',
+      time: '6:49 AM'
+    });
+    document.getElementById('statusText').textContent = 'Thalberg posted daily status...';
+    await delay(4000);
+
+    // --- THALBERG: script notes follow-up ---
+    addAgentToFeed({
+      cls: 'agent-thalberg',
+      avatar: 'T',
+      name: 'Thalberg',
+      role: 'The Producer',
+      text: 'Also — read the script you finished last night. <strong>3 notes added</strong> to the doc. The cold open is strong but the mid-section needs a tighter beat. Let\'s talk before you shoot.',
+      time: '6:49 AM'
+    });
+    document.getElementById('statusText').textContent = 'Thalberg added script notes';
+    await delay(2500);
+
+    // ===== SEQUENCE 3 COMPLETE — all agents reporting =====
+    document.getElementById('statusText').textContent = 'All agents online — ready when you are';
   }
 
   function restart() {
