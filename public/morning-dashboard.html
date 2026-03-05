@@ -466,7 +466,7 @@
 
   /* ========== SID GREETING (below cards) ========== */
   .sid-greeting {
-    margin: 24px 48px 0;
+    margin: 0;
     background: var(--surface);
     border: 1px solid rgba(88,166,255,0.4);
     border-radius: 16px;
@@ -675,7 +675,7 @@
 
 <!-- Dashboard header -->
 <div class="header" id="header">
-  <div class="header-time">6:47 AM</div>
+  <div class="header-time" id="headerTime">6:47 AM</div>
   <div class="header-date">Thursday, March 5</div>
   <div class="header-sub">
     <span class="dot"></span>
@@ -771,19 +771,9 @@
 
 </div>
 
-<!-- Sid greeting (below cards) -->
-<div class="sid-greeting" id="sidGreeting">
-  <div class="avatar">
-    S
-    <span class="online"></span>
-  </div>
-  <div>
-    <div class="greeting-text">Good Morning Michael :)</div>
-    <div class="greeting-sub">Sid — Daily Ops &amp; Vault · 6:47 AM</div>
-  </div>
-</div>
-
-<!-- Agent message feed (Sequence 2+) — messages prepend here dynamically -->
+<!-- Agent message feed — all messages (including Sid greeting) go here.
+     Messages prepend (newest at top, right under the status cards).
+     Sid's greeting is the first item added, then Colbert/Seshat/K5M push it down. -->
 <div class="feed" id="feed"></div>
 
 <!-- Caption safe zone -->
@@ -838,6 +828,12 @@
     el.textContent = n;
   }
 
+  // updateClock(time) — Update the header clock when a new time-stamped
+  // message arrives. Keeps the dashboard feeling live.
+  function updateClock(time) {
+    document.getElementById('headerTime').textContent = time;
+  }
+
   // createAgentMsg(agent) — Build a message card DOM element from data.
   // Returns the element (not yet in the DOM). Call addAgentToFeed() to insert.
   function createAgentMsg(agent) {
@@ -866,6 +862,27 @@
     feed.prepend(msg);
     msg.offsetHeight; // force reflow so transition fires
     msg.classList.add('visible', 'highlight');
+  }
+
+  // addSidGreeting() — Add Sid's greeting to the feed as the first message.
+  // Uses the same sid-greeting styling but built as a feed item.
+  function addSidGreeting() {
+    const feed = document.getElementById('feed');
+    const div = document.createElement('div');
+    div.className = 'sid-greeting';
+    div.innerHTML = `
+      <div class="avatar">
+        S
+        <span class="online"></span>
+      </div>
+      <div>
+        <div class="greeting-text">Good Morning Michael :)</div>
+        <div class="greeting-sub">Sid — Daily Ops &amp; Vault · 6:47 AM</div>
+      </div>
+    `;
+    feed.prepend(div);
+    div.offsetHeight;
+    div.classList.add('visible');
   }
 
   // animateGauge(pct) — Fill the SVG circle gauge to a percentage and
@@ -930,7 +947,7 @@
     // ===== PHASE 3: Sid comes online =====
     updateCounter(1);
     document.getElementById('statusText').textContent = 'Sid online';
-    show('sidGreeting');
+    addSidGreeting();
     await delay(1800);
 
     // ===== PHASE 4: Health card fills in =====
@@ -981,6 +998,7 @@
     // =================================================================
 
     // --- COLBERT: subscription warning ---
+    updateClock('6:48 AM');
     document.getElementById('statusText').textContent = 'Colbert online';
     updateCounter(2);
     await delay(800);
@@ -1012,6 +1030,7 @@
     await delay(3500);
 
     // --- K5M.BOT: share price + overnight trading ---
+    updateClock('6:49 AM');
     document.getElementById('statusText').textContent = 'K5M.bot online';
     updateCounter(4);
     await delay(800);
