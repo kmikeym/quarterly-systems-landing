@@ -107,65 +107,12 @@
     margin-top: 4px;
   }
 
-  /* ========== SID GREETING ========== */
-  .sid-greeting {
-    margin: 28px 48px 0;
-    background: var(--surface);
-    border: 1px solid rgba(88,166,255,0.4);
-    border-radius: 16px;
-    padding: 20px 28px;
-    display: flex;
-    gap: 18px;
-    align-items: center;
-    opacity: 0;
-    transform: translateY(16px);
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .sid-greeting.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .sid-greeting .avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    background: rgba(88,166,255,0.15);
-    color: var(--blue);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: 700;
-    flex-shrink: 0;
-    position: relative;
-  }
-  .sid-greeting .avatar .online {
-    position: absolute;
-    bottom: -2px;
-    right: -2px;
-    width: 13px;
-    height: 13px;
-    border-radius: 50%;
-    background: var(--green);
-    border: 3px solid var(--surface);
-  }
-  .sid-greeting .greeting-text {
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .sid-greeting .greeting-sub {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-top: 2px;
-  }
-
   /* ========== STATUS CARDS ROW ========== */
   .status-cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
-    padding: 24px 48px 0;
+    padding: 28px 48px 0;
   }
   .status-card {
     background: var(--surface);
@@ -173,15 +120,15 @@
     border-radius: 16px;
     padding: 24px;
     opacity: 0;
-    transform: translateY(20px) scale(0.96);
+    transform: translateY(16px);
     transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    min-height: 260px;
+    min-height: 280px;
     display: flex;
     flex-direction: column;
   }
   .status-card.visible {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
   .card-header {
     font-size: 13px;
@@ -189,73 +136,82 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--text-muted);
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
     gap: 8px;
   }
-  .card-header .card-icon {
-    font-size: 15px;
-  }
+  .card-header .card-icon { font-size: 15px; }
 
-  /* -- Health Card -- */
-  .health-rows {
+  /* Card empty state */
+  .card-empty {
     flex: 1;
     display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--border);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    transition: opacity 0.3s ease;
+  }
+  .card-empty.hidden { opacity: 0; display: none; }
+
+  /* -- Health Card -- */
+  .health-content {
+    display: none;
     flex-direction: column;
-    gap: 10px;
+    flex: 1;
+  }
+  .health-content.active { display: flex; }
+  .health-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
   .health-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 16px;
+    font-size: 17px;
     opacity: 0;
     transform: translateX(-12px);
-    transition: all 0.35s ease;
+    transition: all 0.4s ease;
   }
   .health-row.visible {
     opacity: 1;
     transform: translateX(0);
   }
-  .health-row .label {
-    color: var(--text-muted);
-  }
+  .health-row .label { color: var(--text-muted); }
   .health-row .value {
     font-weight: 700;
     font-variant-numeric: tabular-nums;
   }
-
   .gauge-wrap {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 12px;
+    margin-top: auto;
+    padding-top: 16px;
     opacity: 0;
     transition: opacity 0.5s ease;
   }
   .gauge-wrap.visible { opacity: 1; }
   .gauge-container {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
   }
-  .gauge-svg {
-    transform: rotate(-90deg);
-  }
-  .gauge-bg {
-    fill: none;
-    stroke: var(--border);
-    stroke-width: 8;
-  }
+  .gauge-svg { transform: rotate(-90deg); }
+  .gauge-bg { fill: none; stroke: var(--border); stroke-width: 7; }
   .gauge-fill {
     fill: none;
     stroke: var(--green);
-    stroke-width: 8;
+    stroke-width: 7;
     stroke-linecap: round;
-    stroke-dasharray: 251.3;
-    stroke-dashoffset: 251.3;
-    transition: stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    stroke-dasharray: 276.5;
+    stroke-dashoffset: 276.5;
+    transition: stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .gauge-label {
     position: absolute;
@@ -265,7 +221,7 @@
     text-align: center;
   }
   .gauge-pct {
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 800;
     color: var(--green);
     line-height: 1;
@@ -279,6 +235,12 @@
   }
 
   /* -- Upcoming Card -- */
+  .upcoming-content {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+  }
+  .upcoming-content.active { display: flex; }
   .meeting-block {
     opacity: 0;
     transform: translateY(10px);
@@ -289,13 +251,13 @@
     transform: translateY(0);
   }
   .meeting-time {
-    font-size: 14px;
+    font-size: 15px;
     color: var(--blue);
     font-weight: 600;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
   .meeting-title {
-    font-size: 19px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--text);
     line-height: 1.3;
@@ -304,7 +266,7 @@
   .meeting-with {
     font-size: 14px;
     color: var(--text-muted);
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
   .zoom-btn {
     display: inline-flex;
@@ -320,10 +282,6 @@
     text-decoration: none;
     transition: all 0.2s;
   }
-  .zoom-btn:hover {
-    background: rgba(88,166,255,0.2);
-    border-color: var(--blue);
-  }
   .zoom-icon {
     width: 18px;
     height: 18px;
@@ -333,10 +291,7 @@
     align-items: center;
     justify-content: center;
   }
-  .zoom-icon svg {
-    width: 12px;
-    height: 12px;
-  }
+  .zoom-icon svg { width: 12px; height: 12px; }
   .no-more {
     font-size: 13px;
     color: var(--text-muted);
@@ -347,10 +302,16 @@
   .no-more.visible { opacity: 1; }
 
   /* -- Focus Card -- */
+  .focus-content {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+  }
+  .focus-content.active { display: flex; }
   .focus-list {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
   }
   .focus-item {
     display: flex;
@@ -358,15 +319,15 @@
     align-items: flex-start;
     opacity: 0;
     transform: translateX(-12px);
-    transition: all 0.35s ease;
+    transition: all 0.4s ease;
   }
   .focus-item.visible {
     opacity: 1;
     transform: translateX(0);
   }
   .focus-num {
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -384,10 +345,7 @@
     color: var(--text-dim);
     line-height: 1.4;
   }
-  .focus-text strong {
-    color: var(--text);
-    font-weight: 600;
-  }
+  .focus-text strong { color: var(--text); font-weight: 600; }
   .focus-tag {
     font-size: 11px;
     font-weight: 600;
@@ -401,84 +359,58 @@
   .tag-infra { background: rgba(210,153,34,0.15); color: var(--orange); }
   .tag-knowledge { background: rgba(88,166,255,0.15); color: var(--blue); }
 
-  /* ========== AGENT FEED ========== */
-  .feed {
-    padding: 24px 48px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    max-height: 580px;
-    overflow: hidden;
-  }
-  .agent-msg {
+  /* ========== SID GREETING (below cards) ========== */
+  .sid-greeting {
+    margin: 24px 48px 0;
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(88,166,255,0.4);
     border-radius: 16px;
-    padding: 22px 26px;
+    padding: 22px 28px;
     display: flex;
     gap: 18px;
-    align-items: flex-start;
+    align-items: center;
     opacity: 0;
-    transform: translateX(-40px);
+    transform: translateY(16px);
     transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .agent-msg.visible {
+  .sid-greeting.visible {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
-  .agent-msg.highlight {
-    border-color: var(--agent-color, var(--border));
-    box-shadow: 0 0 24px rgba(255,255,255,0.03);
-  }
-  .agent-avatar {
-    width: 46px;
-    height: 46px;
-    border-radius: 12px;
+  .sid-greeting .avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    background: rgba(88,166,255,0.15);
+    color: var(--blue);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 19px;
+    font-size: 21px;
     font-weight: 700;
     flex-shrink: 0;
     position: relative;
   }
-  .agent-avatar .status-dot {
+  .sid-greeting .avatar .online {
     position: absolute;
     bottom: -2px;
     right: -2px;
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: var(--green);
     border: 3px solid var(--surface);
   }
-  .agent-content { flex: 1; min-width: 0; }
-  .agent-name { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
-  .agent-role { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
-  .agent-text {
-    font-size: 16px;
-    color: var(--text-dim);
-    line-height: 1.5;
+  .sid-greeting .greeting-text {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text);
   }
-  .agent-text strong { color: var(--text); font-weight: 600; }
-  .agent-time {
-    font-size: 12px;
+  .sid-greeting .greeting-sub {
+    font-size: 14px;
     color: var(--text-muted);
-    font-variant-numeric: tabular-nums;
-    margin-top: 8px;
+    margin-top: 3px;
   }
-
-  /* Agent colors */
-  .agent-sid .agent-avatar { background: rgba(88,166,255,0.15); color: var(--blue); }
-  .agent-sid { --agent-color: rgba(88,166,255,0.4); }
-  .agent-colbert .agent-avatar { background: rgba(210,153,34,0.15); color: var(--orange); }
-  .agent-colbert { --agent-color: rgba(210,153,34,0.4); }
-  .agent-seshat .agent-avatar { background: rgba(188,140,255,0.15); color: var(--purple); }
-  .agent-seshat { --agent-color: rgba(188,140,255,0.4); }
-  .agent-k5m .agent-avatar { background: rgba(63,185,80,0.15); color: var(--green); }
-  .agent-k5m { --agent-color: rgba(63,185,80,0.4); }
-  .agent-thalberg .agent-avatar { background: rgba(248,81,73,0.15); color: var(--red); }
-  .agent-thalberg { --agent-color: rgba(248,81,73,0.4); }
 
   /* ========== CAPTION SAFE ZONE ========== */
   .caption-safe {
@@ -555,21 +487,12 @@
     font-family: inherit;
   }
   .speed-btn.active { border-color: var(--blue); color: var(--text); }
-
-  .updating {
-    animation: countPulse 0.3s ease;
-  }
-  @keyframes countPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-    100% { transform: scale(1); }
-  }
 </style>
 </head>
 <body>
 
 <!-- Controls -->
-<button class="restart-btn" onclick="restart()">Restart Animation</button>
+<button class="restart-btn" onclick="restart()">Restart</button>
 <div class="speed-controls">
   <button class="speed-btn" onclick="setSpeed(0.5)">0.5x</button>
   <button class="speed-btn active" onclick="setSpeed(1)">1x</button>
@@ -600,7 +523,88 @@
   <div class="counter-sub">of 5</div>
 </div>
 
-<!-- Sid greeting -->
+<!-- Status Cards (show empty first) -->
+<div class="status-cards">
+
+  <!-- HEALTH SCORE -->
+  <div class="status-card" id="cardHealth">
+    <div class="card-header"><span class="card-icon">♥</span> Health Score</div>
+    <div class="card-empty" id="healthEmpty">Waiting for data...</div>
+    <div class="health-content" id="healthContent">
+      <div class="health-rows">
+        <div class="health-row" id="rowSleep">
+          <span class="label">Sleep</span>
+          <span class="value" style="color:var(--blue)">6h 51m</span>
+        </div>
+        <div class="health-row" id="rowHRV">
+          <span class="label">HRV</span>
+          <span class="value" style="color:var(--purple)">42 ms</span>
+        </div>
+        <div class="health-row" id="rowWeight">
+          <span class="label">Weight</span>
+          <span class="value" style="color:var(--text)">178.7 lb</span>
+        </div>
+      </div>
+      <div class="gauge-wrap" id="gaugeWrap">
+        <div class="gauge-container">
+          <svg class="gauge-svg" width="110" height="110" viewBox="0 0 110 110">
+            <circle class="gauge-bg" cx="55" cy="55" r="44"/>
+            <circle class="gauge-fill" id="gaugeFill" cx="55" cy="55" r="44"/>
+          </svg>
+          <div class="gauge-label">
+            <div class="gauge-pct" id="gaugePct">0%</div>
+            <div class="gauge-sub">Score</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPCOMING -->
+  <div class="status-card" id="cardUpcoming">
+    <div class="card-header"><span class="card-icon">◷</span> Upcoming</div>
+    <div class="card-empty" id="upcomingEmpty">Checking calendar...</div>
+    <div class="upcoming-content" id="upcomingContent">
+      <div class="meeting-block" id="meetingBlock">
+        <div class="meeting-time">9:00 AM</div>
+        <div class="meeting-title">Script Notes with Albanik</div>
+        <div class="meeting-with">w/ Albanik · Zoom</div>
+        <a href="#" class="zoom-btn">
+          <div class="zoom-icon">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M4 5a2 2 0 012-2h8a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm14 1l4-2v8l-4-2V6z"/></svg>
+          </div>
+          Join Call
+        </a>
+        <div class="no-more" id="noMore">No other meetings today</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOCUS TASKS -->
+  <div class="status-card" id="cardFocus">
+    <div class="card-header"><span class="card-icon">◎</span> Focus Tasks</div>
+    <div class="card-empty" id="focusEmpty">Building priority list...</div>
+    <div class="focus-content" id="focusContent">
+      <div class="focus-list">
+        <div class="focus-item" id="focus1">
+          <div class="focus-num">1</div>
+          <div class="focus-text"><strong>Film + post AI Morning Routine Short</strong> <span class="focus-tag tag-film">FILM</span></div>
+        </div>
+        <div class="focus-item" id="focus2">
+          <div class="focus-num">2</div>
+          <div class="focus-text"><strong>Marcus call — Vibe CLI launch strategy</strong> <span class="focus-tag tag-infra">INFRA</span></div>
+        </div>
+        <div class="focus-item" id="focus3">
+          <div class="focus-num">3</div>
+          <div class="focus-text"><strong>J. Chris long-form edits</strong> <span class="focus-tag tag-knowledge">KNOW</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Sid greeting (below cards) -->
 <div class="sid-greeting" id="sidGreeting">
   <div class="avatar">
     S
@@ -612,114 +616,12 @@
   </div>
 </div>
 
-<!-- Status Cards -->
-<div class="status-cards" id="statusCards">
-
-  <!-- HEALTH SCORE -->
-  <div class="status-card" id="cardHealth">
-    <div class="card-header"><span class="card-icon">♥</span> Health Score</div>
-    <div class="health-rows">
-      <div class="health-row" id="rowSleep">
-        <span class="label">Sleep</span>
-        <span class="value" style="color:var(--blue)">6h 51m</span>
-      </div>
-      <div class="health-row" id="rowHRV">
-        <span class="label">HRV</span>
-        <span class="value" style="color:var(--purple)">42 ms</span>
-      </div>
-      <div class="health-row" id="rowWeight">
-        <span class="label">Weight</span>
-        <span class="value" style="color:var(--text)">178.7 lb</span>
-      </div>
-    </div>
-    <div class="gauge-wrap" id="gaugeWrap">
-      <div class="gauge-container">
-        <svg class="gauge-svg" width="100" height="100" viewBox="0 0 100 100">
-          <circle class="gauge-bg" cx="50" cy="50" r="40"/>
-          <circle class="gauge-fill" id="gaugeFill" cx="50" cy="50" r="40"/>
-        </svg>
-        <div class="gauge-label">
-          <div class="gauge-pct" id="gaugePct">0%</div>
-          <div class="gauge-sub">Score</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- UPCOMING -->
-  <div class="status-card" id="cardUpcoming">
-    <div class="card-header"><span class="card-icon">◷</span> Upcoming</div>
-    <div class="meeting-block" id="meetingBlock">
-      <div class="meeting-time">9:00 AM</div>
-      <div class="meeting-title">Script Notes with Albanik</div>
-      <div class="meeting-with">w/ Albanik · Zoom</div>
-      <a href="#" class="zoom-btn">
-        <div class="zoom-icon">
-          <svg viewBox="0 0 24 24" fill="white"><path d="M4 5a2 2 0 012-2h8a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm14 1l4-2v8l-4-2V6z"/></svg>
-        </div>
-        Join Call
-      </a>
-      <div class="no-more" id="noMore">No other meetings today</div>
-    </div>
-  </div>
-
-  <!-- FOCUS TASKS -->
-  <div class="status-card" id="cardFocus">
-    <div class="card-header"><span class="card-icon">◎</span> Focus Tasks</div>
-    <div class="focus-list">
-      <div class="focus-item" id="focus1">
-        <div class="focus-num">1</div>
-        <div class="focus-text"><strong>Film + post AI Morning Routine Short</strong> <span class="focus-tag tag-film">FILM</span></div>
-      </div>
-      <div class="focus-item" id="focus2">
-        <div class="focus-num">2</div>
-        <div class="focus-text"><strong>Marcus call — Vibe CLI launch strategy</strong> <span class="focus-tag tag-infra">INFRA</span></div>
-      </div>
-      <div class="focus-item" id="focus3">
-        <div class="focus-num">3</div>
-        <div class="focus-text"><strong>J. Chris long-form edits</strong> <span class="focus-tag tag-knowledge">KNOW</span></div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- Agent message feed -->
-<div class="feed" id="feed"></div>
-
 <!-- Caption safe zone -->
 <div class="caption-safe"></div>
 
 <script>
   let speedMultiplier = 1;
   let timeouts = [];
-
-  const agentData = [
-    {
-      id: 'colbert', cls: 'agent-colbert', avatar: 'C', name: 'Colbert',
-      role: 'Financial Strategy',
-      text: 'Spending audit complete. <strong>Flagged: unused Loom subscription — $12.99/mo.</strong> Runway: 11 months at current burn.',
-      time: '6:48 AM'
-    },
-    {
-      id: 'seshat', cls: 'agent-seshat', avatar: 'Se', name: 'Seshat',
-      role: 'Research Librarian',
-      text: 'Finished extracting <strong>"Content Inc."</strong> overnight — 47 frameworks, 12 action items. Notes sent to Thalberg.',
-      time: '6:48 AM'
-    },
-    {
-      id: 'k5m', cls: 'agent-k5m', avatar: 'K', name: 'K5M.bot',
-      role: 'Investor Relations',
-      text: 'Share price: <strong>$4.00 ▼0.25.</strong> Market update posted. 1,247 shareholders notified.',
-      time: '6:49 AM'
-    },
-    {
-      id: 'thalberg', cls: 'agent-thalberg', avatar: 'T', name: 'Thalberg',
-      role: 'Producing Partner',
-      text: 'Yesterday: <strong>3 items shipped.</strong> Today: 2 blocked, 1 in review. Left you notes on the Chris interview edit.',
-      time: '6:49 AM'
-    }
-  ];
 
   function delay(ms) {
     return new Promise(resolve => {
@@ -744,140 +646,118 @@
     el.classList.add('hidden');
   }
 
+  function activate(id) {
+    document.getElementById(id).classList.add('active');
+  }
+
+  function hideEmpty(id) {
+    document.getElementById(id).classList.add('hidden');
+  }
+
   function updateCounter(n) {
     const el = document.getElementById('counterValue');
     el.textContent = n;
-    el.classList.add('updating');
-    setTimeout(() => el.classList.remove('updating'), 300);
-  }
-
-  function createAgentMsg(agent) {
-    const div = document.createElement('div');
-    div.className = `agent-msg ${agent.cls}`;
-    div.innerHTML = `
-      <div class="agent-avatar">
-        ${agent.avatar}
-        <span class="status-dot"></span>
-      </div>
-      <div class="agent-content">
-        <div class="agent-name">${agent.name}</div>
-        <div class="agent-role">${agent.role}</div>
-        <div class="agent-text">${agent.text}</div>
-        <div class="agent-time">${agent.time}</div>
-      </div>
-    `;
-    return div;
-  }
-
-  function addAgentToFeed(agent) {
-    const feed = document.getElementById('feed');
-    const msg = createAgentMsg(agent);
-    feed.prepend(msg);
-    msg.offsetHeight;
-    msg.classList.add('visible', 'highlight');
   }
 
   function animateGauge(pct) {
-    const circumference = 2 * Math.PI * 40; // 251.3
+    const circumference = 2 * Math.PI * 44; // ~276.5
     const offset = circumference * (1 - pct / 100);
     document.getElementById('gaugeFill').style.strokeDashoffset = offset;
-
-    // Animate the number
     let current = 0;
-    const target = pct;
     const step = () => {
       current += 2;
-      if (current > target) current = target;
+      if (current > pct) current = pct;
       document.getElementById('gaugePct').textContent = current + '%';
-      if (current < target) requestAnimationFrame(step);
+      if (current < pct) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
   }
 
   async function runAnimation() {
-    // Reset
-    document.getElementById('feed').innerHTML = '';
-    document.querySelectorAll('.visible, .highlight, .hidden').forEach(el => {
+    // ===== RESET =====
+    document.querySelectorAll('.visible, .highlight, .hidden, .active').forEach(el => {
       el.classList.remove('visible', 'highlight', 'hidden');
+    });
+    // Reset active states on content panels
+    ['healthContent', 'upcomingContent', 'focusContent'].forEach(id => {
+      document.getElementById(id).classList.remove('active');
+    });
+    // Reset empty states
+    ['healthEmpty', 'upcomingEmpty', 'focusEmpty'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('hidden');
     });
     document.getElementById('counterValue').textContent = '0';
     document.getElementById('statusText').textContent = 'Agents online';
-    document.getElementById('gaugeFill').style.strokeDashoffset = '251.3';
+    document.getElementById('gaugeFill').style.strokeDashoffset = '276.5';
     document.getElementById('gaugePct').textContent = '0%';
 
-    // Phase 0: Sleeping (2s)
+    // ===== PHASE 0: Sleeping =====
     await delay(500);
     show('sleeping');
     await delay(2500);
 
-    // Phase 1: Wake up
+    // ===== PHASE 1: Dashboard wakes up =====
     hide('sleeping');
     await delay(600);
     show('header');
     show('agentCounter');
-    updateCounter(1);
-    document.getElementById('statusText').textContent = 'Sid online';
+    await delay(400);
+
+    // ===== PHASE 2: Empty cards appear =====
+    show('cardHealth');
+    await delay(200);
+    show('cardUpcoming');
+    await delay(200);
+    show('cardFocus');
     await delay(600);
 
-    // Phase 2: Sid greeting
+    // ===== PHASE 3: Sid comes online =====
+    updateCounter(1);
+    document.getElementById('statusText').textContent = 'Sid online';
     show('sidGreeting');
-    await delay(1500);
+    await delay(1800);
 
-    // Phase 3: Health Score card
-    show('cardHealth');
-    await delay(400);
+    // ===== PHASE 4: Health card fills in =====
+    document.getElementById('statusText').textContent = 'Pulling health data...';
+    hideEmpty('healthEmpty');
+    activate('healthContent');
+    await delay(500);
     show('rowSleep');
-    await delay(350);
+    await delay(600);
     show('rowHRV');
-    await delay(350);
+    await delay(600);
     show('rowWeight');
-    await delay(400);
+    await delay(700);
     show('gaugeWrap');
-    await delay(100);
+    await delay(200);
     animateGauge(87);
-    await delay(1200);
+    await delay(1800);
 
-    // Phase 4: Upcoming card
-    show('cardUpcoming');
+    // ===== PHASE 5: Upcoming card fills in =====
+    document.getElementById('statusText').textContent = 'Checking calendar...';
+    hideEmpty('upcomingEmpty');
+    activate('upcomingContent');
     await delay(300);
     show('meetingBlock');
-    await delay(200);
+    await delay(400);
     show('noMore');
-    await delay(800);
+    await delay(1200);
 
-    // Phase 5: Focus Tasks card
-    show('cardFocus');
-    await delay(300);
+    // ===== PHASE 6: Focus card fills in =====
+    document.getElementById('statusText').textContent = 'Building priority list...';
+    hideEmpty('focusEmpty');
+    activate('focusContent');
+    await delay(400);
     show('focus1');
-    await delay(250);
+    await delay(500);
     show('focus2');
-    await delay(250);
+    await delay(500);
     show('focus3');
-    document.getElementById('statusText').textContent = 'Briefing ready — 4 agents incoming';
-    await delay(2000);
+    await delay(1000);
 
-    // Phase 6: Remaining agents arrive in feed
-    addAgentToFeed(agentData[0]);
-    updateCounter(2);
-    document.getElementById('statusText').textContent = 'Colbert auditing...';
-    await delay(2500);
-
-    addAgentToFeed(agentData[1]);
-    updateCounter(3);
-    document.getElementById('statusText').textContent = 'Seshat distributing notes...';
-    await delay(2500);
-
-    addAgentToFeed(agentData[2]);
-    updateCounter(4);
-    document.getElementById('statusText').textContent = 'K5M.bot posting update...';
-    await delay(2500);
-
-    addAgentToFeed(agentData[3]);
-    updateCounter(5);
-    document.getElementById('statusText').textContent = 'All agents reporting';
-    await delay(2000);
-
-    document.getElementById('statusText').textContent = 'Morning briefing complete';
+    // ===== DONE: Sequence 1 complete =====
+    document.getElementById('statusText').textContent = 'Morning briefing ready';
   }
 
   function restart() {
