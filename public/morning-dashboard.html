@@ -517,6 +517,86 @@
     margin-top: 3px;
   }
 
+  /* ========== AGENT FEED (Sequence 2+) ========== */
+  .feed {
+    padding: 24px 48px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow: hidden;
+  }
+  .agent-msg {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 26px;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .agent-msg.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .agent-msg.highlight {
+    border-color: var(--agent-color, var(--border));
+    box-shadow: 0 0 20px rgba(255,255,255,0.03);
+  }
+  /* Warning variant for alerts */
+  .agent-msg.warning {
+    border-color: rgba(210,153,34,0.5);
+    background: linear-gradient(135deg, var(--surface), rgba(210,153,34,0.05));
+  }
+  .agent-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    font-weight: 700;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .agent-avatar .status-dot {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 3px solid var(--surface);
+  }
+  .agent-content { flex: 1; min-width: 0; }
+  .agent-name { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+  .agent-role { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+  .agent-text {
+    font-size: 16px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .agent-text strong { color: var(--text); font-weight: 600; }
+  .agent-text .warn { color: var(--orange); font-weight: 600; }
+  .agent-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    margin-top: 8px;
+  }
+
+  /* Agent color theming */
+  .agent-colbert .agent-avatar { background: rgba(210,153,34,0.15); color: var(--orange); }
+  .agent-colbert { --agent-color: rgba(210,153,34,0.4); }
+  .agent-seshat .agent-avatar { background: rgba(188,140,255,0.15); color: var(--purple); }
+  .agent-seshat { --agent-color: rgba(188,140,255,0.4); }
+  .agent-k5m .agent-avatar { background: rgba(63,185,80,0.15); color: var(--green); }
+  .agent-k5m { --agent-color: rgba(63,185,80,0.4); }
+
   /* ========== CAPTION SAFE ZONE ========== */
   .caption-safe {
     position: absolute;
@@ -721,6 +801,9 @@
   </div>
 </div>
 
+<!-- Agent message feed (Sequence 2+) — messages prepend here dynamically -->
+<div class="feed" id="feed"></div>
+
 <!-- Caption safe zone -->
 <div class="caption-safe"></div>
 
@@ -773,6 +856,36 @@
     el.textContent = n;
   }
 
+  // createAgentMsg(agent) — Build a message card DOM element from data.
+  // Returns the element (not yet in the DOM). Call addAgentToFeed() to insert.
+  function createAgentMsg(agent) {
+    const div = document.createElement('div');
+    div.className = `agent-msg ${agent.cls}` + (agent.warning ? ' warning' : '');
+    div.innerHTML = `
+      <div class="agent-avatar">
+        ${agent.avatar}
+        <span class="status-dot"></span>
+      </div>
+      <div class="agent-content">
+        <div class="agent-name">${agent.name}</div>
+        <div class="agent-role">${agent.role}</div>
+        <div class="agent-text">${agent.text}</div>
+        <div class="agent-time">${agent.time}</div>
+      </div>
+    `;
+    return div;
+  }
+
+  // addAgentToFeed(agent) — Prepend a message to the feed (newest at top).
+  // Triggers the slide-in animation via .visible class.
+  function addAgentToFeed(agent) {
+    const feed = document.getElementById('feed');
+    const msg = createAgentMsg(agent);
+    feed.prepend(msg);
+    msg.offsetHeight; // force reflow so transition fires
+    msg.classList.add('visible', 'highlight');
+  }
+
   // animateGauge(pct) — Fill the SVG circle gauge to a percentage and
   // count up the number display. The circle uses stroke-dashoffset to
   // reveal the arc (CSS transition handles the smooth fill). The number
@@ -805,6 +918,8 @@
       const el = document.getElementById(id);
       el.classList.remove('hidden');
     });
+    // Clear agent feed
+    document.getElementById('feed').innerHTML = '';
     document.getElementById('counterValue').textContent = '0';
     document.getElementById('statusText').textContent = 'Agents online';
     document.getElementById('gaugeFill').style.strokeDashoffset = '276.5';
@@ -874,8 +989,63 @@
     show('focus3');
     await delay(1000);
 
-    // ===== DONE: Sequence 1 complete =====
+    // ===== SEQUENCE 1 COMPLETE — pause before Sequence 2 =====
     document.getElementById('statusText').textContent = 'Morning briefing ready';
+    await delay(2500);
+
+    // =================================================================
+    // SEQUENCE 2 — Other agents report in (Colbert, Seshat, K5M.bot)
+    // Messages prepend to the feed below Sid's greeting (newest at top).
+    // =================================================================
+
+    // --- COLBERT: subscription warning ---
+    document.getElementById('statusText').textContent = 'Colbert online';
+    updateCounter(2);
+    await delay(800);
+    addAgentToFeed({
+      cls: 'agent-colbert',
+      avatar: 'C',
+      name: 'Colbert',
+      role: 'Financial Strategy',
+      warning: true,
+      text: '<span class="warn">⚠ Heads up:</span> That Loom subscription you cancelled last week? <strong>They charged $12.99 anyway.</strong> I\'ve flagged it for dispute and paused the payment method. Runway is 11 months at current burn.',
+      time: '6:48 AM'
+    });
+    document.getElementById('statusText').textContent = 'Colbert flagged a charge...';
+    await delay(3500);
+
+    // --- SESHAT: book analysis delivered ---
+    document.getElementById('statusText').textContent = 'Seshat online';
+    updateCounter(3);
+    await delay(800);
+    addAgentToFeed({
+      cls: 'agent-seshat',
+      avatar: 'Se',
+      name: 'Seshat',
+      role: 'Research Librarian',
+      text: '<strong>The Little Book of Behavioral Investing</strong> has been analyzed — 23 frameworks extracted, 8 action items. Notes sent to <strong>K5M.bot</strong> for shareholder integration.',
+      time: '6:48 AM'
+    });
+    document.getElementById('statusText').textContent = 'Seshat delivered book analysis...';
+    await delay(3500);
+
+    // --- K5M.BOT: share price + overnight trading ---
+    document.getElementById('statusText').textContent = 'K5M.bot online';
+    updateCounter(4);
+    await delay(800);
+    addAgentToFeed({
+      cls: 'agent-k5m',
+      avatar: 'K',
+      name: 'K5M.bot',
+      role: 'Investor Relations',
+      text: 'Share price: <strong>$4.00 ▼$0.25.</strong> 3 trades overnight — two buys (12 shares total) and one sell (5 shares). 1,247 shareholders notified. Market update posted to Discord.',
+      time: '6:49 AM'
+    });
+    document.getElementById('statusText').textContent = 'K5M.bot posted market update';
+    await delay(2500);
+
+    // ===== SEQUENCE 2 COMPLETE =====
+    document.getElementById('statusText').textContent = '4 of 5 agents reporting';
   }
 
   function restart() {
