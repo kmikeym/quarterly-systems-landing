@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morning Dashboard — AI Agent Team</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface-2: #1c2129;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --text-muted: #6e7681;
+    --green: #3fb950;
+    --blue: #58a6ff;
+    --orange: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ========== HEADER ========== */
+  .header {
+    padding: 48px 48px 0;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.8s ease;
+  }
+  .header.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .header-time {
+    font-size: 64px;
+    font-weight: 700;
+    letter-spacing: -2px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .header-date {
+    font-size: 24px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    font-weight: 400;
+  }
+  .header-sub {
+    font-size: 18px;
+    color: var(--text-muted);
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-sub .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ========== METRICS ROW ========== */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 32px 48px 0;
+  }
+  .metric {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.5s ease;
+  }
+  .metric.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .metric-label {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .metric-value {
+    font-size: 36px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -1px;
+    transition: all 0.4s ease;
+  }
+  .metric-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .metric-value.updating {
+    animation: countPulse 0.3s ease;
+  }
+  @keyframes countPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  /* ========== AGENT FEED ========== */
+  .feed {
+    padding: 32px 48px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 820px;
+    overflow: hidden;
+  }
+
+  .agent-msg {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .agent-msg.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .agent-msg.highlight {
+    border-color: var(--agent-color, var(--border));
+    box-shadow: 0 0 24px rgba(255,255,255,0.03);
+  }
+
+  .agent-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .agent-avatar .status-dot {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 3px solid var(--surface);
+  }
+
+  .agent-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .agent-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .agent-role {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .agent-text {
+    font-size: 18px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .agent-text strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .agent-time {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    margin-top: 10px;
+  }
+
+  /* Agent colors */
+  .agent-sid .agent-avatar { background: rgba(88,166,255,0.15); color: var(--blue); }
+  .agent-sid { --agent-color: rgba(88,166,255,0.4); }
+
+  .agent-colbert .agent-avatar { background: rgba(210,153,34,0.15); color: var(--orange); }
+  .agent-colbert { --agent-color: rgba(210,153,34,0.4); }
+
+  .agent-seshat .agent-avatar { background: rgba(188,140,255,0.15); color: var(--purple); }
+  .agent-seshat { --agent-color: rgba(188,140,255,0.4); }
+
+  .agent-k5m .agent-avatar { background: rgba(63,185,80,0.15); color: var(--green); }
+  .agent-k5m { --agent-color: rgba(63,185,80,0.4); }
+
+  .agent-thalberg .agent-avatar { background: rgba(248,81,73,0.15); color: var(--red); }
+  .agent-thalberg { --agent-color: rgba(248,81,73,0.4); }
+
+  /* ========== CAPTION SAFE ZONE ========== */
+  .caption-safe {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 35%;
+    /* This area stays empty for captions */
+    pointer-events: none;
+  }
+
+  /* ========== INITIAL STATE ========== */
+  .sleeping {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .sleeping.visible {
+    opacity: 1;
+  }
+  .sleeping.hidden {
+    opacity: 0;
+  }
+  .sleeping-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+  }
+  .sleeping-text {
+    font-size: 28px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .sleeping-time {
+    font-size: 72px;
+    font-weight: 700;
+    margin-top: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ========== AGENT COUNTER ========== */
+  .agent-counter {
+    position: absolute;
+    top: 48px;
+    right: 48px;
+    text-align: right;
+    opacity: 0;
+    transition: all 0.6s ease;
+  }
+  .agent-counter.visible {
+    opacity: 1;
+  }
+  .counter-label {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+  .counter-value {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--green);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .counter-sub {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ========== RESTART BUTTON ========== */
+  .restart-btn {
+    position: absolute;
+    top: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 16px;
+    padding: 12px 32px;
+    border-radius: 12px;
+    cursor: pointer;
+    z-index: 100;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover {
+    border-color: var(--blue);
+    color: var(--text);
+  }
+
+  /* Speed controls */
+  .speed-controls {
+    position: absolute;
+    bottom: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 100;
+    opacity: 0.4;
+    transition: opacity 0.3s;
+  }
+  .speed-controls:hover { opacity: 1; }
+  .speed-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 14px;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .speed-btn.active {
+    border-color: var(--blue);
+    color: var(--text);
+  }
+</style>
+</head>
+<body>
+
+<!-- Restart button -->
+<button class="restart-btn" onclick="restart()">Restart Animation</button>
+
+<!-- Speed controls -->
+<div class="speed-controls">
+  <button class="speed-btn" onclick="setSpeed(0.5)">0.5x</button>
+  <button class="speed-btn active" onclick="setSpeed(1)">1x</button>
+  <button class="speed-btn" onclick="setSpeed(2)">2x</button>
+  <button class="speed-btn" onclick="setSpeed(4)">4x</button>
+</div>
+
+<!-- Initial sleeping state -->
+<div class="sleeping" id="sleeping">
+  <div class="sleeping-text">Agents initializing...</div>
+  <div class="sleeping-time" id="clock">6:47 AM</div>
+</div>
+
+<!-- Dashboard header -->
+<div class="header" id="header">
+  <div class="header-time" id="headerTime">6:47 AM</div>
+  <div class="header-date">Thursday, March 5</div>
+  <div class="header-sub">
+    <span class="dot"></span>
+    <span id="statusText">Agents online</span>
+  </div>
+</div>
+
+<!-- Agent counter -->
+<div class="agent-counter" id="agentCounter">
+  <div class="counter-label">Agents Active</div>
+  <div class="counter-value" id="counterValue">0</div>
+  <div class="counter-sub" id="counterSub">of 5</div>
+</div>
+
+<!-- Metrics -->
+<div class="metrics" id="metrics">
+  <div class="metric" id="metricSleep">
+    <div class="metric-label">Sleep</div>
+    <div class="metric-value" id="sleepVal" style="color: var(--blue);">--</div>
+    <div class="metric-sub" id="sleepSub">waiting...</div>
+  </div>
+  <div class="metric" id="metricEnergy">
+    <div class="metric-label">Energy</div>
+    <div class="metric-value" id="energyVal" style="color: var(--green);">--</div>
+    <div class="metric-sub" id="energySub">waiting...</div>
+  </div>
+  <div class="metric" id="metricTasks">
+    <div class="metric-label">Tasks</div>
+    <div class="metric-value" id="tasksVal" style="color: var(--orange);">--</div>
+    <div class="metric-sub" id="tasksSub">waiting...</div>
+  </div>
+</div>
+
+<!-- Agent message feed -->
+<div class="feed" id="feed"></div>
+
+<!-- Caption safe zone (stays empty) -->
+<div class="caption-safe"></div>
+
+<script>
+  let speedMultiplier = 1;
+  let timeouts = [];
+
+  const agentData = [
+    {
+      id: 'sid', cls: 'agent-sid', avatar: 'S', name: 'Sid',
+      role: 'Daily Ops & Vault',
+      text: 'Checked calendar, pulled health data. <strong>Sleep: 6h 51m.</strong> Reviewed yesterday\'s todos — 3 carried over. Priority list written. <strong>Energy: 8/10.</strong>',
+      time: '6:47 AM'
+    },
+    {
+      id: 'colbert', cls: 'agent-colbert', avatar: 'C', name: 'Colbert',
+      role: 'Financial Strategy',
+      text: 'Spending audit complete. <strong>Flagged: unused Loom subscription — $12.99/mo.</strong> Runway check: 11 months at current burn. Kosovo budget locked.',
+      time: '6:48 AM'
+    },
+    {
+      id: 'seshat', cls: 'agent-seshat', avatar: 'Se', name: 'Seshat',
+      role: 'Research Librarian',
+      text: 'Finished extracting <strong>"Content Inc."</strong> overnight — 47 frameworks, 12 action items. Notes distributed to Thalberg and Sid.',
+      time: '6:48 AM'
+    },
+    {
+      id: 'k5m', cls: 'agent-k5m', avatar: 'K', name: 'K5M.bot',
+      role: 'Investor Relations',
+      text: 'Share price: <strong>$4.00 ▼0.25.</strong> Market update posted to Discord. 1,247 shareholders notified. No pending trades.',
+      time: '6:49 AM'
+    },
+    {
+      id: 'thalberg', cls: 'agent-thalberg', avatar: 'T', name: 'Thalberg',
+      role: 'Producing Partner',
+      text: 'Yesterday: <strong>3 items shipped.</strong> Today: 2 blocked, 1 in review. Editor pipeline has 4 shorts queued. Left you notes on the Chris interview edit.',
+      time: '6:49 AM'
+    }
+  ];
+
+  function delay(ms) {
+    return new Promise(resolve => {
+      const id = setTimeout(resolve, ms / speedMultiplier);
+      timeouts.push(id);
+    });
+  }
+
+  function setSpeed(s) {
+    speedMultiplier = s;
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  function updateMetric(id, value, sub, color) {
+    const el = document.getElementById(id);
+    el.textContent = value;
+    el.classList.add('updating');
+    if (color) el.style.color = color;
+    setTimeout(() => el.classList.remove('updating'), 300);
+    if (sub) document.getElementById(id.replace('Val', 'Sub')).textContent = sub;
+  }
+
+  function updateCounter(n) {
+    const el = document.getElementById('counterValue');
+    el.textContent = n;
+    el.classList.add('updating');
+    setTimeout(() => el.classList.remove('updating'), 300);
+  }
+
+  function showElement(id) {
+    document.getElementById(id).classList.add('visible');
+  }
+
+  function hideElement(id) {
+    document.getElementById(id).classList.remove('visible');
+    document.getElementById(id).classList.add('hidden');
+  }
+
+  function createAgentMsg(agent) {
+    const div = document.createElement('div');
+    div.className = `agent-msg ${agent.cls}`;
+    div.id = `msg-${agent.id}`;
+    div.innerHTML = `
+      <div class="agent-avatar">
+        ${agent.avatar}
+        <span class="status-dot"></span>
+      </div>
+      <div class="agent-content">
+        <div class="agent-name">${agent.name}</div>
+        <div class="agent-role">${agent.role}</div>
+        <div class="agent-text">${agent.text}</div>
+        <div class="agent-time">${agent.time}</div>
+      </div>
+    `;
+    return div;
+  }
+
+  function addAgentToFeed(agent) {
+    const feed = document.getElementById('feed');
+    const msg = createAgentMsg(agent);
+    // Prepend — new messages appear at top, push others down
+    feed.prepend(msg);
+    // Trigger reflow so transition fires
+    msg.offsetHeight;
+    msg.classList.add('visible', 'highlight');
+  }
+
+  async function runAnimation() {
+    // Reset everything
+    document.getElementById('feed').innerHTML = '';
+    document.querySelectorAll('.visible, .highlight, .hidden').forEach(el => {
+      el.classList.remove('visible', 'highlight', 'hidden');
+    });
+    updateMetric('sleepVal', '--', 'waiting...', 'var(--blue)');
+    updateMetric('energyVal', '--', 'waiting...', 'var(--green)');
+    updateMetric('tasksVal', '--', 'waiting...', 'var(--orange)');
+    document.getElementById('counterValue').textContent = '0';
+    document.getElementById('statusText').textContent = 'Agents online';
+
+    // Phase 0: Sleeping state (2s)
+    await delay(500);
+    showElement('sleeping');
+    await delay(2500);
+
+    // Phase 1: Wake up — transition to dashboard
+    hideElement('sleeping');
+    await delay(600);
+    showElement('header');
+    showElement('agentCounter');
+    await delay(400);
+
+    // Show metric cards (empty)
+    document.getElementById('metricSleep').classList.add('visible');
+    await delay(200);
+    document.getElementById('metricEnergy').classList.add('visible');
+    await delay(200);
+    document.getElementById('metricTasks').classList.add('visible');
+    await delay(800);
+
+    // Phase 2: SID arrives (prepended to top)
+    addAgentToFeed(agentData[0]);
+    updateCounter(1);
+    await delay(600);
+    updateMetric('sleepVal', '6h 51m', 'scored by Sid', 'var(--blue)');
+    await delay(400);
+    updateMetric('energyVal', '8/10', 'locked in', 'var(--green)');
+    await delay(400);
+    updateMetric('tasksVal', '3', 'carried over', 'var(--orange)');
+    document.getElementById('statusText').textContent = 'Sid reporting...';
+    await delay(2500);
+
+    // Phase 3: COLBERT arrives (pushes Sid down)
+    addAgentToFeed(agentData[1]);
+    updateCounter(2);
+    document.getElementById('statusText').textContent = 'Colbert auditing...';
+    await delay(3000);
+
+    // Phase 4: SESHAT arrives (pushes Colbert & Sid down)
+    addAgentToFeed(agentData[2]);
+    updateCounter(3);
+    document.getElementById('statusText').textContent = 'Seshat distributing notes...';
+    await delay(3000);
+
+    // Phase 5: K5M.BOT arrives (pushes all down)
+    addAgentToFeed(agentData[3]);
+    updateCounter(4);
+    document.getElementById('statusText').textContent = 'K5M.bot posting update...';
+    await delay(3000);
+
+    // Phase 6: THALBERG arrives (pushes all down)
+    addAgentToFeed(agentData[4]);
+    updateCounter(5);
+    document.getElementById('statusText').textContent = 'All agents reporting';
+    updateMetric('tasksVal', '6', 'today\'s list ready', 'var(--green)');
+    await delay(3000);
+
+    // Final state — hold
+    document.getElementById('statusText').textContent = 'Morning briefing complete';
+  }
+
+  function restart() {
+    timeouts.forEach(clearTimeout);
+    timeouts = [];
+    runAnimation();
+  }
+
+  // Auto-start after 1s
+  setTimeout(runAnimation, 1000);
+</script>
+
+</body>
+</html>
