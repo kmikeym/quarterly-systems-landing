@@ -73,6 +73,13 @@
     Thalberg: Script notes follow-up (second message)
     End:      "All agents online — ready when you are"
 
+  SEQUENCE 4 — Coordination Layer (the payoff)
+    14 small dimmed chat messages between agents, staggered timing.
+    Shows autonomous inter-agent coordination (BBS-style).
+    Messages are intentionally small/dim — the names (from → to) are
+    the most readable element. Viewer shouldn't try to read in real-time.
+    End:      "All systems nominal"
+
   ============================================================================
   HOW TO MAKE CHANGES
   ============================================================================
@@ -611,6 +618,37 @@
   .agent-thalberg .agent-avatar { background: rgba(248,81,73,0.15); color: var(--red); }
   .agent-thalberg { --agent-color: rgba(248,81,73,0.4); }
 
+  /* ========== INTER-AGENT CHAT (Sequence 4) ========== */
+  /* Small, dimmed chat bubbles showing agents messaging each other.
+     Meant to feel like you walked into a room where a meeting already happened.
+     Agent names (from → to) are the most readable element. */
+  .agent-chat {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 10px 16px;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: all 0.4s ease;
+  }
+  .agent-chat.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .chat-route {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin-bottom: 3px;
+  }
+  .chat-route .chat-arrow { color: var(--text-muted); font-weight: 400; }
+  .chat-body {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.4;
+    opacity: 0.7;
+  }
+
   /* ========== CAPTION SAFE ZONE ========== */
   .caption-safe {
     position: absolute;
@@ -892,6 +930,22 @@
     });
   }
 
+  // addChatMsg(from, to, text) — Add a small inter-agent chat message.
+  // These are dimmed, small-text messages showing agents coordinating.
+  // Prepends to feed just like agent messages.
+  function addChatMsg(from, to, text) {
+    const feed = document.getElementById('feed');
+    const div = document.createElement('div');
+    div.className = 'agent-chat';
+    div.innerHTML = `
+      <div class="chat-route">${from} <span class="chat-arrow">→</span> ${to}</div>
+      <div class="chat-body">${text}</div>
+    `;
+    feed.prepend(div);
+    div.offsetHeight;
+    div.classList.add('visible');
+  }
+
   // animateGauge(pct) — Fill the SVG circle gauge to a percentage and
   // count up the number display. The circle uses stroke-dashoffset to
   // reveal the arc (CSS transition handles the smooth fill). The number
@@ -1088,8 +1142,50 @@
     document.getElementById('statusText').textContent = 'Thalberg added script notes';
     await delay(2500);
 
-    // ===== SEQUENCE 3 COMPLETE — all agents reporting =====
+    // ===== SEQUENCE 3 COMPLETE — pause before coordination layer =====
     document.getElementById('statusText').textContent = 'All agents online — ready when you are';
+    await delay(3000);
+
+    // =================================================================
+    // SEQUENCE 4 — Coordination layer (the payoff)
+    // Small dimmed chat messages between agents. Staggered timing.
+    // Shows the team talking to each other autonomously.
+    // Feeling: you walked into a room where a meeting already happened.
+    // =================================================================
+
+    document.getElementById('statusText').textContent = 'Agents coordinating...';
+
+    addChatMsg('Sid', 'Thalberg', 'Focus list updated. Sleep was low — moved the recording to afternoon.');
+    await delay(600);
+    addChatMsg('Seshat', 'K5M.bot', '23 frameworks extracted from Behavioral Investing. Loaded to your reference.');
+    await delay(450);
+    addChatMsg('Colbert', 'Thalberg', "Loom charge is $15/mo. Mike hasn't used it since January. Flagging for cancel.");
+    await delay(700);
+    addChatMsg('K5M.bot', 'Colbert', 'Share price dropped $0.25. No action — volume too low to mean anything.');
+    await delay(500);
+    addChatMsg('Thalberg', 'Sid', 'Documentary cold open is strong. Mid-section needs work. Added to today\'s focus.');
+    await delay(400);
+    addChatMsg('Sid', 'Seshat', "Mike's sleep trending down 3 nights running. Any research on sleep protocols?");
+    await delay(650);
+    addChatMsg('Seshat', 'Sid', 'Pulling from Portable Operating System. Will have recs in 10 min.');
+    await delay(350);
+    addChatMsg('Colbert', 'K5M.bot', 'Track the Loom refund against March budget.');
+    await delay(550);
+    addChatMsg('Thalberg', 'Colbert', 'Newsletter shipped yesterday. 2,400 subs. Factor into Q2 revenue model.');
+    await delay(400);
+    addChatMsg('K5M.bot', 'Thalberg', '3 trades overnight. Net +7 shares. Posting market summary to Discord.');
+    await delay(500);
+    addChatMsg('Sid', 'Colbert', 'Vyvanse skip count at 7 in 30 days. Adding to canary flags.');
+    await delay(450);
+    addChatMsg('Seshat', 'Thalberg', 'Source note complete for Behavioral Investing. 8 action items tagged for content pipeline.');
+    await delay(600);
+    addChatMsg('Thalberg', 'Seshat', "Need the sleep protocol research before Mike's afternoon block.");
+    await delay(400);
+    addChatMsg('K5M.bot', 'Sid', 'Shareholder count at 1,247. No unusual activity.');
+    await delay(2000);
+
+    // ===== ALL SEQUENCES COMPLETE =====
+    document.getElementById('statusText').textContent = 'All systems nominal';
   }
 
   function restart() {
