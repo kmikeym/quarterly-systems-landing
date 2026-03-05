@@ -150,20 +150,20 @@
     transform: translateY(0);
   }
   .header-time {
-    font-size: 72px;
+    font-size: 86px;
     font-weight: 700;
     letter-spacing: -2px;
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
   .header-date {
-    font-size: 28px;
+    font-size: 34px;
     color: var(--text-dim);
     margin-top: 4px;
     font-weight: 400;
   }
   .header-sub {
-    font-size: 20px;
+    font-size: 24px;
     color: var(--text-muted);
     margin-top: 12px;
     display: flex;
@@ -193,21 +193,21 @@
   }
   .agent-counter.visible { opacity: 1; }
   .counter-label {
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-muted);
   }
   .counter-value {
-    font-size: 48px;
+    font-size: 58px;
     font-weight: 700;
     color: var(--green);
     font-variant-numeric: tabular-nums;
     line-height: 1;
   }
   .counter-sub {
-    font-size: 16px;
+    font-size: 20px;
     color: var(--text-muted);
     margin-top: 4px;
   }
@@ -236,7 +236,7 @@
     transform: translateY(0);
   }
   .card-header {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -246,7 +246,7 @@
     align-items: center;
     gap: 8px;
   }
-  .card-header .card-icon { font-size: 15px; }
+  .card-header .card-icon { font-size: 18px; }
 
   /* Card empty state */
   .card-empty {
@@ -255,7 +255,7 @@
     align-items: center;
     justify-content: center;
     color: var(--border);
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 500;
     letter-spacing: 0.05em;
     transition: opacity 0.3s ease;
@@ -278,7 +278,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 19px;
+    font-size: 24px;
     opacity: 0;
     transform: translateX(-12px);
     transition: all 0.4s ease;
@@ -326,14 +326,14 @@
     text-align: center;
   }
   .gauge-pct {
-    font-size: 28px;
+    font-size: 34px;
     font-weight: 800;
     color: var(--green);
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
   .gauge-sub {
-    font-size: 10px;
+    font-size: 13px;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -356,36 +356,39 @@
     transform: translateY(0);
   }
   .meeting-time {
-    font-size: 16px;
+    font-size: 20px;
     color: var(--blue);
     font-weight: 600;
     margin-bottom: 8px;
   }
   .meeting-title {
-    font-size: 22px;
+    font-size: 28px;
     font-weight: 700;
     color: var(--text);
     line-height: 1.3;
     margin-bottom: 6px;
   }
   .meeting-with {
-    font-size: 14px;
+    font-size: 18px;
     color: var(--text-muted);
     margin-bottom: 18px;
   }
   .zoom-btn {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 10px;
     background: rgba(88,166,255,0.12);
     border: 1px solid rgba(88,166,255,0.3);
     color: var(--blue);
-    font-size: 15px;
+    font-size: 20px;
     font-weight: 600;
-    padding: 10px 20px;
-    border-radius: 10px;
+    padding: 14px 28px;
+    border-radius: 12px;
     text-decoration: none;
     transition: all 0.2s;
+    width: fit-content;
+    margin: 0 auto;
   }
   .zoom-icon {
     width: 18px;
@@ -398,9 +401,10 @@
   }
   .zoom-icon svg { width: 12px; height: 12px; }
   .no-more {
-    font-size: 13px;
+    font-size: 16px;
     color: var(--text-muted);
     margin-top: 16px;
+    text-align: center;
     opacity: 0;
     transition: opacity 0.4s ease 0.3s;
   }
@@ -431,13 +435,13 @@
     transform: translateX(0);
   }
   .focus-num {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 800;
     flex-shrink: 0;
     margin-top: 1px;
@@ -446,13 +450,13 @@
   .focus-item:nth-child(2) .focus-num { background: rgba(210,153,34,0.15); color: var(--orange); }
   .focus-item:nth-child(3) .focus-num { background: rgba(88,166,255,0.15); color: var(--blue); }
   .focus-text {
-    font-size: 17px;
+    font-size: 22px;
     color: var(--text-dim);
     line-height: 1.4;
   }
   .focus-text strong { color: var(--text); font-weight: 600; }
   .focus-tag {
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -551,13 +555,13 @@
     background: linear-gradient(135deg, var(--surface), rgba(210,153,34,0.05));
   }
   .agent-avatar {
-    width: 46px;
-    height: 46px;
-    border-radius: 12px;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 19px;
+    font-size: 22px;
     font-weight: 700;
     flex-shrink: 0;
     position: relative;
@@ -573,17 +577,17 @@
     border: 3px solid var(--surface);
   }
   .agent-content { flex: 1; min-width: 0; }
-  .agent-name { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
-  .agent-role { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
+  .agent-name { font-size: 24px; font-weight: 700; margin-bottom: 2px; }
+  .agent-role { font-size: 17px; color: var(--text-muted); margin-bottom: 8px; }
   .agent-text {
-    font-size: 18px;
+    font-size: 22px;
     color: var(--text-dim);
     line-height: 1.5;
   }
   .agent-text strong { color: var(--text); font-weight: 600; }
   .agent-text .warn { color: var(--orange); font-weight: 600; }
   .agent-time {
-    font-size: 12px;
+    font-size: 15px;
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
     margin-top: 8px;
@@ -596,6 +600,8 @@
   .agent-seshat { --agent-color: rgba(188,140,255,0.4); }
   .agent-k5m .agent-avatar { background: rgba(63,185,80,0.15); color: var(--green); }
   .agent-k5m { --agent-color: rgba(63,185,80,0.4); }
+  .agent-sid .agent-avatar { background: rgba(88,166,255,0.15); color: var(--blue); }
+  .agent-sid { --agent-color: rgba(88,166,255,0.4); }
 
   /* ========== CAPTION SAFE ZONE ========== */
   .caption-safe {
@@ -864,25 +870,18 @@
     msg.classList.add('visible', 'highlight');
   }
 
-  // addSidGreeting() — Add Sid's greeting to the feed as the first message.
-  // Uses the same sid-greeting styling but built as a feed item.
+  // addSidGreeting() — Add Sid's greeting as a standard agent message.
+  // Uses the same addAgentToFeed() format so it matches other agents
+  // and gets pushed down properly when new messages arrive.
   function addSidGreeting() {
-    const feed = document.getElementById('feed');
-    const div = document.createElement('div');
-    div.className = 'sid-greeting';
-    div.innerHTML = `
-      <div class="avatar">
-        S
-        <span class="online"></span>
-      </div>
-      <div>
-        <div class="greeting-text">Good Morning Michael :)</div>
-        <div class="greeting-sub">Sid — Daily Ops &amp; Vault · 6:47 AM</div>
-      </div>
-    `;
-    feed.prepend(div);
-    div.offsetHeight;
-    div.classList.add('visible');
+    addAgentToFeed({
+      cls: 'agent-sid',
+      avatar: 'S',
+      name: 'Sid',
+      role: 'Daily Ops & Vault',
+      text: 'Good Morning Michael :)',
+      time: '6:47 AM'
+    });
   }
 
   // animateGauge(pct) — Fill the SVG circle gauge to a percentage and
