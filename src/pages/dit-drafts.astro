@@ -1,0 +1,466 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="DIT Editorial Drafts - Quarterly Systems">
+
+	<!-- Password Gate -->
+	<div id="auth-gate" class="fixed inset-0 z-50 bg-white flex items-center justify-center">
+		<div class="max-w-md w-full mx-auto px-6">
+			<div class="text-center mb-8">
+				<div class="text-xs uppercase tracking-widest text-gray-400 mb-3">Quarterly Systems</div>
+				<h1 class="text-2xl font-bold text-gray-900">Confidential Drafts</h1>
+				<p class="text-sm text-gray-500 mt-2">This document is shared by invitation only.</p>
+			</div>
+			<form id="auth-form" class="space-y-4">
+				<input
+					id="auth-input"
+					type="password"
+					placeholder="Access code"
+					autocomplete="off"
+					class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
+				/>
+				<button
+					type="submit"
+					class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-lg transition-colors"
+				>
+					Continue
+				</button>
+				<div id="auth-error" class="text-sm text-red-600 text-center hidden">Incorrect access code.</div>
+			</form>
+			<div class="mt-8 text-center">
+				<a href="/" class="text-xs text-gray-400 hover:text-gray-600">← Quarterly Systems</a>
+			</div>
+		</div>
+	</div>
+
+	<div id="memo-content" class="hidden">
+
+		<nav class="bg-white border-b border-gray-200">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="flex justify-between items-center h-16">
+					<div class="flex items-center">
+						<a href="/" class="text-xl font-bold text-gray-900">Quarterly Systems</a>
+					</div>
+					<div class="hidden md:block">
+						<a href="/dit" class="text-sm text-gray-500 hover:text-purple-600 mr-4">← Investment Memo</a>
+						<span class="text-xs uppercase tracking-widest text-gray-400 px-3 py-2">Confidential · Editorial Drafts</span>
+					</div>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Hero -->
+		<section class="bg-gradient-to-br from-gray-50 to-white py-20 border-b border-gray-200">
+			<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="text-xs uppercase tracking-widest text-purple-600 mb-4">Editorial Drafts · May 2026</div>
+				<h1 class="text-5xl font-bold text-gray-900 mb-4 tracking-tight">Dead Internet Theory — Copy</h1>
+				<p class="text-xl text-gray-600 mb-8">Two drafts in the publishing cascade: the long-form blog post for news.kmikeym.com, and the binary vote page for vote.kmikeym.com. Both pre-publication. Comments welcome.</p>
+				<div class="flex flex-wrap gap-3">
+					<a href="#blog" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">▾ Jump to Blog Post</a>
+					<a href="#vote" class="inline-flex items-center px-4 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-300 hover:border-purple-400 transition-colors">▾ Jump to Vote Page</a>
+				</div>
+			</div>
+		</section>
+
+		<!-- ════════════════════════════════════════════════════════════════ -->
+		<!-- SECTION 1: BLOG POST (news.kmikeym.com)                          -->
+		<!-- ════════════════════════════════════════════════════════════════ -->
+		<section id="blog" class="py-20 bg-white">
+			<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+				<div class="mb-12 pb-8 border-b border-gray-200">
+					<div class="text-xs uppercase tracking-widest text-purple-600 mb-3">Section 1 · Blog Post</div>
+					<h2 class="text-3xl font-bold text-gray-900 mb-2">news.kmikeym.com</h2>
+					<p class="text-gray-500">Long-form pitch. Target ~2,400 words. Voice: Mike's first-person, dry, structurally honest.</p>
+					<div class="mt-4 inline-block bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm px-4 py-2 rounded-lg">
+						<strong>Note:</strong> Two passages in <code class="bg-yellow-100 px-1">[brackets]</code> are placeholders Mike will fill in his own voice. Flagged below.
+					</div>
+				</div>
+
+				<article class="draft-prose">
+
+					<h1>Why I'm Asking You to Back Dead Internet Theory</h1>
+
+					<h2>1. The Game I Lost</h2>
+
+					<p>The first time I played in one of Paizley's games, I wildly failed. <span class="bg-yellow-100 text-yellow-900 px-1 rounded">[SPECIFIC MOMENT — Mike to fill: which game, what you were trying to do, the moment it went sideways. One sentence, in scene.]</span> I did not know what I was doing or how anything worked. But it was clear I was in a well thought "real" place online with real people. I failed my team early, but I was completely mesmerized.</p>
+
+					<p>Paizley creates participatory long-form games. A couple hundred people show up and a story unfolds in a cross between digital and physical space, with the players exploring the system Paizley built. There is no spectator experience, it's designed to be played. Either you are in it or you are not in it, and honestly it's not clear how anyone finds out about it beyond word-of-mouth.</p>
+
+					<p>The thing I felt, walking out of that game, was jealousy. A kind of architectural envy. The kind that says, this person built something I never even imagined. I want to play again, I want to immerse myself, and I want to help see more of this happen.</p>
+
+					<p>I have been "KmikeyM" for eighteen years. I sell shares of myself, and part of that process is shareholders deposit money with me to make trades. The KmikeyM shareholder fund holds all the deposits plus money I put in to cover the costs of servers and various services. This money earns a little interest, but mostly is doing nothing, sized to cover a redemption pressure should it happen. When Marcus Estes sent me Paizley's deck for her new project, Dead Internet Theory, the jealousy came back, but I was able to sort of judo throw that into a way to participate.</p>
+
+					<p>This is the long form explanation of a proposal to back Paizley's Dead Internet Theory with $5,000 from KmikeyM. For the shorter version you can read the Substack post, or even just the vote.</p>
+
+					<p>I want to walk through the path that led me from "I want to be near this" to "I think we should put $5,000 of the shareholder funds into it." This is as much for my clarity as to make my case. This is a vote about a project, a person, a moment, and a deal.</p>
+
+					<p>I had a call with Paizley at the end of April. The inner mechanics of the deal we agreed to are kept private under our New Vote Terms of Engagement policy, the same protocol that has covered every private negotiation KmikeyM has run since 2013. What you are voting on, is the headline: KmikeyM soft-circles $5,000 as first money in, our return is capped at 2X, and our endorsement helps Paizley close the rest of her raise. The project is what this post is about.</p>
+
+					<h2>2. The Dead Internet Got Real</h2>
+
+					<p>The phrase "dead internet" used to be a conspiracy theory. It started on a 4chan-adjacent forum in January 2021. The claim was that most of the internet had been replaced by bots and AI-generated content, and that real human conversation online had quietly died sometime around 2016 or 2017. The original post was sourced badly and read more like an outraged teen than an argument. It was wrong, but it felt true.</p>
+
+					<p>Then it stopped being wrong.</p>
+
+					<p>The pivot point was November 2022, when ChatGPT shipped, and from there it took less than two years for the theory to swing from paranoid to descriptive. By spring 2024, 404 Media had documented the Shrimp Jesus Facebook ecosystem: AI-generated images, AI-generated comments, AI-generated engagement, all running on top of real human boomers who could not tell. By early 2025, Spotify's playlists were full of AI ghost artists nobody could name. The conspiracy theorists turned out to have been wrong about the mechanism (it was not happening yet) and right about the destination (it was about to). Patricia Lockwood wrote, in <em>No One Is Talking About This</em>: <em>"Why did the portal feel so private, when you only entered it when you were with everyone?"</em> That book was published in 2021. It reads like a documentary now.</p>
+
+					<p>I've played with this myself. I love the blog that my own bot was writing — <a href="https://k5m.bot/blog/">https://k5m.bot/blog/</a>. Slop? Maybe… but it's my slop so it feels special.</p>
+
+					<p>Anyway, this is the condition Paizley's project is responding to. The condition is not "AI is bad." The condition is that the texture of being online has changed, that scrolling no longer feels like contact with other humans, and that a generation of people who lived through the transition is now actively looking for places that are not the feed. Indie web infrastructure has been quietly building back: NeoCities, Are.na, Yesterweb, the post-naive internet movement coming out of Mozilla and Robin Sloan and Stephen Ango. Small Web September ran for the first time in 2024. The audience for "the internet was a place once" is bigger now than it has been in a decade. This isn't nostalgia, this is a righting of the wrongs.</p>
+
+					<p>The opportunity in front of us is not that we get to build that movement. The movement is already happening. The opportunity is that we get to participate in it, on the right side, at the right moment, with the right person.</p>
+
+					<h2>3. A Thirty-Year Lineage of People in Rooms</h2>
+
+					<p>Paizley's project is not the first version of this idea. It is the latest one. There is a lineage:</p>
+
+					<ul>
+						<li><strong>XOXO Festival</strong> is a very Portland kind of precursor. From 2012 to 2024, starting as a 400-person gathering for "people doing creative work on the internet," and it became, over twelve years, the canonical reference point for what intentional anti-algorithm gatherings could feel like.</li>
+						<li><strong>Webstock</strong> in New Zealand, every year since 2006, doing similar work for a different audience. I've never been, but I've always wanted to!</li>
+						<li><strong>Small Web September</strong> launched in 2024 as a distributed month-long format: anyone could host an event, anywhere, as long as it was about the internet-as-a-place.</li>
+						<li><strong>The Vintage Computer Fair</strong> in LA, every year, where Paizley goes to source the equipment for her events.</li>
+						<li>And so much more…</li>
+					</ul>
+
+					<p>Dead Internet Theory sits inside that lineage. The way Paizley described it on our call: she does not want premium activations, she does not want gatekept VIP rooms, she does not want any of the Coachella-grade brand-bullshit that has eaten most of the live event industry. She wants a room you can move the couch in. She wants kids to bring their own home built cyberdecks to show off. She wants people to touch and use the equipment. As she said, "People should feel free to move a couch."</p>
+
+					<p>What Paizley has that the festivals before her did not have, is timing. Dead Internet Theory is running on the downside of social media. The cultural appetite for being in a room with other humans, doing something real, is bigger than it has been since the Bowling Alone era of the late 1990s. This is not me arguing it. The research is in our own files if you want the receipts.</p>
+
+					<h2>4. @kidgrandma</h2>
+
+					<p>Paizley Lee runs WORKSUCKS™. She publishes online as kidgrandma. She lives in Los Angeles, and on the call she described herself this way: <em>"I have no formal background in tech, I have no formal education art. It's all very serendipitous."</em> That is the line I keep coming back to because I see myself and KmikeyM in that. We did not come from a deep tech and finance background. The first version of the site was Greg's first time building with Ruby on Rails. I was a "fan" of finance, but not educated about it in any meaningful way. But this is also why it worked, and why I think Dead Internet Theory will work.</p>
+
+					<p>What she actually has, working backwards from the receipts: some upcoming press coverage for the first time on her last project. A working relationship with tech artists in LA and NYC. And a team unwilling to not make it happen. She also has the aesthetic instincts to know that selling a participatory event to a brand as "premium activation" is the wrong move. She's running the first test of the idea at ARC/8 in LA as a proof-of-concept (and it kills me that I'll be out of town). She's been doing this kind of work for two years and this is her leveling up.</p>
+
+					<p>She is also, to be clear, doing her first formal raise. The minimum she is looking to close is $15,000, of which KmikeyM's $5,000 will be the first. She has been pitching to people in her network already and I know how much having money already soft-circled makes it easier to raise. Additionally shareholder Marcus Estes has been acting as an advisor and will continue to do so.</p>
+
+					<p>The thing that came through hardest when I talked with Paizley was not the deck or the timing. It was the ferocity. She has a way of describing what she wants the room to feel like that does not sound like a creator angling for capital. It sounds like somebody who has already lived inside the experience and is telling you what it was like. The deck is good, but in person her pitch is better than the deck.</p>
+
+					<h2>5. One Night in Los Angeles, May 17</h2>
+
+					<p>If the vote passes and the money lands, here is the first thing the money helps make.</p>
+
+					<p><strong>A:</strong> A Saturday night in May, in an art space called ARC/8 in Los Angeles. Two hundred people. Most of them have brought a laptop, a Cyberdeck, an old PSP, a piece of gear they have not had anywhere to show off. The walls are running 90s and 2000s film projections. There is a CD-burning station. There is a station for decorating CD covers. There is a Raspberry Pi station for building mini Cyberdecks. The food is internet-café food: orange chicken, mountain dew, Doritos, sour belts.</p>
+
+					<p><strong>B:</strong> The 22 retro PC stations in the middle of the room are the visual anchor, but they are not the point. People are not lined up to play Counter-Strike. They are lined up because there is also a custom-made mini-game that runs on those PCs, a musician who does not normally make games made a collaborative web-game that lives next to it, and a group of strangers who came in solo are now building a Cyberdeck together at the personalization station. The room sorts itself into pockets. People bring gear from their cars. People show up because they heard from friends-of-friends.</p>
+
+					<p><strong>C:</strong> Afterwards, people take physical objects home: a CD they burned, with a cover they decorated, full of music they made or found in the room. The cyberdeck they built. Maybe a hand-printed zine the artists made in the back room. And then they get to share it. Likely on the slow internet, on Are.na or in a group chat or on a NeoCities page, and the photo of the room will spread, and the next event will sell out faster from a wider friend-of-a-friend network.</p>
+
+					<h2>6. The Tour</h2>
+
+					<p>LA on May 17 is the proof of concept. Paizley is producing it on a small budget, mostly out of pocket and on a budget of friend favors. LA is the testing ground for what happens next. Which is where the investment comes in.</p>
+
+					<p>What our money funds is what comes after.</p>
+
+					<ul>
+						<li><strong>Brooklyn, June.</strong> First New York stop. Still intentionally on the smaller scale. But now some new goals: prove the format travels, learn what New York does differently, build the audience.</li>
+						<li><strong>Brooklyn, August.</strong> Second New York stop. Focus shifts from "prove it" to "monetize it." First paid tickets. First sponsor commitments.</li>
+						<li><strong>New York, September.</strong> First long-form game. The thing Paizley actually built her career around: a multi-day participatory game in physical space with many players, an unfolding narrative, and an attended ending.</li>
+						<li><strong>Beyond.</strong> The tour continues…</li>
+					</ul>
+
+					<p>Each stop builds on the last. Each stop teaches the format. The Fall long-form is the first big test of whether Dead Internet Theory can be the kind of thing that makes money on its own, without grants, without patronage, without a brand activation deal. If it works, the structure scales. If it doesn't, we still break even, get to be part of the start of this thing, and know that Paizley won't quit.</p>
+
+					<h2>7. The First Five Thousand</h2>
+
+					<p>Here is the part I find most interesting.</p>
+
+					<p>If the 2026 tour works, what 2027 looks like is materially different. Paizley's Phase 2 ambition, depending on what she learns and the opportunities, includes a possible permanent fixed-location concept. IP licensing into real retail (Dover Street Market, the Standard, places that pay for cultural access). Leveling up sponsor deals that go from "Doritos sends a case for free" to "Liquid Death cornerstones at $50K a year."</p>
+
+					<p>The Phase 3 trajectory, if all that works, is more ambitious. The phrase she did not use but that the deck implies is: a highly regarded studio doing experiential events. That could lead to acquisition interest from agencies. Working with tech art institutions. The chance to make a meaningful cultural-establishment that is based on the recognition of the people-in-rooms gatherings around technology that has been the cornerstone of everything that doesn't suck online, from user groups to open source to fan organized events.</p>
+
+					<p>The probability of that Phase 3 outcome is not high. Most $5,000 first-money-in checks do not generate meaningful cultural or financial returns. But the ones that do return, return big. KmikeyM's $5,000 is in the kind of asymmetric upside seat where the downside is delayed payback, we breakeven, or take a small loss. The upside is a 2X financial return and a permanent connection to Paizley's work. That's materially larger than what the shareholder fund could ever earn sitting in reserve.</p>
+
+					<p>The financial structure is built so that KmikeyM benefits if Paizley wins, walks away clean if she does not, and never holds equity in any of the bigger upside machines (the studio, the venue, the IP). The structure is conservative; the position is asymmetric. That is the deal.</p>
+
+					<h2>8. The Vote</h2>
+
+					<p>The KmikeyM project has had three or four through-lines that have stayed consistent across eighteen years. The most durable one is this: a person you can trust is more interesting than a brand you can transact with. That has been the entire premise of selling shares of a human being, of letting strangers vote on private decisions, of running shareholder gatherings online and off as more than a marketing event. The premise was always that there is more value in the messy real thing than in the polished simulation of it. We have lived inside that bet for a long time.</p>
+
+					<p>What Dead Internet Theory is doing, at the cultural level, is the same bet, scaled to a bunch of people in a warehouse instead of one person in front of a stock ticker. It's people in a room with real things to interact with and other people to meet. Paizley is making something outside of the algorithm, outside of the "premium activation" of a brand, and with no backstage or VIP passes. The bet is that today there is a generation of people who have figured out that the feed costs them too much and are looking for something else. KmikeyM fights this by trying to co-opt it all, but here is a chance to help back someone creating an actual alternative.</p>
+
+					<p>I want this vote to pass. I should be honest about that, because it is the bias most likely to shape this post. The thesis-fit between Dead Internet Theory and KmikeyM is the cleanest I have felt on a non-KmikeyM project in years. It is also a project I will not be in the room for! I am in Kosovo through early June and I cannot help produce the LA event, cannot help load PCs into the venue, and can't even physically attend. KmikeyM's capital here is going somewhere I cannot directly experience. But I trust that Paizley will not just pull it off, but that it will be amazing, and it will continue to grow.</p>
+
+					<p>The vote is up at vote.kmikeym.com. The headline ask is $5,000 plus our endorsement; the inner mechanics are private under our standing New Vote Terms of Engagement policy. The pitch is here. The decision is yours.</p>
+
+					<hr class="my-12 border-gray-200" />
+
+					<h2>What Happens Next</h2>
+
+					<p>If you vote <strong>YES</strong>, KmikeyM commits the $5,000 and Paizley can name KmikeyM as first-money-in on Dead Internet Theory. Some shareholders will get free entry to any DIT event (get in touch if you're in LA and want to attend).</p>
+
+					<p>If you vote <strong>NO</strong>, KmikeyM does not deploy the capital. We can all still support Paizley as attendees, volunteers, supporters but without any financial risk.</p>
+
+					<p>The vote closes on <strong>[DATE — fill in based on post date + 14 days]</strong>.</p>
+
+					<p><a href="https://vote.kmikeym.com/">Cast your vote at vote.kmikeym.com →</a></p>
+
+				</article>
+			</div>
+		</section>
+
+		<!-- ════════════════════════════════════════════════════════════════ -->
+		<!-- SECTION 2: VOTE PAGE (vote.kmikeym.com)                          -->
+		<!-- ════════════════════════════════════════════════════════════════ -->
+		<section id="vote" class="py-20 bg-gray-50 border-y border-gray-200">
+			<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+				<div class="mb-12 pb-8 border-b border-gray-200">
+					<div class="text-xs uppercase tracking-widest text-purple-600 mb-3">Section 2 · Vote Page</div>
+					<h2 class="text-3xl font-bold text-gray-900 mb-2">vote.kmikeym.com</h2>
+					<p class="text-gray-500">Public binary vote page. Lives on vote.kmikeym.com once Part 1 (Terms Sheet) is locked. Compresses the blog post into the YES/NO ask.</p>
+				</div>
+
+				<article class="draft-prose bg-white p-12 rounded-2xl border border-gray-200">
+
+					<h1>New Vote: Invest in Dead Internet Theory?</h1>
+
+					<h2>The Question</h2>
+
+					<p><strong>Should KmikeyM commit $5,000 from the shareholder fund as the first slug of capital into Paizley Lee's Dead Internet Theory project, in exchange for a revenue share starting from her first paid event, capped at 2x return?</strong></p>
+
+					<h2>Background</h2>
+
+					<p>For eighteen years we have sat on the funds shareholders invest in KmikeyM. We earn modest interest but maintain full liquidity to facilitate any withdrawal of funds. This is a vote to test a more pro-active financial stance, back a new venture, and put a portion of that money to work.</p>
+
+					<p>Paizley Lee (kidgrandma / WORKSUCKS™) is producing a series of in-person gaming events called Dead Internet Theory. The framing is a cyber-café LAN party as a piece of cultural counter-programming: people in a room, on real machines, playing real games together, building things, leaving with physical objects from the night. The thesis she presents is <em>"back to an internet that was a place, not a performance."</em> After an initial play-test of one of her games, I spent fifty-six minutes on a video call with her on April 29 about the new venture. I came out of that call inspired by her vision and how cleanly it maps onto the KmikeyM ethos.</p>
+
+					<p>The thesis-fit with KmikeyM is the part that is most exciting me. I have been describing KmikeyM in private notes for years as "a project that solves loneliness," and Dead Internet Theory is shaped like the same answer: people in a room, participation over performance, the opposite of the algorithmic feed. I did not expect her IRL gaming-events deck to map this cleanly onto the through-line of our own project.</p>
+
+					<h2>Why Now</h2>
+
+					<p>Paizley's LA proof-of-concept is May 17th. The shareholder vote process takes about two weeks from post to close, which puts a clean vote close on or around May 14th. That timing reaches Paizley before her summer Brooklyn dates, where the money actually does its work.</p>
+
+					<p>Her plan is a six-stop arc through 2026 that begins with the LA proof-of-concept on May 17th, moves to Brooklyn in the summer, and lands a longer-form game in New York in September. The first LA event is bare-bones on purpose to create a proof-of-concept. KmikeyM's funds are not enough to fund the whole arc on their own, but with shareholder approval we'd commit as the first money in and become a credibility line she can use to close the rest of the raise.</p>
+
+					<h2>The Proposal</h2>
+
+					<p>If this passes, KmikeyM commits $5,000 from the shareholder fund to Dead Internet Theory under the terms locked in our standing New Vote Terms of Engagement policy. The headline structure:</p>
+
+					<ul>
+						<li><strong>$5,000 transferred to Paizley Lee</strong> by approximately May 11th, contingent on this vote passing.</li>
+						<li><strong>Two-stage revenue share</strong> beginning at her first paid event, designed so KmikeyM recovers principal quickly and rides along quietly until cap.</li>
+						<li><strong>2x return cap.</strong> Once KmikeyM receives $10,000 back, the participation ends and KmikeyM is out clean.</li>
+						<li><strong>No equity, no cap-table position, no follow-on obligation.</strong> A single one-time deployment with a defined exit.</li>
+						<li><strong>Permission to credit ourselves as a "producer"</strong> of Dead Internet Theory events in our own materials. Paizley is under no obligation to publicly credit KmikeyM.</li>
+						<li><strong>Free shareholder entry</strong> to any Dead Internet Theory event, up to 5 people per event.</li>
+					</ul>
+
+					<p>The structural shape is closer to a publishing advance than a venture investment: capital out, defined repayment from event revenue, capped return, then done. Final percentages, cadence, and term are set in the private terms sheet and will be summarized in the post that links to this vote.</p>
+
+					<h2>What This Doesn't Change</h2>
+
+					<ul>
+						<li><strong>The shareholder fund principal floor.</strong> $5K is sized to be loseable. The fund retains enough reserve to cover redemption pressure regardless of outcome.</li>
+						<li><strong>My role in KmikeyM.</strong> I am not becoming an event producer or operationally involved in Dead Internet Theory. I am in Kosovo through early June and cannot run logistics. The deal is capital and remote introductions as needed, not labor.</li>
+						<li><strong>KmikeyM's investing posture.</strong> This is not a turn toward KmikeyM as a venture vehicle. If this works, the next investment-shaped vote gets evaluated on its own. If this fails, KmikeyM does not stop being KmikeyM.</li>
+						<li><strong>My ownership of share economics.</strong> I am not personally taking any cut, fee, or upside from this deal. Returns go to the shareholder fund.</li>
+					</ul>
+
+					<h2>What This Vote Is NOT About</h2>
+
+					<p>This is not a vote about whether Dead Internet Theory is a good cultural project. I think it is. Whether you do is a separate question and not the one in front of you. The vote is about whether KmikeyM should be the entity that backs it.</p>
+
+					<p>This is also not a vote of confidence in my taste. If Dead Internet Theory loses money, that is a real outcome with real loss of fund capital, and it should weigh on a no vote. The thesis fit and my enthusiasm are inputs to the case, not insurance against the downside.</p>
+
+					<h2>The Arguments</h2>
+
+					<h3>For (Yes)</h3>
+
+					<ul>
+						<li><strong>Latent capital should work.</strong> The shareholder fund has sat near-static for years, sized for redemption that rarely happens. Putting a small slug of it into a defined-exit, capped-return investment is a more interesting use of the fund than letting it earn nothing.</li>
+						<li><strong>Thesis-aligned.</strong> Dead Internet Theory is shaped like the same answer KmikeyM has been giving for eighteen years: people in a room, participation over performance, the messy real thing instead of the algorithmic-feed simulation. Backing it is consistent with our work.</li>
+						<li><strong>Defined return path with a hard cap.</strong> This is not patronage and not equity. The 2x cap means the upside is bounded, the downside is bounded, and the exit is defined. Shareholders know exactly what they are buying.</li>
+						<li><strong>Producer credit.</strong> KmikeyM earns the right to refer to itself as a producer of these events in our own materials. That credit compounds across our channels even if the financial return underdelivers.</li>
+						<li><strong>Press tailwind.</strong> Paizley has press scheduled around her last project. Backing the project before that hits is structurally more useful than backing it after.</li>
+						<li><strong>Shareholder access.</strong> Up to 5 shareholders per event get free entry, with reports back to the Discord.</li>
+					</ul>
+
+					<h3>Against (No)</h3>
+
+					<ul>
+						<li><strong>This is a category change for the fund.</strong> The shareholder fund has never been deployed as risk capital before. Saying yes to this vote sets the precedent that it can be. Some shareholders may consider the fund a redemption guarantee, and while the amount of this investment doesn't jeopardize that, a series of poor investments over time would materially weaken it.</li>
+						<li><strong>Real loss is plausible.</strong> Paizley is talented and moving fast, but she is also at the beginning of a major evolution of her previous work. A multi-stop tour where every stop after LA depends on her closing sponsorships and venues she has not yet closed. A loss-of-capital outcome is on the table.</li>
+						<li><strong>The return path runs through paid events and through sponsors.</strong> KmikeyM does not see a dollar back until Paizley successfully runs her first paid event later this year. That is a chain of execution risks: LA has to work, the next event has to land, sponsorships have to close, the format has to build in reputation. Any break in the chain delays or kills the return.</li>
+						<li><strong>Mike is not in the room.</strong> I am in Kosovo through early June, and Portland in the summer. I cannot help produce an LA event, cannot help negotiate New York venues, cannot do hands-on damage control if a stop falters. KmikeyM's capital is going somewhere I cannot directly support.</li>
+						<li><strong>Vote-NO risk.</strong> Once a public vote runs, a NO outcome is a public signal that KmikeyM rejected Paizley's project. That is a worse signal for her than no vote at all. The honest case for voting NO is real, and shareholders should not feel pressured to vote YES to protect Paizley from a public NO.</li>
+					</ul>
+
+					<h2>The Honest Tension</h2>
+
+					<p>I want this vote to pass. I should name that, because it is the bias most likely to shape how this is written.</p>
+
+					<p>The thesis-fit between Dead Internet Theory and KmikeyM is the cleanest thesis-fit I have seen on a non-KmikeyM project in years. That excitement is real, and it is also a thing that makes me want help looking at the trade-offs. If someone I didn't know pitched the same project with a less-aligned thesis, I do not know that I would be writing this vote.</p>
+
+					<p>The inner mechanics of the deal (the two-stage revenue-share rates, distribution cadence, term limit, recipient entity) are kept private under our standing New Vote Terms of Engagement policy, the same protocol that has covered every private negotiation KmikeyM has run since 2013. What you are voting on is the public ask: $5,000 from the shareholder fund as a first-money-in commitment, with a revenue share, a 2x hard cap, and producer credit on the events. The inner numbers are mine to negotiate; the headline is yours to ratify.</p>
+
+					<h2>How to Vote</h2>
+
+					<ul>
+						<li><strong>YES</strong> — KmikeyM commits $5,000 from the shareholder fund to Dead Internet Theory, with inner deal mechanics structured under New Vote Terms of Engagement.</li>
+						<li><strong>NO</strong> — KmikeyM does not deploy capital. The conversation with Paizley remains open for non-financial forms of support (introductions, content cross-promotion, shareholder attendance at events).</li>
+					</ul>
+
+					<p>This vote will end on <strong>[DATE — fill in based on post date + 14 days]</strong>.</p>
+
+					<h2>What Happens Next</h2>
+
+					<p><strong>If passed:</strong></p>
+					<ol>
+						<li>Mike and Paizley settle final terms in a shared document. Open items in the private terms sheet get filled in.</li>
+						<li>$5,000 wires from the KmikeyM shareholder fund to Paizley by approximately May 11th.</li>
+						<li>KmikeyM gains the right to credit itself as a producer of Dead Internet Theory in our own materials.</li>
+						<li>Shareholders get a follow-up post after the LA event (May 17th) with a real read on how the project is performing.</li>
+						<li>Revenue-share clock starts at the first paid event.</li>
+					</ol>
+
+					<p><strong>If failed:</strong></p>
+					<ol>
+						<li>KmikeyM does not deploy capital.</li>
+						<li>I let Paizley know directly, and we discuss other forms of support.</li>
+						<li>This vote does not get re-proposed in this form.</li>
+					</ol>
+
+				</article>
+			</div>
+		</section>
+
+		<!-- Footer -->
+		<footer class="bg-white border-t border-gray-200">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+				<div class="flex flex-col md:flex-row justify-between items-center gap-4">
+					<div>
+						<div class="text-xs uppercase tracking-widest text-gray-400 mb-2">Confidential · For Marcus + Paizley</div>
+						<span class="text-sm text-gray-500">© 2026 Quarterly Systems</span>
+						<br>
+						<span class="text-xs text-gray-400">a <a href="https://kmikeym.com" class="hover:text-gray-600 transition-colors">K5M</a> company</span>
+					</div>
+					<div class="text-xs text-gray-400 text-right">
+						<a href="/dit" class="text-purple-600 hover:text-purple-700">← Investment Memo</a><br>
+						Drafts prepared 2026-05-02
+					</div>
+				</div>
+			</div>
+		</footer>
+
+	</div>
+
+	<style>
+		.draft-prose {
+			color: #1f2937;
+			font-size: 1.0625rem;
+			line-height: 1.75;
+		}
+		.draft-prose h1 {
+			font-size: 2.25rem;
+			font-weight: 700;
+			color: #111827;
+			line-height: 1.2;
+			margin-top: 0;
+			margin-bottom: 2rem;
+			letter-spacing: -0.025em;
+		}
+		.draft-prose h2 {
+			font-size: 1.5rem;
+			font-weight: 700;
+			color: #111827;
+			line-height: 1.3;
+			margin-top: 3rem;
+			margin-bottom: 1rem;
+			letter-spacing: -0.015em;
+		}
+		.draft-prose h3 {
+			font-size: 1.125rem;
+			font-weight: 600;
+			color: #111827;
+			margin-top: 1.75rem;
+			margin-bottom: 0.75rem;
+		}
+		.draft-prose p {
+			color: #374151;
+			margin-top: 0;
+			margin-bottom: 1.25rem;
+		}
+		.draft-prose strong {
+			color: #111827;
+			font-weight: 600;
+		}
+		.draft-prose em {
+			color: #374151;
+			font-style: italic;
+		}
+		.draft-prose ul,
+		.draft-prose ol {
+			margin-top: 0;
+			margin-bottom: 1.5rem;
+			padding-left: 1.5rem;
+		}
+		.draft-prose ul { list-style: disc; }
+		.draft-prose ol { list-style: decimal; }
+		.draft-prose li {
+			margin-bottom: 0.5rem;
+			color: #374151;
+		}
+		.draft-prose li::marker { color: #9ca3af; }
+		.draft-prose a {
+			color: #7c3aed;
+			text-decoration: none;
+			font-weight: 500;
+		}
+		.draft-prose a:hover {
+			color: #6d28d9;
+			text-decoration: underline;
+		}
+		.draft-prose hr {
+			margin-top: 3rem;
+			margin-bottom: 3rem;
+			border-color: #e5e7eb;
+		}
+		.draft-prose code {
+			background: #fef3c7;
+			color: #78350f;
+			padding: 0.125rem 0.25rem;
+			border-radius: 0.25rem;
+			font-size: 0.9em;
+		}
+	</style>
+
+	<script is:inline>
+		// Password gate (matches /dit)
+		const PASSWORD = 'kidgrandma';
+
+		const gate = document.getElementById('auth-gate');
+		const memo = document.getElementById('memo-content');
+		const form = document.getElementById('auth-form');
+		const input = document.getElementById('auth-input');
+		const errEl = document.getElementById('auth-error');
+
+		function unlock() {
+			gate.style.display = 'none';
+			memo.classList.remove('hidden');
+		}
+
+		if (sessionStorage.getItem('dit-auth') === 'ok') {
+			unlock();
+		} else {
+			input.focus();
+		}
+
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const guess = input.value.trim().toLowerCase();
+			if (guess === PASSWORD) {
+				sessionStorage.setItem('dit-auth', 'ok');
+				errEl.classList.add('hidden');
+				unlock();
+			} else {
+				errEl.classList.remove('hidden');
+				input.value = '';
+				input.focus();
+			}
+		});
+	</script>
+
+</Layout>
