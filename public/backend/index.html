@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>★ MIKE'S HOMEPAGE!! ★ The Truth Is Out There ★</title>
+<style>
+  @keyframes blink { 50% { visibility: hidden; } }
+  @keyframes rainbow {
+    0%   { color: #ff0000; }
+    16%  { color: #ff8800; }
+    33%  { color: #ffff00; }
+    50%  { color: #00ff00; }
+    66%  { color: #00ffff; }
+    83%  { color: #ff00ff; }
+    100% { color: #ff0000; }
+  }
+  @keyframes marquee {
+    0%   { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+  @keyframes ticker {
+    0%   { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+  @keyframes glow {
+    0%, 100% { text-shadow: 0 0 8px #00ff00, 0 0 16px #00ff00; }
+    50%      { text-shadow: 0 0 16px #00ff00, 0 0 32px #00ff00; }
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Times New Roman", Times, serif;
+    overflow-x: hidden;
+  }
+  body {
+    max-width: 1080px;
+    margin: 0 auto;
+    background-color: #000022;
+    background-image:
+      radial-gradient(white 2px, transparent 2px),
+      radial-gradient(white 1px, transparent 1px);
+    background-size: 40px 40px, 25px 25px;
+    background-position: 0 0, 12px 12px;
+    color: #ffffff;
+    text-align: center;
+    padding: clamp(16px, 4vw, 50px) clamp(12px, 3vw, 40px);
+    box-sizing: border-box;
+  }
+  * { box-sizing: border-box; }
+  img { max-width: 100%; height: auto; }
+
+  .blink { animation: blink 1s step-end infinite; }
+  .rainbow { animation: rainbow 2s linear infinite; }
+  .glow { animation: glow 2s ease-in-out infinite; }
+
+  h1 {
+    font-family: "Comic Sans MS", "Chalkboard SE", cursive;
+    color: #ffff00;
+    font-size: clamp(32px, 7vw, 78px);
+    margin: 0 0 20px 0;
+    text-shadow: 6px 6px 0 #ff00ff, -2px -2px 0 #00ffff;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    word-wrap: break-word;
+  }
+
+  h2 {
+    font-family: "Comic Sans MS", "Chalkboard SE", cursive;
+    color: #00ffff;
+    font-size: clamp(26px, 5vw, 52px);
+    margin: 32px 0 12px 0;
+    text-shadow: 3px 3px 0 #ff0088;
+    line-height: 1.15;
+  }
+
+  .hr {
+    height: 18px;
+    background: linear-gradient(to right, #ff0000, #ff8800, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
+    margin: 24px 0;
+    border-radius: 6px;
+  }
+
+  .construction {
+    display: inline-block;
+    background: #ffff00;
+    color: #000;
+    font-family: "Impact", "Arial Black", sans-serif;
+    font-size: clamp(20px, 3.8vw, 38px);
+    font-weight: 900;
+    padding: clamp(10px, 2vw, 18px) clamp(18px, 3.5vw, 36px);
+    border: clamp(4px, 0.8vw, 8px) solid #000;
+    margin: 16px 0;
+    transform: rotate(-3deg);
+    letter-spacing: 2px;
+  }
+  .construction::before { content: "⚠ "; }
+  .construction::after { content: " ⚠"; }
+
+  .intro {
+    font-size: clamp(18px, 3.2vw, 38px);
+    line-height: 1.4;
+    color: #ffff00;
+    margin: 30px 0;
+    font-family: "Times New Roman", serif;
+  }
+
+  .photo {
+    display: inline-block;
+    width: clamp(200px, 50vw, 320px);
+    height: clamp(200px, 50vw, 320px);
+    object-fit: cover;
+    border: clamp(6px, 1.2vw, 12px) ridge #00ff00;
+    margin: 20px 0;
+    box-shadow: 0 0 30px #00ff00;
+  }
+
+  .photo-caption {
+    font-family: "Courier New", monospace;
+    color: #00ff00;
+    font-size: clamp(14px, 2vw, 22px);
+    margin-top: -10px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+  }
+
+  ul.hobbies {
+    list-style: "🛸 ";
+    text-align: left;
+    font-size: clamp(16px, 2.8vw, 32px);
+    color: #00ff88;
+    font-family: "Comic Sans MS", cursive;
+    width: min(700px, 92%);
+    margin: 16px auto;
+    line-height: 1.8;
+    padding-left: 1.4em;
+  }
+
+  ul.hobbies li::marker { color: #ffff00; font-size: clamp(20px, 3.4vw, 38px); }
+
+  .links {
+    text-align: center;
+    font-size: clamp(16px, 2.8vw, 32px);
+    line-height: 1.6;
+    margin: 12px 0;
+  }
+  .links a {
+    color: #00ffff;
+    text-decoration: underline;
+    margin: 0 12px;
+    font-family: "Times New Roman", serif;
+  }
+
+  .guestbook {
+    font-family: "Comic Sans MS", cursive;
+    font-size: clamp(26px, 5vw, 52px);
+    color: #ff00ff;
+    text-shadow: 3px 3px 0 #ffff00;
+    margin: 30px 0 16px 0;
+  }
+
+  .counter {
+    background: #000;
+    color: #00ff00;
+    font-family: "Courier New", monospace;
+    font-size: clamp(28px, 5vw, 52px);
+    padding: 18px 24px;
+    border: 4px solid #00ff00;
+    display: inline-block;
+    margin: 20px 0;
+    letter-spacing: 6px;
+  }
+
+  .counter-label {
+    color: #ffff00;
+    font-size: clamp(18px, 3vw, 32px);
+    font-family: "Comic Sans MS", cursive;
+    margin-top: 8px;
+  }
+
+  .marquee-wrap {
+    overflow: hidden;
+    margin: 24px 0;
+    border-top: 4px dashed #ffff00;
+    border-bottom: 4px dashed #ffff00;
+    padding: 8px 0;
+    background: #220033;
+  }
+  .marquee {
+    display: inline-block;
+    white-space: nowrap;
+    font-family: "Courier New", monospace;
+    font-size: clamp(16px, 3vw, 32px);
+    color: #ffff00;
+    animation: marquee 18s linear infinite;
+  }
+
+  .ticker-wrap {
+    overflow: hidden;
+    margin: 24px 0;
+    border: 4px solid #00ff00;
+    background: #000;
+    padding: 14px 0;
+  }
+  .ticker {
+    display: inline-block;
+    white-space: nowrap;
+    font-family: "Courier New", monospace;
+    font-size: clamp(15px, 2.6vw, 30px);
+    color: #00ff00;
+    animation: ticker 28s linear infinite;
+  }
+  .up { color: #00ff00; }
+  .down { color: #ff3333; }
+
+  .webring {
+    margin-top: 18px;
+    font-size: clamp(13px, 2.2vw, 26px);
+    font-family: "Courier New", monospace;
+    color: #cccccc;
+    border: 4px double #ffff00;
+    padding: clamp(10px, 2vw, 18px);
+    background: #110022;
+    line-height: 1.5;
+  }
+  .webring a { color: #00ffff; text-decoration: underline; }
+  .webring + .webring { margin-top: 14px; }
+
+  .footer {
+    margin-top: 24px;
+    font-size: clamp(13px, 2vw, 24px);
+    color: #aaaaff;
+    font-family: "Courier New", monospace;
+    line-height: 1.5;
+  }
+
+  .heart { color: #ff0066; }
+
+  /* X-FILES PANEL */
+  .xfiles {
+    background: #000;
+    border: 6px ridge #66ff00;
+    color: #66ff00;
+    font-family: "Courier New", monospace;
+    padding: clamp(14px, 2.5vw, 24px) clamp(16px, 3vw, 32px);
+    margin: 24px 0;
+    text-align: left;
+    font-size: clamp(13px, 2.1vw, 22px);
+    line-height: 1.5;
+  }
+  .xfiles .case-no { color: #ffffff; font-weight: bold; }
+  .xfiles .classified {
+    color: #ff3333;
+    font-family: "Impact", "Arial Black", sans-serif;
+    font-size: clamp(20px, 3.6vw, 36px);
+    letter-spacing: 4px;
+    text-align: center;
+    border: 4px solid #ff3333;
+    padding: 8px;
+    margin: 12px 0;
+  }
+  .xfiles h3 {
+    color: #ffff00;
+    font-family: "Courier New", monospace;
+    font-size: clamp(16px, 2.6vw, 28px);
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    border-bottom: 2px dashed #66ff00;
+    padding-bottom: 8px;
+  }
+
+  /* STAR TREK PANEL — LCARS-ish */
+  .lcars {
+    background: #000;
+    color: #ff9966;
+    font-family: "Arial Black", sans-serif;
+    padding: 0;
+    margin: 24px 0;
+    text-align: left;
+    border-radius: 24px;
+    overflow: hidden;
+  }
+  .lcars-header {
+    background: #ff9966;
+    color: #000;
+    padding: 12px clamp(16px, 3vw, 32px);
+    font-size: clamp(18px, 3.2vw, 32px);
+    letter-spacing: 4px;
+    border-bottom: 4px solid #cc6633;
+  }
+  .lcars-body {
+    display: flex;
+    background: #000;
+  }
+  .lcars-sidebar {
+    width: clamp(70px, 12vw, 120px);
+    background: #cc99ff;
+    padding: 20px clamp(6px, 1vw, 12px);
+    color: #000;
+    font-size: clamp(10px, 1.3vw, 14px);
+    font-family: "Courier New", monospace;
+    line-height: 1.4;
+    flex-shrink: 0;
+  }
+  .lcars-sidebar div {
+    background: #ff9966;
+    color: #000;
+    margin-bottom: 6px;
+    padding: 8px 4px;
+    text-align: center;
+    font-weight: 900;
+  }
+  .lcars-content {
+    flex: 1;
+    min-width: 0;
+    padding: clamp(14px, 2.5vw, 24px);
+    color: #ffcc99;
+    font-family: "Courier New", monospace;
+    font-size: clamp(13px, 2.1vw, 22px);
+    line-height: 1.5;
+  }
+  .lcars-content h3 {
+    color: #ff9966;
+    font-size: clamp(16px, 2.6vw, 28px);
+    margin: 0 0 12px 0;
+    letter-spacing: 3px;
+  }
+  .lcars-content .stardate { color: #ffff00; }
+
+  /* STOCK PORTFOLIO TABLE */
+  .portfolio {
+    background: #000;
+    border: 4px solid #00ff00;
+    margin: 24px 0;
+    padding: clamp(12px, 2vw, 20px);
+    text-align: left;
+  }
+  .portfolio h3 {
+    color: #00ff00;
+    font-family: "Courier New", monospace;
+    font-size: clamp(18px, 3vw, 30px);
+    margin: 0 0 16px 0;
+    letter-spacing: 3px;
+    text-align: center;
+  }
+  .portfolio-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table.stocks {
+    width: 100%;
+    min-width: 480px;
+    border-collapse: collapse;
+    font-family: "Courier New", monospace;
+    font-size: clamp(12px, 2vw, 22px);
+    color: #00ff00;
+  }
+  table.stocks th {
+    background: #003300;
+    color: #00ff00;
+    padding: clamp(6px, 1.2vw, 10px);
+    border: 2px solid #00ff00;
+    text-align: left;
+    letter-spacing: 2px;
+  }
+  table.stocks td {
+    padding: clamp(6px, 1.2vw, 10px);
+    border: 2px solid #006600;
+  }
+  table.stocks tr:nth-child(even) td { background: #001100; }
+
+  /* MICROBANNERS */
+  .microbanner-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 900px;
+    margin: 16px auto 24px auto;
+  }
+  .mb {
+    position: relative;
+    isolation: isolate;
+    flex: 1 1 220px;
+    max-width: 280px;
+    min-height: 78px;
+    font-family: "Arial Black", "Helvetica", sans-serif;
+    font-size: clamp(12px, 1.8vw, 18px);
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 1.15;
+    padding: 6px 8px;
+    box-sizing: border-box;
+    border: 2px solid #000;
+    /* Chrome bevel: inner highlights/shadows + outer drop shadow */
+    box-shadow:
+      inset 2px 2px 0 rgba(255,255,255,0.9),
+      inset -2px -2px 0 rgba(0,0,0,0.55),
+      inset 5px 5px 8px rgba(255,255,255,0.5),
+      inset -5px -5px 8px rgba(0,0,0,0.35),
+      4px 4px 0 #000,
+      7px 7px 14px rgba(0,0,0,0.55);
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.55);
+    letter-spacing: 0.5px;
+  }
+  .mb::before {
+    /* glossy top highlight strip — Win98 button vibe */
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 2px; left: 2px; right: 2px;
+    height: 42%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0));
+    pointer-events: none;
+    border-radius: 1px;
+  }
+  .mb::after {
+    /* bottom shading */
+    content: "";
+    position: absolute;
+    z-index: -1;
+    bottom: 2px; left: 2px; right: 2px;
+    height: 32%;
+    background: linear-gradient(0deg, rgba(0,0,0,0.4), rgba(0,0,0,0));
+    pointer-events: none;
+  }
+  .mb-netscape  { background: linear-gradient(180deg, #003399, #0066cc); color: #fff; }
+  .mb-ie        { background: linear-gradient(180deg, #0066ff, #00aaff); color: #ffff00; }
+  .mb-flash     { background: linear-gradient(180deg, #ff3300, #cc0000); color: #fff; }
+  .mb-realplayer{ background: #000; color: #00ff00; }
+  .mb-geocities { background: linear-gradient(180deg, #ffff00, #ff9900); color: #000; }
+  .mb-html      { background: #ffffff; color: #000; }
+  .mb-notepad   { background: #cccccc; color: #000; border-color: #666; }
+  .mb-antims    { background: linear-gradient(180deg, #cc0000, #660000); color: #ffff00; }
+  .mb-xfiles    { background: #000; color: #66ff00; border-color: #66ff00; }
+  .mb-trek      { background: linear-gradient(180deg, #000033, #000066); color: #ffcc66; }
+  .mb-yahoo     { background: linear-gradient(180deg, #6633cc, #330099); color: #ffff00; }
+  .mb-yahoofan  { background: linear-gradient(180deg, #ffff66, #cc6600); color: #330099; border-color: #330099; }
+  .mb-motley    { background: linear-gradient(180deg, #cc0033, #660033); color: #ffff00; }
+  .mb-etrade    { background: linear-gradient(180deg, #006633, #003311); color: #00ff66; }
+  .mb-msnbc     { background: linear-gradient(180deg, #0066cc, #003366); color: #ffffff; }
+  .mb-iomega    { background: linear-gradient(180deg, #003366, #000033); color: #00ccff; }
+</style>
+</head>
+<body>
+
+  <h1><span class="heart">👽</span> WELCOME TO MIKE'S HOMEPAGE!! <span class="heart">👽</span></h1>
+
+  <div class="hr"></div>
+
+  <div class="construction">UNDER CONSTRUCTION</div>
+
+  <p class="intro">Hi!! My name is Mike and this is my home page on the<br><span class="rainbow">WORLD WIDE WEB!!!</span><br>
+  I live in Soldotna, ALASKA &nbsp;❅&nbsp; The Truth Is Out There!!</p>
+
+  <img src="mike-hs.jpg" alt="me" class="photo">
+  <div class="photo-caption">// SUBJECT: M.MERRILL // SOLDOTNA HS //</div>
+
+  <h2>♫ MY HOBBIES ♫</h2>
+  <ul class="hobbies">
+    <li>Watching THE X-FILES every Sunday on FOX</li>
+    <li>STAR TREK: The Next Generation (Picard &gt; Kirk, fight me)</li>
+    <li>Picking stocks &amp; reading The Motley Fool</li>
+    <li>Building websites in NOTEPAD.EXE</li>
+    <li>Recording episodes on VHS so I can pause &amp; analyze frames</li>
+    <li>UFO sightings on the Kenai Peninsula (I have NOTES)</li>
+  </ul>
+
+  <div class="hr"></div>
+
+  <!-- X-FILES CASE FILE -->
+  <div class="xfiles">
+    <div class="classified blink">★ CLASSIFIED ★</div>
+    <h3>★ THE X-FILES — CASE FILE</h3>
+    <p><span class="case-no">CASE NO:</span> X-091897-AK<br>
+    <span class="case-no">FIELD AGENT:</span> M. MERRILL (Soldotna Office)<br>
+    <span class="case-no">SUBJECT:</span> Strange lights observed over Cook Inlet, 02:14 AKDT</p>
+    <p><span class="case-no">FAVORITE EPISODES:</span><br>
+    &nbsp;&nbsp;» "Squeeze" (S1E3) — Eugene Tooms, the liver-eating mutant<br>
+    &nbsp;&nbsp;» "Clyde Bruckman's Final Repose" (S3E4) — Peter Boyle is a TREASURE<br>
+    &nbsp;&nbsp;» "Jose Chung's From Outer Space" (S3E20) — Reality is what you make of it<br>
+    &nbsp;&nbsp;» "Bad Blood" (S5E12) — vampire pizza guy</p>
+    <p><span class="case-no">SHIP STATUS:</span> Mulder/Scully — they are JUST FRIENDS okay???<br>
+    <span class="case-no">CONCLUSION:</span> <span class="rainbow">TRUST NO ONE.</span></p>
+  </div>
+
+  <!-- STAR TREK LCARS PANEL -->
+  <div class="lcars">
+    <div class="lcars-header">★ STARFLEET PERSONNEL FILE — NCC-1701-D</div>
+    <div class="lcars-body">
+      <div class="lcars-sidebar">
+        <div>BRIDGE</div>
+        <div>OPS</div>
+        <div>WARP 9</div>
+        <div>SHIELDS</div>
+        <div>RED ALERT</div>
+        <div>HOLODECK 3</div>
+      </div>
+      <div class="lcars-content">
+        <h3>CAPTAIN'S LOG</h3>
+        <p><span class="stardate">STARDATE 50871.4</span> — Have been re-watching "The Best of Both Worlds"
+        on VHS. Locutus of Borg still terrifying. Riker's beard, however, remains the true MVP.</p>
+        <p><strong>TOP 5 EPISODES (TNG):</strong><br>
+        1. "The Inner Light" (S5E25) — I will never recover<br>
+        2. "The Best of Both Worlds Pt I &amp; II"<br>
+        3. "Yesterday's Enterprise"<br>
+        4. "Tapestry" — Q teaches Picard a lesson<br>
+        5. "Darmok" — Shaka, when the walls fell</p>
+        <p><strong>RANKINGS:</strong> TNG &gt; DS9 &gt; TOS &gt; VOY &gt;&gt; ENT (haven't seen yet, premiering soon??)</p>
+        <p>★ <strong>LIVE LONG AND PROSPER</strong> 🖖</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STOCK PORTFOLIO -->
+  <div class="portfolio">
+    <h3>★ MIKE'S STOCK PICKS — Q3 1997 ★</h3>
+    <div class="portfolio-scroll">
+    <table class="stocks">
+      <tr>
+        <th>TICKER</th>
+        <th>COMPANY</th>
+        <th>PRICE</th>
+        <th>CHG</th>
+        <th>MIKE SAYS</th>
+      </tr>
+      <tr>
+        <td>MSFT</td>
+        <td>Microsoft Corp</td>
+        <td>$140.25</td>
+        <td class="down">▼ -2.50</td>
+        <td><strong>SELL!!!</strong> The DOJ is coming for Bill. Windows is BLOATWARE.</td>
+      </tr>
+      <tr>
+        <td>AAPL</td>
+        <td>Apple Computer</td>
+        <td>$18.50</td>
+        <td class="down">▼ -0.75</td>
+        <td>Steve is back! Contrarian PICK!!</td>
+      </tr>
+      <tr>
+        <td>YHOO</td>
+        <td>Yahoo! Inc</td>
+        <td>$48.75</td>
+        <td class="up">▲ +6.88</td>
+        <td><span class="rainbow"><strong>★★★ TOP PICK ★★★</strong></span> The PORTAL is the FUTURE. ALL IN!!!</td>
+      </tr>
+      <tr>
+        <td>IOM</td>
+        <td>Iomega Corp</td>
+        <td>$27.50</td>
+        <td class="up">▲ +1.25</td>
+        <td>ZIP DRIVES are the future of storage. 100MB!! HOLD FOREVER.</td>
+      </tr>
+      <tr>
+        <td>NSCP</td>
+        <td>Netscape</td>
+        <td>$38.00</td>
+        <td class="up">▲ +0.88</td>
+        <td>The browser wars are OVER. Marc Andreessen = genius.</td>
+      </tr>
+    </table>
+    </div>
+    <p style="font-family: 'Courier New', monospace; color: #ffff00; font-size: clamp(12px, 1.8vw, 18px); margin-top: 16px;">
+    ★ DISCLAIMER: I am 16 years old. Past performance does not guarantee future results. Etc.</p>
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker">
+      ▲ DJIA 7,945.26 +28.50 &nbsp;&nbsp; ▲ NASDAQ 1,594.20 +12.81 &nbsp;&nbsp;
+      <span class="down">▼ MSFT 140.25 (BOO!!!)</span> &nbsp;&nbsp; ▼ AAPL 18.50 &nbsp;&nbsp;
+      <span class="up">▲ YHOO 48.75 ★★★</span> &nbsp;&nbsp; ▲ IOM 27.50 &nbsp;&nbsp;
+      ▲ INTC 95.50 &nbsp;&nbsp; ▼ IBM 102.25 &nbsp;&nbsp;
+      ▲ NSCP 38.00 &nbsp;&nbsp; ▲ DELL 84.50 &nbsp;&nbsp; ▲ ORCL 36.75 &nbsp;&nbsp;
+      ★ MIKE'S PICK OF THE WEEK: <span class="up">YHOO TO $200!!!</span> ★
+    </div>
+  </div>
+
+  <h2>★ COOL LINKS ★</h2>
+  <div class="links">
+    <a href="#">Yahoo!</a> ◆
+    <a href="#">AltaVista</a> ◆
+    <a href="#">The Motley Fool</a> ◆<br>
+    <a href="#">The Lone Gunmen Page</a> ◆
+    <a href="#">Memory Alpha</a> ◆
+    <a href="#">E*TRADE</a> ◆
+    <a href="#">Ask Jeeves</a>
+  </div>
+
+  <div class="hr"></div>
+
+  <h2>✦ AWARDS &amp; AFFILIATIONS ✦</h2>
+  <div class="microbanner-grid">
+    <div class="mb mb-netscape">BEST VIEWED IN NETSCAPE 4.0</div>
+    <div class="mb mb-ie">GET INTERNET EXPLORER</div>
+    <div class="mb mb-flash">GET SHOCKWAVE FLASH</div>
+    <div class="mb mb-realplayer">REALPLAYER G2</div>
+    <div class="mb mb-geocities">POWERED BY GEOCITIES AREA51</div>
+    <div class="mb mb-html">VALID HTML 3.2</div>
+    <div class="mb mb-notepad">MADE WITH NOTEPAD</div>
+    <div class="mb mb-antims">★ MICRO$OFT FREE ZONE ★ DOWN WITH BILL!!</div>
+    <div class="mb mb-xfiles">★ I WANT TO BELIEVE ★</div>
+    <div class="mb mb-trek">★ STAR TREK FAN CLUB ★</div>
+    <div class="mb mb-yahoo">YAHOO! GEOCITIES MEMBER</div>
+    <div class="mb mb-yahoofan">★ YAHOO! TO THE MOON!! ★</div>
+    <div class="mb mb-iomega">IOMEGA ZIP DRIVE OWNER</div>
+    <div class="mb mb-motley">FOOL.COM READER</div>
+    <div class="mb mb-etrade">E*TRADE INVESTOR</div>
+    <div class="mb mb-msnbc">CNBC AT THE BUS STOP</div>
+  </div>
+
+  <div class="hr"></div>
+
+  <div class="guestbook"><span class="blink">★ SIGN MY GUESTBOOK!! ★</span></div>
+
+  <div class="counter glow">00042</div>
+  <div class="counter-label">YOU ARE VISITOR #</div>
+
+  <div class="marquee-wrap">
+    <div class="marquee">♪♪ NOW PLAYING: X-FILES_THEME.MIDI ♪♪ &nbsp; ♥ EMAIL ME: mulder1981@aol.com ♥ &nbsp; ★ THE TRUTH IS OUT THERE ★ &nbsp; 🖖 LIVE LONG AND PROSPER 🖖 &nbsp; ▲ BUY LOW, SELL HIGH ▲</div>
+  </div>
+
+  <div class="webring">
+    ✦ THIS SITE IS A PROUD MEMBER OF THE ✦<br>
+    <a href="#">&lt;&lt; PREV</a> ◆ <strong>X-FILES WEB RING</strong> ◆ <a href="#">NEXT &gt;&gt;</a> ◆ <a href="#">RANDOM</a>
+  </div>
+  <div class="webring">
+    <a href="#">&lt;&lt; PREV</a> ◆ <strong>STARFLEET ACADEMY WEBRING</strong> ◆ <a href="#">NEXT &gt;&gt;</a> ◆ <a href="#">JOIN</a>
+  </div>
+  <div class="webring">
+    <a href="#">&lt;&lt; PREV</a> ◆ <strong>YOUNG INVESTORS OF AMERICA</strong> ◆ <a href="#">NEXT &gt;&gt;</a> ◆ <a href="#">SITES</a>
+  </div>
+  <div class="webring">
+    <a href="#">&lt;&lt; PREV</a> ◆ <strong>HTML WRITERS GUILD</strong> ◆ <a href="#">NEXT &gt;&gt;</a> ◆ <a href="#">JOIN</a>
+  </div>
+
+  <div class="footer">
+    Last updated: 09 / 18 / 1997<br>
+    Best viewed in Netscape Navigator at 800×600<br>
+    © 1997 Mike Merrill. All rights reserved. NOT a federal agent.
+  </div>
+
+</body>
+</html>
