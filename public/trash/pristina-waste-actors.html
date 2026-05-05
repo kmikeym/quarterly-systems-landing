@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pristina Waste Management Actor Map</title>
+<style>
+:root {
+  --bg: #faf9f5;
+  --text-primary: #1f1f1c;
+  --text-secondary: #5f5e5a;
+  --legend-text: #5f5e5a;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0a0a0a;
+    --text-primary: #f0eee6;
+    --text-secondary: #b4b2a9;
+    --legend-text: #8a8a8a;
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 28px 16px;
+  gap: 14px;
+}
+
+.actors {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  min-height: 0;
+}
+
+.actor {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 0.5px solid;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.actor .name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 4px;
+}
+
+.actor .role {
+  font-size: 12px;
+  line-height: 1.3;
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* Color legend at the bottom */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 22px;
+  padding-top: 6px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--legend-text);
+  text-transform: uppercase;
+}
+.legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.legend .swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+  border: 0.5px solid;
+  flex-shrink: 0;
+}
+
+/* Coral - Operational core */
+.c-coral { background: #FAECE7; border-color: #993C1D; }
+.c-coral .name { color: #4A1B0C; }
+.c-coral .role { color: #993C1D; }
+
+/* Blue - Municipal */
+.c-blue { background: #E6F1FB; border-color: #185FA5; }
+.c-blue .name { color: #042C53; }
+.c-blue .role { color: #185FA5; }
+
+/* Purple - National */
+.c-purple { background: #EEEDFE; border-color: #534AB7; }
+.c-purple .name { color: #26215C; }
+.c-purple .role { color: #534AB7; }
+
+/* Teal - External */
+.c-teal { background: #E1F5EE; border-color: #0F6E56; }
+.c-teal .name { color: #04342C; }
+.c-teal .role { color: #0F6E56; }
+
+/* Amber - Citizens */
+.c-amber { background: #FAEEDA; border-color: #854F0B; }
+.c-amber .name { color: #412402; }
+.c-amber .role { color: #854F0B; }
+
+@media (prefers-color-scheme: dark) {
+  .c-coral { background: #712B13; border-color: #F0997B; }
+  .c-coral .name { color: #FAECE7; }
+  .c-coral .role { color: #F5C4B3; }
+
+  .c-blue { background: #0C447C; border-color: #85B7EB; }
+  .c-blue .name { color: #E6F1FB; }
+  .c-blue .role { color: #B5D4F4; }
+
+  .c-purple { background: #3C3489; border-color: #AFA9EC; }
+  .c-purple .name { color: #EEEDFE; }
+  .c-purple .role { color: #CECBF6; }
+
+  .c-teal { background: #085041; border-color: #5DCAA5; }
+  .c-teal .name { color: #E1F5EE; }
+  .c-teal .role { color: #9FE1CB; }
+
+  .c-amber { background: #633806; border-color: #EF9F27; }
+  .c-amber .name { color: #FAEEDA; }
+  .c-amber .role { color: #FAC775; }
+}
+</style>
+</head>
+<body>
+
+<div class="actors">
+
+  <!-- Operational core (coral) -->
+  <div class="actor c-coral" style="animation-delay: 0.05s">
+    <p class="name">Pastrimi (KRM JSC)</p>
+    <p class="role">Public collection monopoly</p>
+  </div>
+  <div class="actor c-coral" style="animation-delay: 0.15s">
+    <p class="name">Pastrimi union</p>
+    <p class="role">Workers, strike leverage</p>
+  </div>
+  <div class="actor c-coral" style="animation-delay: 0.25s">
+    <p class="name">KLMC</p>
+    <p class="role">Mirash landfill, owed money</p>
+  </div>
+
+  <!-- Municipal (blue) -->
+  <div class="actor c-blue" style="animation-delay: 0.40s">
+    <p class="name">Municipality of Pristina</p>
+    <p class="role">Main shareholder, Pastrimi</p>
+  </div>
+  <div class="actor c-blue" style="animation-delay: 0.50s">
+    <p class="name">Mayor (LDK, Rama)</p>
+    <p class="role">Wants reform, blocked</p>
+  </div>
+  <div class="actor c-blue" style="animation-delay: 0.60s">
+    <p class="name">Municipal Assembly</p>
+    <p class="role">PDK and VV majority</p>
+  </div>
+  <div class="actor c-blue" style="animation-delay: 0.70s">
+    <p class="name">Municipal inspectors</p>
+    <p class="role">Issue waste fines</p>
+  </div>
+  <div class="actor c-blue" style="animation-delay: 0.80s">
+    <p class="name">Kosovo Police</p>
+    <p class="role">Enforcement, sporadic</p>
+  </div>
+
+  <!-- National (purple) -->
+  <div class="actor c-purple" style="animation-delay: 0.95s">
+    <p class="name">MMPHI ministry</p>
+    <p class="role">Licenses operators</p>
+  </div>
+  <div class="actor c-purple" style="animation-delay: 1.05s">
+    <p class="name">AMMK</p>
+    <p class="role">Environmental monitoring</p>
+  </div>
+  <div class="actor c-purple" style="animation-delay: 1.15s">
+    <p class="name">NIPHK (IKSHPK)</p>
+    <p class="role">Public health institute</p>
+  </div>
+  <div class="actor c-purple" style="animation-delay: 1.25s">
+    <p class="name">Constitutional Court</p>
+    <p class="role">Article 52, environment</p>
+  </div>
+  <div class="actor c-purple" style="animation-delay: 1.35s">
+    <p class="name">Supreme Court</p>
+    <p class="role">Rejected repeal claim</p>
+  </div>
+  <div class="actor c-purple" style="animation-delay: 1.45s">
+    <p class="name">Ombudsperson</p>
+    <p class="role">Service complaint route</p>
+  </div>
+
+  <!-- External (teal) -->
+  <div class="actor c-teal" style="animation-delay: 1.60s">
+    <p class="name">EU delegation</p>
+    <p class="role">Accession leverage</p>
+  </div>
+  <div class="actor c-teal" style="animation-delay: 1.70s">
+    <p class="name">Press</p>
+    <p class="role">Koha, Insight, BIRN</p>
+  </div>
+  <div class="actor c-teal" style="animation-delay: 1.80s">
+    <p class="name">Civil society NGOs</p>
+    <p class="role">Atlas, GAP, Lets Do It</p>
+  </div>
+
+  <!-- Citizens (amber) -->
+  <div class="actor c-amber" style="animation-delay: 1.95s">
+    <p class="name">Households</p>
+    <p class="role">Pay flat fee, no metering</p>
+  </div>
+  <div class="actor c-amber" style="animation-delay: 2.05s">
+    <p class="name">Commercial generators</p>
+    <p class="role">Restaurants, construction</p>
+  </div>
+  <div class="actor c-amber" style="animation-delay: 2.15s">
+    <p class="name">Scrap collectors</p>
+    <p class="role">Informal recovery economy</p>
+  </div>
+
+</div>
+
+<div class="legend">
+  <span><i class="swatch c-coral"></i> Operational core</span>
+  <span><i class="swatch c-blue"></i> Municipal</span>
+  <span><i class="swatch c-purple"></i> National</span>
+  <span><i class="swatch c-teal"></i> External / civil society</span>
+  <span><i class="swatch c-amber"></i> Citizens / informal</span>
+</div>
+
+</body>
+</html>

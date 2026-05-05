@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trash, Please — FLOSSK / Prishtina Hackerspace</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --ink: #e8e8e8;
+    --dim: #8a8a8a;
+    --accent: #7fff9b;
+    --rule: #1f1f1f;
+    --frame: #2a2a2a;
+    --mono: 'JetBrains Mono','SF Mono','Menlo',ui-monospace,monospace;
+    --sans: 'Inter',ui-sans-serif,system-ui,sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #000; color: var(--ink); font-family: var(--sans); }
+  body { overflow: hidden; }
+
+  .deck {
+    position: fixed; inset: 0;
+    background: #000;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .slide {
+    position: relative;
+    display: none; flex-direction: column;
+    width: min(100vw, calc(100vh * 4 / 3));
+    height: min(100vh, calc(100vw * 3 / 4));
+    padding: 2.5vh 3vw 2vh;
+    background: var(--bg);
+  }
+  .slide.active { display: flex; }
+
+  .topbar {
+    display: flex; align-items: baseline; justify-content: space-between;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    color: var(--dim); text-transform: uppercase; opacity: 0.9;
+    padding-bottom: 10px; border-bottom: 1px solid var(--rule);
+  }
+  .topbar .title { color: var(--ink); }
+  .topbar .meta { display: flex; gap: 20px; }
+  .topbar .meta span { color: var(--dim); }
+  .topbar .num { color: var(--accent); }
+
+  .stage {
+    display: grid;
+    grid-template-rows: minmax(0, 1.2fr) auto;
+    gap: 28px;
+    flex: 1;
+    padding: 28px 0 0;
+    min-height: 0;
+  }
+
+  .still {
+    position: relative;
+    border: 1px dashed var(--frame);
+    background:
+      repeating-linear-gradient(0deg, rgba(127,255,155,0.025) 0 1px, transparent 1px 3px),
+      radial-gradient(ellipse at center, rgba(127,255,155,0.04), transparent 70%),
+      #060606;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 0;
+  }
+  .still::before, .still::after {
+    content: ''; position: absolute; width: 16px; height: 16px;
+    border: 1px solid var(--frame);
+  }
+  .still::before { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+  .still::after { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+  .still .label {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em;
+    color: var(--dim); text-transform: uppercase; text-align: center;
+    line-height: 1.7; max-width: 70%;
+  }
+  .still .label .tag { color: var(--accent); display: block; margin-bottom: 6px; font-size: 10px; }
+  .still .label .desc { color: var(--ink); font-size: 14px; letter-spacing: 0.12em; }
+  .still .label .alt { color: var(--dim); font-size: 11px; margin-top: 8px; font-style: italic; letter-spacing: 0.06em; text-transform: none; }
+  .still img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+  .still:has(img) .label { display: none; }
+  .still:has(img) { background: #060606; }
+  .still:has(img)::before, .still:has(img)::after { display: none; }
+  .still.split { gap: 4px; padding: 12px; align-items: stretch; }
+  .still.split img { flex: 1; min-width: 0; max-width: 50%; height: 100%; object-fit: contain; }
+
+  /* Build-reveal popups */
+  .still .builds {
+    position: absolute; top: 24px; left: 24px;
+    width: 36%; max-width: 420px;
+    display: flex; flex-direction: column; gap: 12px;
+    z-index: 2; counter-reset: builditem;
+  }
+  .still .build {
+    background: rgba(8,8,8,0.92);
+    border: 1px solid rgba(127,255,155,0.35);
+    border-left: 3px solid var(--accent);
+    padding: 14px 16px;
+    font-family: var(--sans); font-size: 17px; font-weight: 500;
+    color: var(--ink); line-height: 1.35;
+    counter-increment: builditem;
+    opacity: 0; transform: translateY(10px) scale(0.97);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .still .build::before {
+    content: counter(builditem, decimal-leading-zero);
+    display: block; font-family: var(--mono); font-size: 10px;
+    color: var(--accent); margin-bottom: 6px;
+    letter-spacing: 0.22em;
+  }
+  .still .build.visible { opacity: 1; transform: translateY(0) scale(1); }
+
+  /* Centered popup variant (Slide 2: 404) */
+  .still .builds.center {
+    position: absolute;
+    top: 50%; left: 50%;
+    right: auto; bottom: auto;
+    transform: translate(-50%, -50%);
+    display: block;
+    width: max-content;
+    max-width: 90%;
+  }
+  .still .builds.center .build {
+    font-family: var(--mono);
+    font-size: clamp(20px, 3.2vh, 36px);
+    font-weight: 500;
+    text-align: center;
+    padding: 32px 88px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .still .builds.center .build::before { display: none; }
+  .still .builds.center .build .errcode {
+    color: var(--accent); font-weight: 700; margin-right: 14px;
+  }
+
+  /* Win95-style desktop app icon (Slide 8 demo launcher) */
+  .win95-app-icon {
+    position: absolute;
+    bottom: 36px;
+    left: 4px;
+    width: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-decoration: none;
+    z-index: 4;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  .win95-app-icon .icon-box {
+    width: 32px;
+    height: 32px;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    box-shadow: 1px 1px 0 0 #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .win95-app-icon .icon-box .icon-glyph {
+    font-size: 18px;
+    line-height: 1;
+    filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.4));
+  }
+  .win95-app-icon .label {
+    font-family: "MS Sans Serif","Microsoft Sans Serif",Tahoma,Verdana,sans-serif;
+    font-size: 9px;
+    color: #ffffff;
+    text-align: center;
+    line-height: 1.15;
+    text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
+    padding: 1px 3px;
+    letter-spacing: 0.02em;
+    font-weight: 500;
+  }
+  .win95-app-icon:hover .label {
+    background: var(--accent);
+    color: #000;
+    text-shadow: none;
+  }
+  .win95-app-icon:active .icon-box {
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    box-shadow: none;
+  }
+
+  /* Side-by-side variant (Slide 5: image right full-height, popups centered) */
+  .slide.builds-side .still {
+    position: relative;
+    display: block;
+    padding: 16px;
+  }
+  .slide.builds-side .still img {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    height: calc(100% - 32px);
+    width: auto;
+    max-width: calc(100% - 32px);
+    object-fit: contain;
+    object-position: right center;
+    z-index: 1;
+  }
+  .slide.builds-side .still .builds {
+    position: absolute;
+    inset: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-left: 32px;
+    gap: 18px;
+    z-index: 2;
+    width: auto; max-width: none;
+    pointer-events: none;
+  }
+  .slide.builds-side .still .build {
+    position: relative;
+    font-size: clamp(18px, 2.8vh, 30px);
+    line-height: 1.3;
+    padding: 20px 28px;
+    text-align: left;
+    max-width: 50%;
+  }
+  .slide.builds-side .still .build::before {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+
+  /* Auto-show caption pair (Slide 4: movie title labels under each image) */
+  .still .captions {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .still .captions .cap {
+    position: absolute;
+    bottom: 7%;
+    background: rgba(8,8,8,0.92);
+    border: 1px solid rgba(127,255,155,0.35);
+    border-left: 3px solid var(--accent);
+    padding: 10px 20px;
+    font-family: var(--mono);
+    font-size: clamp(13px, 1.9vh, 20px);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--ink);
+    opacity: 0;
+    animation: capFadeIn 0.5s ease-out 0.25s forwards;
+  }
+  .still .captions .cap.left-cap {
+    left: 25%;
+    transform: translateX(-50%);
+  }
+  .still .captions .cap.right-cap {
+    left: 75%;
+    transform: translateX(-50%);
+    animation-delay: 0.45s;
+  }
+  @keyframes capFadeIn { to { opacity: 1; } }
+
+  /* Intro slide — title-card layout */
+  .slide.intro .stage {
+    display: flex; flex-direction: column;
+    align-items: flex-start; justify-content: center;
+    gap: 12px; padding: 0 0 4vh;
+  }
+  .intro-title {
+    font-family: var(--sans);
+    font-size: clamp(48px, 9vh, 110px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .intro-handle {
+    font-family: var(--mono);
+    font-size: clamp(20px, 3vh, 36px);
+    letter-spacing: 0.16em;
+    color: var(--accent);
+    margin-bottom: 28px;
+  }
+  .intro-bio {
+    font-family: var(--sans);
+    font-size: clamp(18px, 2.4vh, 28px);
+    color: var(--dim);
+    line-height: 1.45;
+    max-width: 80%;
+  }
+
+  .diagram-frame {
+    position: relative; border: 1px solid var(--frame);
+    background: #1a1a18; overflow: hidden; min-height: 0; border-radius: 4px;
+  }
+  .diagram-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .slide.diagram .stage { grid-template-rows: minmax(0, 1.4fr) auto; }
+
+  .script {
+    display: block; padding-top: 14px;
+  }
+  .script .slug { display: none; }
+  .script .body { max-width: none; }
+  .script .body p {
+    font-family: var(--sans);
+    font-size: clamp(18px, 2.6vh, 30px);
+    line-height: 1.45;
+    color: var(--ink);
+    margin-bottom: 10px;
+    font-weight: 400;
+  }
+  .script .body p.beat { display: none; }
+  .script .body p .ph {
+    color: var(--accent); border-bottom: 1px dotted var(--accent);
+    padding: 0 2px;
+  }
+  .script .body em { color: var(--accent); font-style: normal; font-weight: 600; }
+
+  .footer {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 11px; color: var(--dim); letter-spacing: 0.1em;
+    opacity: 0.8;
+  }
+  .footer .nav { display: none; }
+  .footer .total { color: var(--accent); }
+
+  /* Slide 7 close-callback styling */
+  .slide.ask .script .body p.signoff {
+    font-size: 22px; color: var(--ink); margin-top: 14px;
+    border-left: 2px solid var(--accent); padding-left: 14px;
+  }
+
+  @media (max-width: 900px) {
+    .script { grid-template-columns: 1fr; gap: 14px; }
+    .stage { grid-template-rows: minmax(0, 1fr) auto; }
+    .script .body p { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ============= SLIDE 1 — INTRO ============= -->
+<section class="slide intro active" data-num="1">
+  <div class="topbar">
+    <span class="title">Trash, Please · FLOSSK / Prishtina Hackerspace</span>
+    <div class="meta">
+      <span></span>
+      <span>Slide <span class="num">1</span> / 8</span>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="intro-title">Mike Merrill</div>
+    <div class="intro-handle">@KmikeyM</div>
+    <div class="intro-bio">
+      Work at Vibes DIY.<br>
+      Met some folks online.<br>
+      Visiting Kosovo for two months.
+    </div>
+  </div>
+  <div class="footer">
+    <span>Trash, Please · v0.4 · 2026-05-04</span>
+    <div class="nav"><kbd>←</kbd><kbd>→</kbd> navigate · <kbd>space</kbd> next</div>
+    <span class="total">8 slides · ~7 min</span>
+  </div>
+</section>
+
+<!-- ============= SLIDE 2 — COLD OPEN ============= -->
+<section class="slide" data-num="2">
+  <div class="topbar">
+    <span class="title">Trash, Please · FLOSSK / Prishtina Hackerspace</span>
+    <div class="meta">
+      <span>~60s</span>
+      <span>Slide <span class="num">2</span> / 8</span>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="still">
+      <img src="images/01-pristina-dumpster.jpeg" alt="Pristina dumpster" onerror="this.remove()">
+      <div class="builds center">
+        <div class="build"><span class="errcode">404</span>Schedule Not Found</div>
+      </div>
+      <div class="label">
+        <span class="tag">Photo — Mike's own</span>
+        <span class="desc">Drop file at: <code>images/01-pristina-dumpster.jpeg</code></span>
+        <span class="alt">alt: 2-frame composite — same dumpster, two locations / two days · proves "the dumpsters move"</span>
+      </div>
+    </div>
+    <div class="script">
+      <div class="slug">Cold Open<span class="runtime">0:00 – 1:00</span></div>
+      <div class="body">
+        <p>This is a corner near my apartment.</p>
+        <p>I've been here about a month and <em>the dumpsters move.</em> They aren't always in the same place. And it's not clear when they get picked up.</p>
+        <p>I figured okay, fine, there must be a schedule. So I tried to find it.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Trash, Please · v0.4 · 2026-05-04</span>
+    <div class="nav"><kbd>←</kbd><kbd>→</kbd> navigate · <kbd>space</kbd> next</div>
+    <span class="total">8 slides · ~7 min</span>
+  </div>
+</section>
+
+<!-- ============= SLIDE 2 ============= -->
+<section class="slide diagram" data-num="3">
+  <div class="topbar">
+    <span class="title">Trash, Please · FLOSSK / Prishtina Hackerspace</span>
+    <div class="meta">
+      <span>~75s</span>
+      <span>Slide <span class="num">3</span> / 8</span>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="diagram-frame">
+      <iframe id="actor-map" src="pristina-waste-actors.html" title="Pristina Waste Management Actor Map"></iframe>
+    </div>
+    <div class="script">
+      <div class="slug">The Rabbit Hole<span class="runtime">1:00 – 2:15</span></div>
+      <div class="body">
+        <p>But I did find something interesting.</p>
+        <p>I mapped out a whole network. The operations layer connects to the city layer, which connects to the national layer, and then trash works into the international level. And then all the way back to the everyday people.</p>
+        <p>This is a <em>wildly complicated system.</em></p>
+        <p>And it's fascinating.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Trash, Please · v0.4 · 2026-05-04</span>
+    <div class="nav"><kbd>←</kbd><kbd>→</kbd> navigate · <kbd>space</kbd> next</div>
+    <span class="total">8 slides · ~7 min</span>
+  </div>
+</section>
+
+<!-- ============= SLIDE 3 ============= -->
+<section class="slide" data-num="4">
+  <div class="topbar">
+    <span class="title">Trash, Please · FLOSSK / Prishtina Hackerspace</span>
+    <div class="meta">
+      <span>~60s</span>
+      <span>Slide <span class="num">4</span> / 8</span>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="still split">
+      <img src="images/03-sneakers.png" alt="Sneakers (1992)" onerror="this.remove()">
+      <img src="images/03-hackers.jpg" alt="Hackers (1995)" onerror="this.remove()">
+      <div class="captions">
+        <span class="cap left-cap">Sneakers · 1992</span>
+        <span class="cap right-cap">Hackers · 1995</span>
+      </div>
+      <div class="label">
+        <span class="tag">Two stills — side by side</span>
+        <span class="desc">Drop files at: <code>images/03-sneakers.png</code> + <code>images/03-hackers.jpg</code></span>
+        <span class="alt">left: Sneakers team · right: Hackers gang · whichever shots best read "crew studying a system"</span>
+      </div>
+    </div>
+    <div class="script">
+      <div class="slug">The Connection<span class="runtime">2:00 – 3:00</span></div>
+      <div class="body">
+        <p>This makes me think of two of my favorite movies.</p>
+        <p><em>Sneakers,</em> 1992. <em>Hackers,</em> 1995.</p>
+        <p>In <em>Hackers,</em> they explore and they map. They dumpster-dive for manuals. The trash is key.</p>
+        <p>In <em>Sneakers,</em> the team also collects trash. They examine it. They build a whole profile from it. The trash tells them everything.</p>
+        <p>Trash tells us how systems work.</p>
+        <p>This room is full of system thinkers. <em>So let's explore the trash.</em></p>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Trash, Please · v0.4 · 2026-05-04</span>
+    <div class="nav"><kbd>←</kbd><kbd>→</kbd> navigate · <kbd>space</kbd> next</div>
+    <span class="total">8 slides · ~7 min</span>
+  </div>
+</section>
+
+<!-- ============= SLIDE 5 — THE IDEA ============= -->
+<section class="slide builds-side" data-num="5">
+  <div class="topbar">
+    <span class="title">Trash, Please · FLOSSK / Prishtina Hackerspace</span>
+    <div class="meta">
+      <span>~75s</span>
+      <span>Slide <span class="num">5</span> / 8</span>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="still">
+      <img src="images/04-sneakers.jpg" alt="Sneakers — crew at the monitor" onerror="this.remove()">
+      <div class="builds">
+        <div class="build">Complex systems are easier to play</div>
+        <div class="build">Open source</div>
+        <div class="build">You have to understand it first</div>
+      </div>
+      <div class="label">
+        <span class="tag">Still</span>
+        <span class="desc">Drop file at: <code>images/04-sneakers.jpg</code></span>
+        <span class="alt">Sneakers (1992) — crew gathered around the monitor</span>
+      </div>
+    </div>
+    <div class="script">
+      <div class="slug">The Idea<span class="runtime">3:00 – 4:15</span></div>
+      <div class="body">
+        <p>The idea isn't to "fix" a trash problem. I don't even want to call it a problem.</p>
+        <p>It's a system, and we can model it.</p>
+        <p>Once we have a model we can build a simulation. Almost like a game... see how the pieces impact each other.</p>
+        <p><em>One.</em> Complex systems are easier to understand by playing them. Think SimCity.</p>
+        <p><em>Two.</em> It's open. It sits on a website, open license on GitHub.</p>
+        <p><em>Three.</em> Building it forces precision. You can't model a system you don't understand.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Trash, Please · v0.4 · 2026-05-04</span>
+    <div class="nav"><kbd>←</kbd><kbd>→</kbd> navigate · <kbd>space</kbd> next</div>
+    <span class="total">8 slides · ~7 min</span>
+  </div>
+</section>
+
+<!-- ============= SLIDE 6 — NO WINNER ============= -->
+<section class="slide" data-num="6">
+  <div class="topbar">
+    <span class="title">Trash, Please · FLOSSK / Prishtina Hackerspace</span>
+    <div class="meta">
+      <span>~45s</span>
+      <span>Slide <span class="num">6</span> / 8</span>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="still">
+      <img src="images/06-sneakers.jpg" alt="Sneakers (1992)" onerror="this.remove()">
+      <div class="label">
+        <span class="tag">Still</span>
+        <span class="desc">Drop file at: <code>images/06-sneakers.jpg</code></span>
+        <span class="alt">Sneakers (1992) — crew shot · "no winner, the sim wins" beat</span>
+      </div>
+    </div>
+    <div class="script">
+      <div class="slug">No Winner<span class="runtime">5:00 – 5:45</span></div>
+      <div class="body">
+        <p>And importantly, we work on this together.</p>
+        <p>Normal hackathons are competitive. Teams pitch, judges pick a winner, everyone else's code goes in a drawer.</p>
+        <p><em>To explore the trash we work together.</em></p>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Trash, Please · v0.4 · 2026-05-04</span>
+    <div class="nav"><kbd>←</kbd><kbd>→</kbd> navigate · <kbd>space</kbd> next</div>
+    <span class="total">8 slides · ~7 min</span>
+  </div>
+</section>
+
+<!-- ============= SLIDE 7 — THE FORMAT ============= -->
+<section class="slide builds-side" data-num="7">
+  <div class="topbar">
+    <span class="title">Trash, Please · FLOSSK / Prishtina Hackerspace</span>
+    <div class="meta">
+      <span>~60s</span>
+      <span>Slide <span class="num">7</span> / 8</span>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="still">
+      <img src="images/05-dumpster.png" alt="Hackers — dumpster-diving scene" onerror="this.remove()">
+      <div class="builds">
+        <div class="build">Teams</div>
+        <div class="build">Research</div>
+        <div class="build">Build</div>
+        <div class="build">Connect</div>
+      </div>
+      <div class="label">
+        <span class="tag">Still</span>
+        <span class="desc">Drop file at: <code>images/05-dumpster.png</code></span>
+        <span class="alt">Hackers — dumpster-diving scene · the team digging into trash</span>
+      </div>
+    </div>
+    <div class="script">
+      <div class="slug">The Format<span class="runtime">5:45 – 6:45</span></div>
+      <div class="body">
+        <p>So let's <em>hack the trash.</em></p>
+        <p>How far can we get in a weekend?</p>
+        <p>We break up into teams. Each team takes a piece. One team models municipal collection. One team models the recycling stream. One team models the informal scavenging economy. One team models the EU compliance reporting layer.</p>
+        <p>We define an interface first. We research, we build, and we connect it all together.</p>
+        <p>I can sponsor with free Claude tokens.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Trash, Please · v0.4 · 2026-05-04</span>
+    <div class="nav"><kbd>←</kbd><kbd>→</kbd> navigate · <kbd>space</kbd> next</div>
+    <span class="total">8 slides · ~7 min</span>
+  </div>
+</section>
+
+<!-- ============= SLIDE 7 ============= -->
+<section class="slide ask" data-num="8">
+  <div class="topbar">
+    <span class="title">Trash, Please · FLOSSK / Prishtina Hackerspace</span>
+    <div class="meta">
+      <span>~75s</span>
+      <span>Slide <span class="num">8</span> / 8</span>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="still">
+      <img src="images/07-hackers.jpg" alt="Hackers (1995)" onerror="this.remove()">
+      <div class="builds center">
+        <div class="build"><span class="errcode">May 9 + 10</span>This Weekend</div>
+      </div>
+      <div class="label">
+        <span class="tag">Still — closing callback</span>
+        <span class="desc">Drop file at: <code>images/07-hackers.jpg</code></span>
+        <span class="alt">Hackers (1995) — closing callback · bookends the deck</span>
+      </div>
+    </div>
+    <div class="script">
+      <div class="slug">The Ask<span class="runtime">6:00 – 7:15</span></div>
+      <div class="body">
+        <p>The practical stuff.</p>
+        <p>This coming weekend if we can. Token allocation that runs out soon.</p>
+        <p>We just need people, power, internet... and a willingness to dig into the trash.</p>
+        <p class="signoff"><em>The next steps are for whoever shows up.</em></p>
+      </div>
+    </div>
+  </div>
+  <a class="win95-app-icon" href="sim-demo/" target="_blank" title="Click to launch the Pastrimi CEO simulation">
+    <div class="icon-box"><span class="icon-glyph">🗑️</span></div>
+    <div class="label">Trash_Please<br>.exe</div>
+  </a>
+  <div class="footer">
+    <span>Trash, Please · v0.4 · 2026-05-04</span>
+    <div class="nav"><kbd>←</kbd><kbd>→</kbd> navigate · <kbd>space</kbd> next</div>
+    <span class="total">8 slides · ~7 min</span>
+  </div>
+</section>
+
+</div>
+
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let i = 0;
+
+  function show(n, mode) {
+    n = (n + slides.length) % slides.length;
+    slides[i].classList.remove('active');
+    slides[n].classList.add('active');
+    i = n;
+
+    // Builds: hide all on forward/jump, show all on backward
+    const builds = slides[n].querySelectorAll('.build');
+    builds.forEach(b => {
+      if (mode === 'back') b.classList.add('visible');
+      else b.classList.remove('visible');
+    });
+
+    // Replay iframe animations (e.g. actor map fade-in) on each activation
+    const iframe = slides[n].querySelector('iframe');
+    if (iframe) iframe.src = iframe.src;
+  }
+
+  function nav(dir) {
+    const cur = slides[i];
+    const builds = cur.querySelectorAll('.build');
+    if (builds.length) {
+      const visible = cur.querySelectorAll('.build.visible');
+      if (dir > 0 && visible.length < builds.length) {
+        builds[visible.length].classList.add('visible');
+        return;
+      }
+      if (dir < 0 && visible.length > 0) {
+        builds[visible.length - 1].classList.remove('visible');
+        return;
+      }
+    }
+    show(i + dir, dir > 0 ? 'fwd' : 'back');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { nav(+1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { nav(-1); e.preventDefault(); }
+    else if (e.key === 'Home') { show(0, 'jump'); }
+    else if (e.key === 'End') { show(slides.length-1, 'jump'); }
+    else if (/^[1-8]$/.test(e.key)) { show(parseInt(e.key,10)-1, 'jump'); }
+  });
+  document.addEventListener('click', (e) => {
+    // ignore clicks on nav hint area (kbd)
+    if (e.target.tagName === 'KBD') return;
+    nav(+1);
+  });
+})();
+</script>
+</body>
+</html>

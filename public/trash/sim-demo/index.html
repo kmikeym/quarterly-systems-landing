@@ -1,0 +1,2423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pastrimi Operations Console</title>
+<style>
+:root {
+  --gray:        #c0c0c0;
+  --gray-light:  #ffffff;
+  --gray-mid:    #808080;
+  --gray-dark:   #000000;
+  --gray-fill:   #dfdfdf;
+  --teal-bg:     #008080;
+  --titlebar-1:  #000080;
+  --titlebar-2:  #1084d0;
+  --titlebar-3:  #7f7f7f;
+  --titlebar-4:  #b5b5b5;
+  --highlight:   #000080;
+  --highlight-text: #ffffff;
+  --field-bg:    #ffffff;
+  --positive:    #008000;
+  --negative:    #aa0000;
+  --warn:        #806000;
+  --met:         #008000;
+  --breach:      #aa0000;
+  --edge:        #806000;
+  --font-sys:    "MS Sans Serif","Microsoft Sans Serif","Pixelated MS Sans Serif",Tahoma,Verdana,sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100vh;
+  overflow: hidden;
+  background: var(--teal-bg);
+  color: var(--gray-dark);
+  font-family: var(--font-sys);
+  font-size: 14px;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: default;
+  user-select: none;
+}
+
+body { display: flex; padding: 0; }
+
+/* ===== WINDOW ===== */
+.window {
+  background: var(--gray);
+  border-top: 2px solid var(--gray-light);
+  border-left: 2px solid var(--gray-light);
+  border-right: 2px solid var(--gray-mid);
+  border-bottom: 2px solid var(--gray-mid);
+  box-shadow: 1px 1px 0 0 var(--gray-dark), inset -1px -1px 0 0 var(--gray-mid);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 8px;
+  min-height: 0;
+}
+
+.title-bar {
+  background: linear-gradient(90deg, var(--titlebar-1) 0%, var(--titlebar-2) 100%);
+  color: white;
+  padding: 4px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 13px;
+  height: 26px;
+  flex-shrink: 0;
+}
+.title-bar .title-text {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-left: 2px;
+}
+.title-bar .title-icon {
+  width: 18px;
+  height: 18px;
+  background: #c0c0c0;
+  border: 1px solid #000;
+  display: inline-block;
+  position: relative;
+}
+.title-bar .title-icon::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: linear-gradient(135deg, #ff8 0%, #aa6 50%, #884 100%);
+}
+.title-bar .controls { display: flex; gap: 2px; }
+.title-bar .ctrl {
+  width: 20px;
+  height: 18px;
+  background: var(--gray);
+  border-top: 1px solid var(--gray-light);
+  border-left: 1px solid var(--gray-light);
+  border-right: 1px solid var(--gray-mid);
+  border-bottom: 1px solid var(--gray-mid);
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--gray-dark);
+  text-align: center;
+  line-height: 16px;
+}
+
+.menu-bar {
+  background: var(--gray);
+  padding: 3px 4px;
+  display: flex;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.menu-bar .menu { padding: 3px 10px; }
+.menu-bar .menu:hover { background: var(--highlight); color: var(--highlight-text); }
+.menu-bar .menu .underline { text-decoration: underline; }
+
+.content {
+  flex: 1;
+  padding: 8px;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 8px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.group {
+  background: var(--gray);
+  border-top: 1px solid var(--gray-mid);
+  border-left: 1px solid var(--gray-mid);
+  border-right: 1px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
+  position: relative;
+  padding: 12px 8px 8px;
+  min-height: 0;
+}
+.group .group-label {
+  position: absolute;
+  top: -8px;
+  left: 10px;
+  background: var(--gray);
+  padding: 0 6px;
+  font-size: 13px;
+}
+
+/* ===== TOP STATUS STRIP ===== */
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  font-size: 13px;
+}
+.status-cell {
+  background: var(--field-bg);
+  border-top: 1px solid var(--gray-mid);
+  border-left: 1px solid var(--gray-mid);
+  border-right: 1px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.status-cell .label {
+  font-size: 11px;
+  color: var(--gray-mid);
+  text-transform: uppercase;
+}
+.status-cell .value {
+  font-weight: bold;
+  font-size: 17px;
+  font-family: "Courier New","Courier",monospace;
+}
+.status-cell .value.positive { color: var(--positive); }
+.status-cell .value.negative { color: var(--negative); }
+.status-cell .value.warn { color: var(--warn); }
+
+/* ===== MANDATES ===== */
+.mandates-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  height: 100%;
+}
+.mandate-card {
+  background: var(--field-bg);
+  border-top: 1px solid var(--gray-mid);
+  border-left: 1px solid var(--gray-mid);
+  border-right: 1px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12px;
+  position: relative;
+}
+.mandate-card .holder {
+  font-weight: bold;
+  font-size: 13px;
+}
+.mandate-card .text {
+  color: var(--gray-mid);
+  line-height: 1.3;
+  flex: 1;
+  font-size: 12px;
+}
+.mandate-card .status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  font-family: "Courier New",monospace;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 3px;
+}
+.mandate-card .status {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.mandate-card .status.met    { color: var(--met); }
+.mandate-card .status.edge   { color: var(--edge); }
+.mandate-card .status.breach { color: var(--breach); }
+.mandate-card .meter {
+  flex: 1;
+  height: 9px;
+  background: #fff;
+  border-top: 1px solid var(--gray-mid);
+  border-left: 1px solid var(--gray-mid);
+  border-right: 1px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
+  padding: 1px;
+}
+.mandate-card .meter .fill {
+  height: 100%;
+  transition: width 0.4s ease, background 0.3s ease;
+}
+.mandate-card .meter .fill.met    { background: var(--met); }
+.mandate-card .meter .fill.edge   { background: var(--edge); }
+.mandate-card .meter .fill.breach { background: var(--breach); }
+
+/* ===== MAIN: INBOX + EMAIL DETAIL ===== */
+.main-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 8px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.inbox-frame, .detail-frame {
+  background: var(--field-bg);
+  border-top: 1px solid var(--gray-mid);
+  border-left: 1px solid var(--gray-mid);
+  border-right: 1px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
+  overflow: auto;
+  padding: 0;
+}
+
+.inbox-list {
+  display: flex;
+  flex-direction: column;
+}
+.email-item {
+  padding: 7px 10px;
+  border-bottom: 1px solid #ddd;
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+  align-items: start;
+  font-size: 13px;
+  cursor: default;
+  line-height: 1.3;
+}
+.email-item:hover { background: #d4d0c8; }
+.email-item.selected { background: var(--highlight); color: var(--highlight-text); }
+.email-item.selected .sender, .email-item.selected .subject { color: var(--highlight-text); }
+.email-item .icon {
+  font-family: "Courier New",monospace;
+  font-weight: bold;
+  font-size: 14px;
+  margin-top: 1px;
+}
+.email-item .sender { font-weight: bold; font-size: 13px; }
+.email-item .subject { color: var(--gray-mid); font-size: 12px; line-height: 1.25; margin-top: 2px; }
+.email-item.resolved .sender, .email-item.resolved .subject { text-decoration: line-through; color: #888; }
+.email-item.resolved.selected .sender, .email-item.resolved.selected .subject { color: #ddd; }
+
+.detail-frame .empty {
+  color: var(--gray-mid);
+  font-style: italic;
+  text-align: center;
+  padding: 40px 20px;
+}
+.detail-content {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+  height: 100%;
+}
+.detail-content .header-row {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 6px 14px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 8px;
+  font-size: 13px;
+}
+.detail-content .header-row .field-label {
+  color: var(--gray-mid);
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: bold;
+}
+.detail-content .header-row .field-val { font-weight: bold; font-size: 13px; }
+.detail-content .body-text {
+  white-space: pre-wrap;
+  line-height: 1.55;
+  flex: 1;
+  overflow: auto;
+  font-family: "Courier New","Courier",monospace;
+  font-size: 13px;
+  background: #fafafa;
+  padding: 10px 12px;
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+.detail-content .options-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.detail-content .options-label {
+  font-size: 11px;
+  color: var(--gray-mid);
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.06em;
+}
+.detail-content .resolved-banner {
+  background: #d4d0c8;
+  border: 1px dotted var(--gray-mid);
+  padding: 7px 12px;
+  font-size: 12px;
+  color: var(--gray-mid);
+  font-style: italic;
+}
+
+/* ===== Win95 BUTTONS ===== */
+.btn {
+  background: var(--gray);
+  border-top: 1px solid var(--gray-light);
+  border-left: 1px solid var(--gray-light);
+  border-right: 1px solid var(--gray-mid);
+  border-bottom: 1px solid var(--gray-mid);
+  box-shadow: inset -1px -1px 0 0 var(--gray-dark);
+  padding: 7px 14px;
+  font-family: var(--font-sys);
+  font-size: 13px;
+  color: var(--gray-dark);
+  cursor: default;
+  text-align: left;
+  position: relative;
+}
+.btn:active:not(:disabled) {
+  border-top: 1px solid var(--gray-mid);
+  border-left: 1px solid var(--gray-mid);
+  border-right: 1px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
+  box-shadow: none;
+  padding: 8px 13px 6px 15px;
+}
+.btn:disabled { color: var(--gray-mid); text-shadow: 1px 1px 0 var(--gray-light); }
+.btn.btn-primary { font-weight: bold; padding: 9px 22px; font-size: 15px; text-align: center; min-width: 160px; }
+.btn.btn-ignore { color: #555; font-style: italic; }
+
+/* ===== TICK BAR ===== */
+.tick-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.tick-bar .log-strip {
+  flex: 1;
+  background: var(--field-bg);
+  border-top: 1px solid var(--gray-mid);
+  border-left: 1px solid var(--gray-mid);
+  border-right: 1px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
+  padding: 6px 10px;
+  font-family: "Courier New",monospace;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 30px;
+  display: flex;
+  align-items: center;
+}
+.tick-bar .log-strip .wk { font-weight: bold; }
+
+.status-bar {
+  background: var(--gray);
+  border-top: 1px solid var(--gray-light);
+  padding: 3px 5px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.status-bar .left, .status-bar .right {
+  background: var(--gray);
+  border-top: 1px solid var(--gray-mid);
+  border-left: 1px solid var(--gray-mid);
+  border-right: 1px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
+  padding: 3px 10px;
+}
+.status-bar .right { font-family: "Courier New",monospace; }
+
+/* ===== END DIALOG ===== */
+.dialog-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+.dialog-overlay.show { display: flex; }
+.dialog {
+  background: var(--gray);
+  border-top: 2px solid var(--gray-light);
+  border-left: 2px solid var(--gray-light);
+  border-right: 2px solid var(--gray-mid);
+  border-bottom: 2px solid var(--gray-mid);
+  box-shadow: 2px 2px 0 0 var(--gray-dark);
+  width: 520px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+}
+.dialog .dialog-body {
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dialog .verdict-row { display: flex; gap: 14px; align-items: flex-start; }
+.dialog .verdict-icon {
+  width: 32px; height: 32px;
+  background: var(--field-bg);
+  border-top: 1px solid var(--gray-mid);
+  border-left: 1px solid var(--gray-mid);
+  border-right: 1px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.dialog .verdict { font-weight: bold; font-size: 16px; line-height: 1.3; margin-bottom: 6px; }
+.dialog .verdict.win  { color: var(--positive); }
+.dialog .verdict.lose { color: var(--negative); }
+.dialog .takeaway { font-size: 13px; line-height: 1.45; }
+.dialog .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.dialog .summary-cell {
+  background: var(--field-bg);
+  border-top: 1px solid var(--gray-mid);
+  border-left: 1px solid var(--gray-mid);
+  border-right: 1px solid var(--gray-light);
+  border-bottom: 1px solid var(--gray-light);
+  padding: 6px 8px;
+  font-size: 12px;
+}
+.dialog .summary-cell .label { color: var(--gray-mid); font-size: 11px; }
+.dialog .summary-cell .val { font-weight: bold; font-family: "Courier New",monospace; font-size: 16px; }
+.dialog .dialog-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  border-top: 1px solid var(--gray-light);
+}
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="title-bar">
+    <div class="title-text">
+      <span class="title-icon"></span>
+      <span>Pastrimi Operations Console — Petrit Reçica, CEO</span>
+    </div>
+    <div class="controls">
+      <div class="ctrl">_</div>
+      <div class="ctrl">▢</div>
+      <div class="ctrl">✕</div>
+    </div>
+  </div>
+
+  <div class="menu-bar">
+    <div class="menu"><span class="underline">F</span>ile</div>
+    <div class="menu"><span class="underline">E</span>dit</div>
+    <div class="menu"><span class="underline">O</span>perations</div>
+    <div class="menu"><span class="underline">R</span>eports</div>
+    <div class="menu"><span class="underline">H</span>elp</div>
+  </div>
+
+  <div class="content">
+
+    <div class="group">
+      <span class="group-label">Operations Status</span>
+      <div class="status-strip">
+        <div class="status-cell"><span class="label">Week</span><span class="value" id="stat-week">1 / 52</span></div>
+        <div class="status-cell"><span class="label">Cash</span><span class="value" id="stat-cash">€8,000</span></div>
+        <div class="status-cell"><span class="label">Backlog</span><span class="value" id="stat-backlog">0t</span></div>
+        <div class="status-cell"><span class="label">Income/wk</span><span class="value" id="stat-income">€—</span></div>
+        <div class="status-cell"><span class="label">Costs/wk</span><span class="value" id="stat-costs">€—</span></div>
+        <div class="status-cell"><span class="label">KLMC Debt</span><span class="value" id="stat-debt">€1,900</span></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <span class="group-label">Mandates from Constituents</span>
+      <div class="mandates-grid" id="mandates"></div>
+    </div>
+
+    <div class="main-grid">
+      <div class="group">
+        <span class="group-label">Inbox — Week <span id="inbox-wk">1</span></span>
+        <div class="inbox-frame" id="inbox-frame"></div>
+      </div>
+      <div class="group">
+        <span class="group-label">Selected Message</span>
+        <div class="detail-frame" id="detail-frame"></div>
+      </div>
+    </div>
+
+    <div class="tick-bar">
+      <div class="log-strip" id="log-strip">System ready.</div>
+      <button class="btn btn-primary" id="tick-btn">Advance Week ▶</button>
+    </div>
+
+  </div>
+
+  <div class="status-bar">
+    <span class="left" id="status-left">Ready</span>
+    <span class="right" id="status-right">PRISTINA · CAPS</span>
+  </div>
+</div>
+
+<div class="dialog-overlay" id="end-overlay">
+  <div class="dialog">
+    <div class="title-bar">
+      <div class="title-text">
+        <span class="title-icon"></span>
+        <span id="end-title">End of Term</span>
+      </div>
+      <div class="controls"><div class="ctrl">✕</div></div>
+    </div>
+    <div class="dialog-body">
+      <div class="verdict-row">
+        <div class="verdict-icon" id="end-icon">!</div>
+        <div>
+          <div class="verdict" id="end-verdict">—</div>
+          <div class="takeaway" id="end-takeaway">—</div>
+        </div>
+      </div>
+      <div class="summary" id="end-summary"></div>
+    </div>
+    <div class="dialog-buttons">
+      <button class="btn" id="replay-btn">Try Again</button>
+      <button class="btn" disabled>Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  function mkEl(tag, opts) {
+    const e = document.createElement(tag);
+    if (opts) {
+      if (opts.cls) e.className = opts.cls;
+      if (opts.text) e.textContent = opts.text;
+      if (opts.style) e.style.cssText = opts.style;
+      if (opts.onclick) e.onclick = opts.onclick;
+      if (opts.disabled) e.disabled = true;
+    }
+    return e;
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function fmtMoney(n) {
+    const s = Math.abs(Math.round(n)).toLocaleString('en-US');
+    return (n < 0 ? '−€' : '€') + s;
+  }
+  function bumpSat(key, delta) {
+    state.satisfaction[key] = Math.max(0, Math.min(100, state.satisfaction[key] + delta));
+  }
+  function logEntry(text) {
+    state.log.unshift({ week: state.week, text: text });
+    if (state.log.length > 8) state.log.pop();
+  }
+
+  // ====== INITIAL STATE ======
+  const TOTAL_WEEKS = 52;
+
+  function makeInitialState() {
+    return {
+      week: 1,
+      cash: 8000,
+      backlog: 0,
+      capacity: 380,
+      trashGenerated: 410,
+      feeMonthly: 6.20,
+      subscribedHouseholds: 720,
+      withheldHouseholds: 230,
+      extraWorkers: 0,
+      recyclingMandate: false,
+      klmcDebt: 1900,
+      satisfaction: { households: 45, union: 60, mayor: 30, assembly: 70, klmc: 35, eu: 50 },
+      lastWeeklyRevenue: 0,
+      lastWeeklyCost: 0,
+      lastCoverage: null,
+      onStrike: false,
+      strikeWeeks: 0,
+      consecutiveLowUnion: 0,
+      euSanctionApplied: false,
+      oneShotsUsed: { eu: false, sue: false, halt: false, legalShield: false },
+      pendingForcedEmail: null,  // queued email for next week from cascading consequences
+      inbox: [],
+      selectedEmailId: null,
+      log: [],
+      gameOver: null,
+      _wageBump: 0,
+      emailIdCounter: 0,
+      templateHistory: {},  // templateId → last week fired (for cooldowns)
+    };
+  }
+
+  let state = makeInitialState();
+
+  // ====== MANDATES ======
+  // Each mandate has: holder (stakeholder), text (what they want), check(state) -> 'met'|'edge'|'breach'
+  const MANDATES = [
+    {
+      id: 'm_households', holder: 'Households',
+      text: 'Coverage ≥ 90%, backlog ≤ 30t',
+      check: function(s) {
+        const cov = s.lastCoverage === null ? 1 : s.lastCoverage;
+        if (cov >= 0.90 && s.backlog <= 30) return 'met';
+        if (cov >= 0.80 && s.backlog <= 80) return 'edge';
+        return 'breach';
+      },
+      meterValue: function(s) { return s.satisfaction.households; }
+    },
+    {
+      id: 'm_union', holder: 'Krasniqi (Union)',
+      text: 'Wages stable, no layoffs',
+      check: function(s) {
+        if (s.satisfaction.union >= 55) return 'met';
+        if (s.satisfaction.union >= 35) return 'edge';
+        return 'breach';
+      },
+      meterValue: function(s) { return s.satisfaction.union; }
+    },
+    {
+      id: 'm_mayor', holder: 'Mayor Rama',
+      text: 'No public broadside; respect his office',
+      check: function(s) {
+        if (s.satisfaction.mayor >= 45) return 'met';
+        if (s.satisfaction.mayor >= 25) return 'edge';
+        return 'breach';
+      },
+      meterValue: function(s) { return s.satisfaction.mayor; }
+    },
+    {
+      id: 'm_assembly', holder: 'Assembly (PDK+VV)',
+      text: 'Defend the Dec 2024 regulation publicly',
+      check: function(s) {
+        if (s.satisfaction.assembly >= 60) return 'met';
+        if (s.satisfaction.assembly >= 40) return 'edge';
+        return 'breach';
+      },
+      meterValue: function(s) { return s.satisfaction.assembly; }
+    },
+    {
+      id: 'm_klmc', holder: 'KLMC (Velija)',
+      text: 'Outstanding debt below €3,000',
+      check: function(s) {
+        if (s.klmcDebt < 2200) return 'met';
+        if (s.klmcDebt < 3500) return 'edge';
+        return 'breach';
+      },
+      meterValue: function(s) {
+        // Inverse — less debt = higher score (out of 100)
+        return Math.max(0, Math.min(100, Math.round(100 - (s.klmcDebt / 50))));
+      }
+    },
+    {
+      id: 'm_eu', holder: 'EU Office',
+      text: 'Visible recycling progress',
+      check: function(s) {
+        if (s.recyclingMandate && s.satisfaction.eu >= 55) return 'met';
+        if (s.satisfaction.eu >= 40) return 'edge';
+        return 'breach';
+      },
+      meterValue: function(s) { return s.satisfaction.eu; }
+    },
+  ];
+
+  // ====== ECONOMICS HELPERS ======
+  function calcWeeklyRevenue(s) {
+    if (s.onStrike) return 0;  // no service = some lose payments, simplified to 0
+    return Math.round((s.feeMonthly * s.subscribedHouseholds) / 4);
+  }
+  function calcWeeklyCost(s) {
+    let cost = 1100
+      + (s.extraWorkers * 300)
+      + (s.recyclingMandate ? 600 : 0)
+      + (s._wageBump || 0);
+    if (s.onStrike) cost = Math.round(cost * 0.4);  // strike — partial pay (admin only), saves money
+    return cost;
+  }
+
+  // ====== EMAIL TEMPLATES ======
+  // Each template: id, sender, subject(s), body(s), options(s), eligibility(s)
+  // The (s) variants are functions of state, so we get parametrized content.
+
+  function generateChiefBriefing(s) {
+    const lines = ['Petrit,'];
+    lines.push('Weekly read-out for week ' + s.week + ':');
+    lines.push('');
+    if (s.satisfaction.union < 35) lines.push('• Krasniqi is one bad meeting from a strike. The Sunday committee is talking.');
+    else if (s.satisfaction.union > 70) lines.push('• Krasniqi steady. Union calm.');
+    else lines.push('• Union watching wages closely.');
+
+    if (s.satisfaction.mayor < 25) lines.push('• Mayor Rama leaked another quote to KOHA. He is preparing something.');
+    else if (s.satisfaction.mayor < 40) lines.push('• Mayor cold but not in motion.');
+    else lines.push('• Mayor diplomatic this week.');
+
+    if (s.satisfaction.klmc < 30) lines.push('• Velija called the KLMC Board. They are weighing whether to refuse trucks.');
+    else if (s.klmcDebt > 2500) lines.push('• Velija anxious about the rising invoice but communicative.');
+    else lines.push('• Velija quiet. Invoice manageable.');
+
+    if (s.satisfaction.assembly > 70) lines.push('• Assembly bloc rock-solid behind us.');
+    else if (s.satisfaction.assembly < 50) lines.push('• PDK assembly group grumbling. Watch for defections.');
+
+    if (s.satisfaction.eu < 40) lines.push('• EU Office wrote to Pristina. Annual report concerns.');
+
+    if (s.satisfaction.households < 40) lines.push('• Households complaining loudly. KOHA quotes incoming.');
+
+    if (s.withheldHouseholds > 0) lines.push('• Reminder: ~' + (s.withheldHouseholds * 100) + ' households still unregistered. Lost revenue ongoing.');
+
+    if (s.cash < 2000) lines.push('• Cash low. Watch payroll.');
+
+    // Hint based on lowest faction
+    const sortedLow = Object.keys(s.satisfaction).map(function(k) { return [k, s.satisfaction[k]]; }).sort(function(a, b) { return a[1] - b[1]; });
+    const worst = sortedLow[0][0];
+    const hints = {
+      households: 'Suggest: cleanup blitz, visible service, or registry push.',
+      union: 'Suggest: Krasniqi appreciates wage moves more than promises.',
+      mayor: 'Suggest: a small concession or symbolic backing of his office.',
+      assembly: 'Suggest: don\'t back the Mayor publicly. They want loyalty.',
+      klmc: 'Suggest: even a partial payment buys you a month with Velija.',
+      eu: 'Suggest: a formal recycling commitment helps the annual report.',
+    };
+    lines.push('');
+    lines.push('Recommendation: ' + (hints[worst] || ''));
+    lines.push('');
+    lines.push('— Mira');
+    return lines.join('\n');
+  }
+
+  // Email template definitions
+  const TEMPLATES = [
+    {
+      id: 't_cos',
+      always: true,
+      build: function(s) {
+        return {
+          sender: 'Mira Hoxha (Chief of Staff)',
+          subject: 'Weekly briefing — wk ' + s.week,
+          body: generateChiefBriefing(s),
+          options: [
+            { label: 'Acknowledged', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_velija_invoice',
+      cooldown: 2,
+      eligible: function(s) { return s.klmcDebt > 1500; },
+      weight: function(s) { return s.klmcDebt > 2500 ? 3 : 1; },
+      build: function(s) {
+        const debt = Math.round(s.klmcDebt);
+        return {
+          sender: 'Dardan Velija (KLMC)',
+          subject: 'Outstanding invoice — €' + debt,
+          body:
+'Petrit,\n\n' +
+'The invoice has crossed €' + debt + '. The Board is asking again.\n' +
+'I do not want to refuse your trucks. But Mirash needs cashflow too.\n\n' +
+'A partial payment this week would help me hold the line internally.\n\n' +
+'— Dardan',
+          options: [
+            { label: 'Pay €600 installment', applyKey: 'pay_klmc_install' },
+            { label: 'Pay full €' + debt + ' (clear it)', applyKey: 'pay_klmc_full' },
+            { label: 'Reply: defer with apology', applyKey: 'defer_klmc_polite' },
+            { label: 'Ignore', applyKey: 'ignore_klmc' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_krasniqi_calm',
+      cooldown: 4,
+      eligible: function(s) { return s.satisfaction.union >= 50 && s.satisfaction.union < 75; },
+      weight: function() { return 1; },
+      build: function(s) {
+        return {
+          sender: 'Ardian Krasniqi (Union)',
+          subject: 'Route 3 — quick word',
+          body:
+'Petrit.\n\n' +
+'The route 3 crew worked hours overtime last weekend. They want\n' +
+'to know if there is a budget for two more drivers. We are not\n' +
+'asking for the moon.\n\n' +
+'— A.',
+          options: [
+            { label: 'Hire 2 workers (cap +40, ongoing −€300/wk)', applyKey: 'hire_workers' },
+            { label: 'Reply: nothing now, talk again next month', applyKey: 'union_defer' },
+            { label: 'Ignore', applyKey: 'union_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_krasniqi_strike',
+      cooldown: 3,
+      eligible: function(s) { return s.satisfaction.union < 40; },
+      weight: function() { return 3; },
+      build: function(s) {
+        return {
+          sender: 'Ardian Krasniqi (Union)',
+          subject: 'STRIKE THREAT — last warning',
+          body:
+'Petrit. We have been patient.\n\n' +
+'Permanent +€1,000/wk wage uplift, or we stop Friday. The Board\n' +
+'will back me. Pristina will go without collection.\n\n' +
+'You know I am not bluffing.\n\n' +
+'— A. Krasniqi',
+          options: [
+            { label: 'Concede +€1,000/wk wage bump', applyKey: 'concede_wages' },
+            { label: 'Reply: small bonus this week, talk later (€800)', applyKey: 'union_bonus' },
+            { label: 'Refuse — accept the strike', applyKey: 'accept_strike' },
+            { label: 'Ignore', applyKey: 'union_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_mayor_stonewall',
+      cooldown: 5,
+      eligible: function(s) { return s.withheldHouseholds > 0; },
+      weight: function() { return 2; },
+      build: function(s) {
+        return {
+          sender: 'Office of Mayor Rama',
+          subject: 'RE: Registry submission ref. 25-1184',
+          body:
+'Director Reçica,\n\n' +
+'Per municipal code 4.2.1, your registry update submission remains\n' +
+'under review by the Department of Public Services.\n\n' +
+'Please direct further correspondence through DFS rather than the\n' +
+'Mayor\'s office.\n\n' +
+'— Office of the Mayor',
+          options: [
+            { label: 'Demand registration of withheld clients (formal)', applyKey: 'demand_registry' },
+            { label: 'Sue Municipality for unpaid debt (€500)', applyKey: 'sue_municipality' },
+            { label: 'Reply respectfully — stand down', applyKey: 'mayor_standdown' },
+            { label: 'Ignore', applyKey: 'mayor_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_mayor_warning',
+      cooldown: 6,
+      eligible: function(s) { return s.satisfaction.mayor < 30 && s.week > 4; },
+      weight: function() { return 2; },
+      build: function(s) {
+        return {
+          sender: 'Office of Mayor Rama',
+          subject: 'WARNING — Public statements',
+          body:
+'Director Reçica,\n\n' +
+'Your public statements about the Municipality have crossed a line.\n' +
+'Continued attacks will be addressed through formal channels.\n\n' +
+'I expect a more constructive posture going forward.\n\n' +
+'— P. Rama, Mayor',
+          options: [
+            { label: 'Apologize publicly (Mayor +8, Assembly −6)', applyKey: 'mayor_apology' },
+            { label: 'Double down with KOHA op-ed', applyKey: 'mayor_double_down' },
+            { label: 'Reply privately, no public action', applyKey: 'mayor_private_reply' },
+            { label: 'Ignore', applyKey: 'mayor_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_mayor_photo_op',
+      cooldown: 8,
+      eligible: function(s) { return s.satisfaction.mayor >= 35 && s.week > 6; },
+      weight: function() { return 1; },
+      build: function(s) {
+        return {
+          sender: 'Office of Mayor Rama',
+          subject: 'Joint photo-op proposal',
+          body:
+'Director Reçica,\n\n' +
+'Mayor Rama is doing a Dardania cleanup walk Wednesday morning. His\n' +
+'comms team suggests you join for photos. We can put aside the\n' +
+'broader dispute for one morning.\n\n' +
+'Confirm by Tuesday.\n\n' +
+'— Office of the Mayor',
+          options: [
+            { label: 'Attend (Mayor +10, Assembly −4)', applyKey: 'mayor_photo_attend' },
+            { label: 'Send a deputy (small gesture)', applyKey: 'mayor_photo_depute' },
+            { label: 'Decline politely', applyKey: 'mayor_photo_decline' },
+            { label: 'Ignore', applyKey: 'mayor_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_mayor_petty',
+      cooldown: 9,
+      eligible: function(s) { return s.satisfaction.mayor < 35 && Math.random() < 0.5; },
+      weight: function() { return 1; },
+      build: function(s) {
+        return {
+          sender: 'Office of Mayor Rama (Facilities)',
+          subject: 'Pastrimi vehicles in Municipal lot',
+          body:
+'Director Reçica,\n\n' +
+'Your service vehicles parked in the Municipal lot Sunday between\n' +
+'02:00–06:00. Please move them or they will be towed.\n\n' +
+'— Facilities Office, Municipality of Pristina',
+          options: [
+            { label: 'Issue internal memo + comply', applyKey: 'noop' },
+            { label: 'Reply: vehicles parked under prior arrangement', applyKey: 'mayor_pushback' },
+            { label: 'Forward to Mira', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_citizen_complaint',
+      cooldown: 3,
+      eligible: function(s) { return s.satisfaction.households < 55; },
+      weight: function(s) { return s.satisfaction.households < 35 ? 3 : 1; },
+      build: function(s) {
+        return {
+          sender: 'DFS Forwarded — Bajram Islami',
+          subject: 'Dardania — bins not emptied 8 days',
+          body:
+'[Forwarded by Department of Public Services]\n\n' +
+'"I live in Dardania. The bins haven\'t been emptied in 8 days.\n' +
+'Even our shop entrance is blocked. The waste in every corner is\n' +
+'causing us problems even in business."\n\n' +
+'— Bajram Islami',
+          options: [
+            { label: 'Cleanup blitz on Dardania (€800)', applyKey: 'dardania_cleanup' },
+            { label: 'Issue press statement (free)', applyKey: 'press_statement' },
+            { label: 'Forward back to Municipality (their problem)', applyKey: 'forward_to_muni' },
+            { label: 'Ignore', applyKey: 'citizen_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_koha_request',
+      cooldown: 5,
+      eligible: function() { return Math.random() < 0.4; },
+      weight: function() { return 1; },
+      build: function(s) {
+        return {
+          sender: 'A. Berisha (KOHA)',
+          subject: 'Comment request — KLMC payments piece',
+          body:
+'Mr Reçica,\n\n' +
+'KOHA is preparing a feature on Pastrimi-KLMC payment dynamics.\n' +
+'A short on-record comment by Friday would be appreciated.\n\n' +
+'— A. Berisha',
+          options: [
+            { label: 'Quotable statement: Pastrimi as victim of Municipality', applyKey: 'koha_victim' },
+            { label: 'Quotable statement: institutional cooperation needed', applyKey: 'koha_diplomatic' },
+            { label: 'Decline to comment', applyKey: 'koha_decline' },
+            { label: 'Ignore', applyKey: 'koha_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_eu_compliance',
+      cooldown: 6,
+      eligible: function(s) { return s.satisfaction.eu < 60 || s.week % 13 === 0; },
+      weight: function() { return 1; },
+      build: function(s) {
+        return {
+          sender: 'EU Office Pristina (Compliance)',
+          subject: 'Quarterly waste-management note',
+          body:
+'Mr Reçica,\n\n' +
+'For the quarterly progress note: Pristina recycling diversion\n' +
+'remains static at approximately 3%. Annual report will reference\n' +
+'absence of pay-as-you-throw mechanism.\n\n' +
+'A formal recycling stream commitment from Pastrimi would help\n' +
+'the framing.\n\n' +
+'— EU Office',
+          options: [
+            { label: 'Accept EU recycling grant (one-shot, +€8,000 / mandate)', applyKey: 'accept_eu_grant' },
+            { label: 'Submit a written plan (cheap show)', applyKey: 'eu_plan' },
+            { label: 'Acknowledge receipt', applyKey: 'eu_ack' },
+            { label: 'Ignore', applyKey: 'eu_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_mirash_floods',
+      cooldown: 8,
+      eligible: function() { return Math.random() < 0.18; },
+      weight: function() { return 1; },
+      build: function(s) {
+        return {
+          sender: 'Dardan Velija (KLMC)',
+          subject: 'URGENT — Mirash collection point flooded',
+          body:
+'Petrit.\n\n' +
+'Mirash flooded again. Lake-low, rains, the usual. Trucks are\n' +
+'queueing 2 hours. Need direction now.\n\n' +
+'— Dardan',
+          options: [
+            { label: 'Authorize emergency rerouting + overtime (€1,500)', applyKey: 'mirash_emergency' },
+            { label: 'Tough it out — wait for KLMC pumps', applyKey: 'mirash_wait' },
+            { label: 'Ignore', applyKey: 'mirash_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_cdw_dump',
+      cooldown: 6,
+      eligible: function() { return Math.random() < 0.2; },
+      weight: function() { return 1; },
+      build: function(s) {
+        return {
+          sender: 'L. Hasanaj (Let\'s Do It Kosovo)',
+          subject: 'CDW dump near Sunny Hill — filming today',
+          body:
+'A construction company dumped a truckload of CDW along the road\n' +
+'near Sunny Hill. We are filming for our campaign.\n\n' +
+'It is technically not Pastrimi\'s legal responsibility, but the\n' +
+'public will not draw the distinction.\n\n' +
+'— Luan Hasanaj',
+          options: [
+            { label: 'Coordinate inspectors + cleanup (€800)', applyKey: 'cdw_cleanup' },
+            { label: 'Statement: not Pastrimi\'s mandate', applyKey: 'cdw_statement' },
+            { label: 'Ignore', applyKey: 'cdw_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_jashari',
+      eligible: function(s) { return s._ombudspersonPending; },
+      weight: function() { return 99; },  // forced when pending
+      build: function(s) {
+        s._ombudspersonPending = false;  // consume
+        return {
+          sender: 'Hilmi Jashari (Ombudsperson)',
+          subject: 'Mediation meeting convened — your attendance',
+          body:
+'Director Reçica,\n\n' +
+'Per your briefing, this institution has called Mayor Rama and\n' +
+'Pastrimi to a mediation meeting this Thursday.\n\n' +
+'Your attendance is requested.\n\n' +
+'— H. Jashari, Ombudsperson',
+          options: [
+            { label: 'Attend personally', applyKey: 'jashari_attend' },
+            { label: 'Send a deputy', applyKey: 'jashari_depute' },
+            { label: 'Ignore', applyKey: 'jashari_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_brief_jashari',
+      eligible: function(s) { return !s._ombudspersonPending && s.satisfaction.mayor < 40 && Math.random() < 0.25; },
+      weight: function() { return 1; },
+      build: function(s) {
+        return {
+          sender: 'Mira Hoxha (Chief of Staff)',
+          subject: 'Suggestion — brief the Ombudsperson?',
+          body:
+'Petrit,\n\n' +
+'Given the standoff with Rama, briefing Ombudsperson Jashari\n' +
+'directly may be useful. He can convene a meeting; if Rama\n' +
+'no-shows, we get the public point.\n\n' +
+'No cost on our side.\n\n' +
+'— Mira',
+          options: [
+            { label: 'Brief Jashari now', applyKey: 'brief_jashari' },
+            { label: 'Hold for now', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_court_accept',
+      cooldown: 99,
+      eligible: function(s) { return s.week >= 8 && !s._courtPending && Math.random() < 0.08; },
+      weight: function() { return 5; },
+      build: function(s) {
+        s._courtPending = true;
+        return {
+          sender: 'Constitutional Court of Kosovo',
+          subject: 'NOTICE — Case ref. KO-2024-12 accepted',
+          body:
+'The Constitutional Court has accepted the Municipality of\n' +
+'Pristina\'s referral on Regulation no. 01-030/01-161704/24.\n\n' +
+'A ruling is expected within several weeks.\n\n' +
+'Risk: regulation overturned, billing authority returns to\n' +
+'Municipality.\n\n' +
+'— Court Registry',
+          options: [
+            { label: 'Hire constitutional counsel (€2,500)', applyKey: 'hire_counsel' },
+            { label: 'Trust Supreme Court precedent (no cost)', applyKey: 'trust_court' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+
+    // ==================== INTERNAL PASTRIMI ====================
+    {
+      id: 't_depot_truck_breakdown',
+      cooldown: 5,
+      eligible: function() { return Math.random() < 0.35; },
+      weight: function() { return 2; },
+      build: function() {
+        return {
+          sender: 'Sefer Berisha (Depot Manager)',
+          subject: 'Truck #04 — transmission failure',
+          body:
+'Petrit,\n\n' +
+'Truck #04 broke down on route 7 this morning. The driver got it\n' +
+'back to the depot but transmission rebuild is €3,200. We can\n' +
+'limp on without it for ~10 days but coverage will drop.\n\n' +
+'Authorize?\n\n' +
+'— S. Berisha, Depot Manager',
+          options: [
+            { label: 'Authorize repair (€3,200)', applyKey: 'truck_repair_full' },
+            { label: 'Cheap patch job (€900, breaks again later)', applyKey: 'truck_patch' },
+            { label: 'Run without truck #04 for now', applyKey: 'truck_run_short' },
+            { label: 'Ignore', applyKey: 'truck_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_it_email_server',
+      cooldown: 7,
+      eligible: function() { return Math.random() < 0.3; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'Arta Bajrami (IT)',
+          subject: 'Email server rejecting Outlook clients',
+          body:
+'Petrit,\n\n' +
+'The Exchange box is rejecting Outlook 2016 and earlier again.\n' +
+'I can budget the upgrade (€1,200) or we resign ourselves to\n' +
+'webmail across the org.\n\n' +
+'— Arta',
+          options: [
+            { label: 'Approve upgrade (€1,200)', applyKey: 'it_upgrade' },
+            { label: 'Webmail only — save the cash', applyKey: 'it_webmail' },
+            { label: 'Defer to next quarter', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_accountant_reconcile',
+      cooldown: 9,
+      eligible: function() { return Math.random() < 0.25; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'Faton Hoxha (Finance)',
+          subject: 'Q1 figures — KLMC line €400 off',
+          body:
+'Petrit,\n\n' +
+'Reconciliation flagged a €400 gap on the KLMC invoice line.\n' +
+'Most likely a duplicated charge from January. I can chase it\n' +
+'or write it off. Your call.\n\n' +
+'— Faton',
+          options: [
+            { label: 'Chase it down formally', applyKey: 'finance_chase' },
+            { label: 'Write off — small money', applyKey: 'finance_writeoff' },
+            { label: 'Hand it to legal', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_hr_sick',
+      cooldown: 6,
+      eligible: function() { return Math.random() < 0.3; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'Lulieta Krasniqi (HR)',
+          subject: 'Staffing — 5 out sick this week',
+          body:
+'Petrit,\n\n' +
+'Five drivers and two sorters out sick (flu going around). One\n' +
+'maternity leave starts Monday. Capacity will dip ~30 tons this\n' +
+'week unless we authorize agency cover (€600).\n\n' +
+'— Lulieta',
+          options: [
+            { label: 'Approve agency cover (€600)', applyKey: 'hr_agency_cover' },
+            { label: 'Run short — accept the hit', applyKey: 'hr_run_short' },
+            { label: 'Ask Krasniqi to cover with overtime', applyKey: 'hr_overtime' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_fuel_spike',
+      cooldown: 8,
+      eligible: function() { return Math.random() < 0.2; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'Fuel Vendor (Eko-Trans)',
+          subject: 'Q renewal — diesel +8%',
+          body:
+'Director Reçica,\n\n' +
+'Quarterly fuel contract renews in 10 days. Distributor diesel\n' +
+'rate is up 8%. We can lock current rate for €1,400 down or\n' +
+'accept the new rate.\n\n' +
+'— Eko-Trans Procurement',
+          options: [
+            { label: 'Lock current rate (€1,400 deposit)', applyKey: 'fuel_lock' },
+            { label: 'Accept higher rate (ongoing cost)', applyKey: 'fuel_accept' },
+            { label: 'Negotiate — buy time', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_recycling_vendor',
+      cooldown: 10,
+      eligible: function() { return Math.random() < 0.15; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'Izolimi Plast Recycling',
+          subject: 'Pilot proposal — smart bin sensors',
+          body:
+'Director Reçica,\n\n' +
+'We propose a 50-unit smart bin pilot — weight sensors, fill\n' +
+'detection. €380/unit. Would help your route optimization and\n' +
+'support EU compliance reporting.\n\n' +
+'— Izolimi Plast',
+          options: [
+            { label: 'Run the pilot (€2,000 partial subsidy)', applyKey: 'pilot_smart_bins' },
+            { label: 'Decline — not budget priority', applyKey: 'noop' },
+            { label: 'Refer to EU grant team', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+
+    // ==================== MORE CITIZEN VOICES ====================
+    {
+      id: 't_citizen_sunny_hill',
+      cooldown: 4,
+      eligible: function(s) { return s.satisfaction.households < 65; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'DFS Forwarded — Drita Berisha',
+          subject: 'Sunny Hill — rats in the back lane',
+          body:
+'[Forwarded by Department of Public Services]\n\n' +
+'"Rats in the back lane behind our building. Bins haven\'t been\n' +
+'emptied since last Wednesday. My kids walk past on the way\n' +
+'to school."\n\n' +
+'— Drita Berisha, Sunny Hill',
+          options: [
+            { label: 'Reroute truck to Sunny Hill (€400)', applyKey: 'citizen_reroute' },
+            { label: 'Issue health note + commit next round', applyKey: 'press_statement' },
+            { label: 'Forward back to Municipality', applyKey: 'forward_to_muni' },
+            { label: 'Ignore', applyKey: 'citizen_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_citizen_vellusha',
+      cooldown: 5,
+      eligible: function(s) { return s.satisfaction.households < 60; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'DFS Forwarded — Anonymous',
+          subject: 'Vellusha — broken glass injury',
+          body:
+'[Forwarded]\n\n' +
+'"My daughter slipped on broken glass next to the recycling\n' +
+'container. Stitches at the clinic. Bring it up at the next\n' +
+'assembly."\n\n' +
+'— Resident, Vellusha',
+          options: [
+            { label: 'Replace damaged container immediately (€600)', applyKey: 'citizen_replace_container' },
+            { label: 'Issue safety advisory', applyKey: 'press_statement' },
+            { label: 'Refer to legal (potential claim)', applyKey: 'citizen_refer_legal' },
+            { label: 'Ignore', applyKey: 'citizen_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_citizen_lajthishte',
+      cooldown: 8,
+      eligible: function() { return Math.random() < 0.18; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'A. Shalaku (Lajthishtë)',
+          subject: 'Mirash smell — children sick',
+          body:
+'Mr Reçica,\n\n' +
+'The smell from your landfill is unbearable again this week.\n' +
+'My children are coughing. We complain, but no one listens.\n\n' +
+'— Adem Shalaku',
+          options: [
+            { label: 'Visit Lajthishtë in person', applyKey: 'citizen_lajthishte_visit' },
+            { label: 'Coordinate odor-mitigation cover (€1,500)', applyKey: 'mirash_emergency' },
+            { label: 'Reply: KLMC manages Mirash, not Pastrimi', applyKey: 'citizen_blame_klmc' },
+            { label: 'Ignore', applyKey: 'citizen_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_hotel_group',
+      cooldown: 9,
+      eligible: function() { return Math.random() < 0.15; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'Pristina Hotel Group',
+          subject: 'Airport route — guest complaints',
+          body:
+'Director Reçica,\n\n' +
+'Our guests complain about the smell along the airport corridor.\n' +
+'It is hurting our reviews. Could you reroute trucks during peak\n' +
+'arrival hours?\n\n' +
+'— PHG Operations',
+          options: [
+            { label: 'Reroute (logistics cost €700)', applyKey: 'hotel_reroute' },
+            { label: 'Reply: not feasible without route study', applyKey: 'noop' },
+            { label: 'Offer informal arrangement', applyKey: 'hotel_informal' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+
+    // ==================== MORE PRESS ====================
+    {
+      id: 't_telegrafi',
+      cooldown: 6,
+      eligible: function() { return Math.random() < 0.25; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'F. Hyseni (Telegrafi)',
+          subject: 'Quick question — legal action against Mayor?',
+          body:
+'Mr Reçica,\n\n' +
+'Are you considering legal action against Mayor Rama personally?\n' +
+'Sources suggest yes. Comment by EOD?\n\n' +
+'— F. Hyseni, Telegrafi',
+          options: [
+            { label: 'Confirm — strong statement', applyKey: 'press_aggressive' },
+            { label: 'Confirm only institutional suit, not personal', applyKey: 'press_balanced' },
+            { label: 'Decline to comment', applyKey: 'koha_decline' },
+            { label: 'Ignore', applyKey: 'koha_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_prishtina_insight',
+      cooldown: 10,
+      eligible: function() { return Math.random() < 0.18; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'A. Berisha (Prishtina Insight / BIRN)',
+          subject: 'Feature request — shadow a route',
+          body:
+'Mr Reçica,\n\n' +
+'Prishtina Insight is preparing a long-form on Pastrimi. We\'d\n' +
+'like to shadow a collection route and interview drivers.\n\n' +
+'Access?\n\n' +
+'— A. Berisha',
+          options: [
+            { label: 'Full access — coach the drivers', applyKey: 'press_access_full' },
+            { label: 'Limited access — supervised', applyKey: 'press_access_limited' },
+            { label: 'Decline — too risky', applyKey: 'press_access_decline' },
+            { label: 'Ignore', applyKey: 'koha_ignore' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_kosovo_2_0',
+      cooldown: 12,
+      eligible: function() { return Math.random() < 0.1; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'Kosovo 2.0 magazine',
+          subject: 'Op-ed invite — circular economy',
+          body:
+'Mr Reçica,\n\n' +
+'We\'re running a feature on circular economy in the Western\n' +
+'Balkans. Would you contribute a 1,200-word op-ed on Pastrimi\'s\n' +
+'role?\n\n' +
+'— Kosovo 2.0 Editorial',
+          options: [
+            { label: 'Write the op-ed', applyKey: 'press_op_ed' },
+            { label: 'Decline politely', applyKey: 'noop' },
+            { label: 'Have Mira ghost-write it', applyKey: 'press_op_ed_ghost' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_rfe_rl',
+      cooldown: 14,
+      eligible: function() { return Math.random() < 0.1; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'RFE/RL Pristina',
+          subject: 'Profile piece — your background',
+          body:
+'Mr Reçica,\n\n' +
+'RFE/RL is preparing a profile piece on you — career, background,\n' +
+'leadership at Pastrimi. 30-min sit-down. Your office?\n\n' +
+'— RFE/RL',
+          options: [
+            { label: 'Accept — full profile', applyKey: 'press_profile' },
+            { label: 'Accept — restricted topics only', applyKey: 'noop' },
+            { label: 'Decline — not now', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+
+    // ==================== OTHER GOVT / CIVIC ====================
+    {
+      id: 't_ammk_report',
+      cooldown: 11,
+      eligible: function() { return Math.random() < 0.18; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'AMMK (Environmental Protection Agency)',
+          subject: 'Annual landfill emissions report',
+          body:
+'Director Reçica,\n\n' +
+'Annual report finds Mirash exceeding emission norms again.\n' +
+'KLMC is the licensee but Pastrimi is the primary supplier.\n' +
+'Please review and respond within 30 days.\n\n' +
+'— AMMK',
+          options: [
+            { label: 'Submit formal response with KLMC', applyKey: 'ammk_respond' },
+            { label: 'Quietly accept finding', applyKey: 'noop' },
+            { label: 'Push back — not Pastrimi\'s liability', applyKey: 'ammk_pushback' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_atlas_demi',
+      cooldown: 13,
+      eligible: function() { return Math.random() < 0.12; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'A. Demi (Atlas Institute)',
+          subject: 'Policy paper — enforcement gaps',
+          body:
+'Mr Reçica,\n\n' +
+'Atlas is publishing a paper on enforcement gaps in waste\n' +
+'management. A two-paragraph quote from you would strengthen\n' +
+'the framing.\n\n' +
+'— A. Demi',
+          options: [
+            { label: 'Provide a sharp quote (Mayor critique)', applyKey: 'atlas_critical' },
+            { label: 'Provide a balanced quote', applyKey: 'atlas_balanced' },
+            { label: 'Decline politely', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_hackerspace',
+      cooldown: 99,
+      eligible: function(s) { return s.week === 3; },
+      weight: function() { return 99; },
+      build: function() {
+        return {
+          sender: 'Prishtina Hackerspace / FLOSSK',
+          subject: 'We\'re modeling Pristina trash as a sim',
+          body:
+'Mr Reçica,\n\n' +
+'A small group at Prishtina Hackerspace is building a simulation\n' +
+'of Pristina\'s waste system as a civic-tech project. Would you\n' +
+'sit for a 45-minute interview?\n\n' +
+'No press, just modeling. Open source.\n\n' +
+'— FLOSSK',
+          options: [
+            { label: 'Yes, happy to help', applyKey: 'hackerspace_help' },
+            { label: 'Send Mira instead', applyKey: 'noop' },
+            { label: 'Decline — busy', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+
+    // ==================== RED HERRINGS ====================
+    {
+      id: 't_phishing',
+      cooldown: 9,
+      eligible: function() { return Math.random() < 0.25; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'IT-SECURITY@pastrimi.security-update.net',
+          subject: 'URGENT: Mailbox quota exceeded',
+          body:
+'Dear Director,\n\n' +
+'Your Pastrimi mailbox has exceeded the storage quota and will\n' +
+'be SUSPENDED within 24 HOURS unless you verify your credentials\n' +
+'at the link below.\n\n' +
+'http://pastrimi-mailaccount-verify.security-update.net/auth\n\n' +
+'IT-Security Team',
+          options: [
+            { label: 'Click the link', applyKey: 'phishing_click' },
+            { label: 'Forward to Arta in IT', applyKey: 'phishing_forward' },
+            { label: 'Delete', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_linkedin',
+      cooldown: 7,
+      eligible: function() { return Math.random() < 0.25; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'LinkedIn',
+          subject: 'You have 4 new connection requests',
+          body:
+'Hi Petrit,\n\n' +
+'You have 4 new people in your network:\n' +
+'• Marc Holzer — Wien Energie\n' +
+'• Aida Kelmendi — DFS Pristina\n' +
+'• "Bob" — Sustainable Solutions Inc.\n' +
+'• A recruiter from Veolia\n\n' +
+'View profiles\n\n' +
+'— LinkedIn',
+          options: [
+            { label: 'Accept all', applyKey: 'noop' },
+            { label: 'Accept selectively', applyKey: 'noop' },
+            { label: 'Decline all', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_conference',
+      cooldown: 16,
+      eligible: function() { return Math.random() < 0.12; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'Sustainable Waste Forum 2026',
+          subject: 'Speaker invitation — Vienna',
+          body:
+'Mr Reçica,\n\n' +
+'You are invited to speak at the Sustainable Waste Management\n' +
+'Forum, Dec 8–10, Vienna. Speaker fee waived. Travel to be\n' +
+'arranged at your cost.\n\n' +
+'— Forum Secretariat',
+          options: [
+            { label: 'Accept (€1,800 travel cost)', applyKey: 'conference_accept' },
+            { label: 'Decline', applyKey: 'noop' },
+            { label: 'Send Mira', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_family',
+      cooldown: 10,
+      eligible: function() { return Math.random() < 0.2; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'Lindita Reçica',
+          subject: 'Liridon\'s school recital — Thursday 17:00',
+          body:
+'Petrit,\n\n' +
+'Don\'t forget — Liridon\'s school recital is Thursday at 17:00.\n' +
+'He\'s playing first trumpet. He asked twice this week if you\n' +
+'were coming.\n\n' +
+'Please don\'t cancel like last time.\n\n' +
+'— L.',
+          options: [
+            { label: 'Promise to be there', applyKey: 'noop' },
+            { label: 'Reply: depends on the week', applyKey: 'noop' },
+            { label: 'Forward to Mira to manage calendar', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_dentist',
+      cooldown: 20,
+      eligible: function() { return Math.random() < 0.08; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'Dr. Kelmendi Dental Clinic',
+          subject: 'Annual checkup reminder',
+          body:
+'Mr Reçica,\n\n' +
+'This is a reminder that your annual dental checkup is overdue.\n' +
+'Please call to reschedule.\n\n' +
+'— Dr. Kelmendi\'s office',
+          options: [
+            { label: 'Schedule appointment', applyKey: 'noop' },
+            { label: 'Reply: not now', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_fake_eu_grant',
+      cooldown: 14,
+      eligible: function() { return Math.random() < 0.12; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'European Sustainable Fund Office',
+          subject: '€85,000 GRANT — IMMEDIATE APPROVAL',
+          body:
+'Dear Director Reçica,\n\n' +
+'Your organization has been pre-selected for a €85,000\n' +
+'sustainability grant. To proceed, please confirm bank details\n' +
+'and pay the €1,200 administrative processing fee.\n\n' +
+'— European Sustainable Fund (Cyprus)',
+          options: [
+            { label: 'Pay processing fee (€1,200)', applyKey: 'fake_grant_pay' },
+            { label: 'Forward to Faton for verification', applyKey: 'fake_grant_verify' },
+            { label: 'Delete as scam', applyKey: 'noop' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+    {
+      id: 't_internal_complaint',
+      cooldown: 8,
+      eligible: function() { return Math.random() < 0.2; },
+      weight: function() { return 1; },
+      build: function() {
+        return {
+          sender: 'Anonymous (Pastrimi internal)',
+          subject: 'Complaint — supervisor at Depot 2',
+          body:
+'Director,\n\n' +
+'I am writing anonymously. The supervisor at Depot 2 is asking\n' +
+'workers to falsify route logs. Several of us have noticed.\n' +
+'We do not want to lose our jobs by speaking up directly.\n\n' +
+'Please look into this.\n\n' +
+'— A worker',
+          options: [
+            { label: 'Confidential investigation (€600)', applyKey: 'internal_investigate' },
+            { label: 'Talk to Krasniqi quietly', applyKey: 'internal_krasniqi' },
+            { label: 'File and forget', applyKey: 'internal_dismiss' },
+            { label: 'Ignore', applyKey: 'noop' },
+          ],
+        };
+      },
+    },
+  ];
+
+  // ====== OPTION HANDLERS ======
+  // Each applyKey matches a function. Encapsulates effect logic so emails stay readable.
+  const APPLIES = {
+    noop: function() { /* nothing */ },
+
+    // KLMC
+    pay_klmc_install: function() {
+      if (state.cash < 600) { logEntry('Tried installment but cash short. Defaulted to defer.'); bumpSat('klmc', -8); return; }
+      state.cash -= 600;
+      state.klmcDebt = Math.max(0, state.klmcDebt - 600);
+      bumpSat('klmc', +10);
+      logEntry('Paid €600 to KLMC. Debt: €' + Math.round(state.klmcDebt));
+    },
+    pay_klmc_full: function() {
+      const debt = Math.round(state.klmcDebt);
+      if (state.cash < debt) { logEntry('Cannot pay full €' + debt + ' — cash insufficient.'); bumpSat('klmc', -4); return; }
+      state.cash -= debt;
+      state.klmcDebt = 0;
+      bumpSat('klmc', +20);
+      logEntry('Cleared KLMC debt €' + debt + '.');
+    },
+    defer_klmc_polite: function() { bumpSat('klmc', -6); logEntry('Deferred KLMC payment (polite reply).'); },
+    ignore_klmc: function() { bumpSat('klmc', -12); logEntry('Ignored Velija. He noted it.'); },
+
+    // Union
+    hire_workers: function() {
+      if (state.cash < 600) { logEntry('No cash to hire.'); bumpSat('union', -3); return; }
+      state.extraWorkers += 2;
+      state.capacity += 40;
+      bumpSat('union', +10);
+      logEntry('Hired 2 workers. Krasniqi pleased.');
+    },
+    union_defer: function() { bumpSat('union', -4); logEntry('Told Krasniqi to wait.'); },
+    union_ignore: function() { bumpSat('union', -10); logEntry('Ignored Krasniqi. He noticed.'); },
+    concede_wages: function() {
+      state._wageBump = (state._wageBump || 0) + 1000;
+      bumpSat('union', +18);
+      logEntry('Conceded permanent +€1,000/wk wage bump.');
+    },
+    union_bonus: function() {
+      if (state.cash < 800) { logEntry('No cash for bonus.'); bumpSat('union', -6); return; }
+      state.cash -= 800;
+      bumpSat('union', +8);
+      logEntry('Paid €800 one-time bonus. Bought time.');
+    },
+    accept_strike: function() {
+      state.onStrike = true;
+      state.strikeWeeks = 1;
+      bumpSat('union', -8);
+      bumpSat('households', -16);
+      bumpSat('mayor', -10);
+      logEntry('Strike begins. Pristina goes a week without collection.');
+    },
+
+    // Mayor / political
+    demand_registry: function() {
+      if (state.withheldHouseholds <= 0) { logEntry('No clients left withheld.'); return; }
+      const baseChance = 0.55 + (state.satisfaction.assembly - state.satisfaction.mayor) / 300;
+      if (Math.random() < Math.max(0.15, Math.min(0.85, baseChance))) {
+        const moved = Math.min(40, state.withheldHouseholds);
+        state.subscribedHouseholds += moved;
+        state.withheldHouseholds -= moved;
+        bumpSat('mayor', -10);
+        bumpSat('assembly', +4);
+        bumpSat('households', +3);
+        logEntry('Registry: ' + (moved * 100) + ' clients registered. Mayor furious.');
+      } else {
+        bumpSat('mayor', -6);
+        bumpSat('assembly', -2);
+        logEntry('Mayor blocked the registry push.');
+      }
+    },
+    sue_municipality: function() {
+      if (state.oneShotsUsed.sue) { logEntry('Already filed suit.'); return; }
+      if (state.cash < 500) { logEntry('No cash for legal fees.'); return; }
+      state.cash -= 500;
+      state.oneShotsUsed.sue = true;
+      state.oneShotsUsed.legalShield = true;
+      bumpSat('mayor', -12);
+      bumpSat('assembly', +6);
+      bumpSat('eu', +4);
+      logEntry('Filed suit against Municipality.');
+    },
+    mayor_standdown: function() { bumpSat('mayor', +4); bumpSat('assembly', -3); logEntry('Stood down. Mayor warmed slightly.'); },
+    mayor_ignore: function() { bumpSat('mayor', -3); logEntry('Ignored Mayor\'s office.'); },
+
+    // Citizens
+    dardania_cleanup: function() {
+      if (state.cash < 800) { logEntry('Cannot fund cleanup.'); bumpSat('households', -3); return; }
+      state.cash -= 800;
+      state.backlog = Math.max(0, state.backlog - 40);
+      bumpSat('households', +8);
+      bumpSat('mayor', +3);
+      logEntry('Dardania cleanup blitz executed.');
+    },
+    press_statement: function() { bumpSat('households', +2); bumpSat('mayor', -4); logEntry('Issued press statement.'); },
+    forward_to_muni: function() { bumpSat('households', -4); bumpSat('mayor', -2); logEntry('Forwarded to Municipality.'); },
+    citizen_ignore: function() { bumpSat('households', -8); logEntry('Ignored citizen complaint.'); },
+
+    // KOHA
+    koha_victim: function() { bumpSat('assembly', +5); bumpSat('mayor', -8); bumpSat('households', -2); logEntry('KOHA quoted: Pastrimi as victim.'); },
+    koha_diplomatic: function() { bumpSat('mayor', +4); bumpSat('eu', +2); bumpSat('households', +2); bumpSat('assembly', -3); logEntry('KOHA quoted: institutional cooperation framing.'); },
+    koha_decline: function() { bumpSat('households', -3); logEntry('Declined KOHA comment.'); },
+    koha_ignore: function() { bumpSat('households', -6); bumpSat('mayor', +2); logEntry('Ignored KOHA. They wrote a negative piece.'); },
+
+    // EU
+    accept_eu_grant: function() {
+      if (state.oneShotsUsed.eu) { logEntry('EU grant already accepted.'); return; }
+      state.cash += 8000;
+      state.recyclingMandate = true;
+      state.oneShotsUsed.eu = true;
+      bumpSat('eu', +20);
+      bumpSat('mayor', +6);
+      logEntry('Accepted EU recycling grant. Mandate active.');
+    },
+    eu_plan: function() { bumpSat('eu', +5); logEntry('Submitted recycling plan to EU.'); },
+    eu_ack: function() { bumpSat('eu', -2); logEntry('Acknowledged EU note.'); },
+    eu_ignore: function() { bumpSat('eu', -10); logEntry('Ignored EU compliance note.'); },
+
+    // Mirash
+    mirash_emergency: function() {
+      if (state.cash < 1500) { logEntry('Cannot fund emergency response.'); state.backlog += 60; bumpSat('households', -10); return; }
+      state.cash -= 1500;
+      state.backlog = Math.max(0, state.backlog - 30);
+      bumpSat('households', +5);
+      bumpSat('union', +6);
+      bumpSat('klmc', +4);
+      logEntry('Emergency rerouting authorized.');
+    },
+    mirash_wait: function() { state.backlog += 60; bumpSat('households', -10); logEntry('Waited for KLMC pumps. Backlog grew.'); },
+    mirash_ignore: function() { state.backlog += 100; bumpSat('households', -15); bumpSat('klmc', -6); logEntry('Ignored Mirash crisis. Disaster.'); },
+
+    // CDW
+    cdw_cleanup: function() {
+      if (state.cash < 800) { logEntry('Cannot fund CDW response.'); return; }
+      state.cash -= 800;
+      bumpSat('households', +6);
+      bumpSat('mayor', +6);
+      bumpSat('assembly', -3);
+      logEntry('Coordinated CDW cleanup. Mayor publicly thanked Pastrimi.');
+    },
+    cdw_statement: function() { bumpSat('mayor', -3); logEntry('Statement: not our mandate.'); },
+    cdw_ignore: function() { bumpSat('households', -4); logEntry('Ignored CDW dump.'); },
+
+    // Ombudsperson
+    brief_jashari: function() {
+      state._ombudspersonPending = true;
+      logEntry('Briefed Ombudsperson Jashari.');
+    },
+    jashari_attend: function() {
+      bumpSat('eu', +6);
+      bumpSat('households', +4);
+      if (Math.random() < 0.55) {
+        bumpSat('mayor', -8);
+        logEntry('Attended Jashari meeting. Mayor no-showed. Public win.');
+      } else {
+        bumpSat('mayor', +4);
+        logEntry('Attended Jashari meeting. Mayor came. Tense.');
+      }
+    },
+    jashari_depute: function() { bumpSat('eu', -4); bumpSat('households', -2); logEntry('Sent deputy to Jashari meeting.'); },
+    jashari_ignore: function() { bumpSat('eu', -8); bumpSat('households', -6); logEntry('Ignored Jashari summons.'); },
+
+    // Constitutional Court
+    hire_counsel: function() {
+      if (state.cash < 2500) { logEntry('Cannot afford counsel.'); return; }
+      state.cash -= 2500;
+      state.oneShotsUsed.legalShield = true;
+      bumpSat('eu', +3);
+      logEntry('Constitutional counsel retained.');
+    },
+    trust_court: function() { bumpSat('assembly', +2); logEntry('Stood on Supreme Court precedent.'); },
+
+    // Mayor variants
+    mayor_apology: function() { bumpSat('mayor', +8); bumpSat('assembly', -6); bumpSat('households', -2); logEntry('Issued public apology to Mayor.'); },
+    mayor_double_down: function() { bumpSat('mayor', -10); bumpSat('assembly', +6); bumpSat('households', +2); logEntry('Doubled down with KOHA op-ed.'); },
+    mayor_private_reply: function() { bumpSat('mayor', +2); logEntry('Private reply to Mayor. No public action.'); },
+    mayor_photo_attend: function() { bumpSat('mayor', +10); bumpSat('assembly', -4); bumpSat('households', +4); logEntry('Attended Dardania photo-op with Mayor.'); },
+    mayor_photo_depute: function() { bumpSat('mayor', +3); logEntry('Sent deputy to photo-op.'); },
+    mayor_photo_decline: function() { bumpSat('mayor', -4); bumpSat('assembly', +2); logEntry('Declined photo-op with Mayor.'); },
+    mayor_pushback: function() { bumpSat('mayor', -3); logEntry('Replied: vehicles parked under prior arrangement.'); },
+
+    // Internal Pastrimi
+    truck_repair_full: function() {
+      if (state.cash < 3200) { logEntry('Cannot afford full repair. Defaulted to patch.'); state.cash -= 900; return; }
+      state.cash -= 3200; logEntry('Truck #04 transmission rebuilt. Full capacity restored.');
+    },
+    truck_patch: function() {
+      if (state.cash < 900) { logEntry('Cannot afford even patch. Truck off road.'); state.capacity -= 30; return; }
+      state.cash -= 900; logEntry('Truck #04 patched. Will fail again later.');
+    },
+    truck_run_short: function() { state.capacity -= 30; logEntry('Truck #04 sidelined. Capacity −30t/wk until handled.'); },
+    truck_ignore: function() { state.capacity -= 40; bumpSat('union', -5); logEntry('Ignored truck breakdown. Crew frustrated.'); },
+    it_upgrade: function() {
+      if (state.cash < 1200) { logEntry('No cash for IT upgrade.'); return; }
+      state.cash -= 1200; logEntry('Email server upgraded.');
+    },
+    it_webmail: function() { logEntry('Org switched to webmail. Saved cash.'); },
+    finance_chase: function() { bumpSat('klmc', +2); logEntry('Finance chasing the €400 KLMC discrepancy.'); },
+    finance_writeoff: function() { logEntry('€400 KLMC discrepancy written off.'); },
+    hr_agency_cover: function() {
+      if (state.cash < 600) { logEntry('Cannot fund agency cover. Coverage drops.'); state.capacity -= 30; return; }
+      state.cash -= 600; logEntry('Agency cover for sick staff authorized.');
+    },
+    hr_run_short: function() { state.capacity -= 30; bumpSat('households', -3); logEntry('Ran short-staffed.'); },
+    hr_overtime: function() { bumpSat('union', -6); logEntry('Asked Krasniqi to cover via overtime. Cool reception.'); },
+    fuel_lock: function() {
+      if (state.cash < 1400) { logEntry('Cannot lock fuel rate.'); return; }
+      state.cash -= 1400; logEntry('Locked fuel rate. Cost stable for the quarter.');
+    },
+    fuel_accept: function() { state._wageBump = (state._wageBump || 0) + 200; logEntry('Accepted higher diesel rate. Ops cost +€200/wk.'); },
+    pilot_smart_bins: function() {
+      if (state.cash < 2000) { logEntry('Cannot fund smart-bin pilot.'); return; }
+      state.cash -= 2000; bumpSat('eu', +6); bumpSat('households', +3); logEntry('Smart-bin pilot funded. EU pleased.');
+    },
+
+    // Citizen variants
+    citizen_reroute: function() {
+      if (state.cash < 400) { logEntry('Cannot fund reroute.'); bumpSat('households', -3); return; }
+      state.cash -= 400; bumpSat('households', +5); logEntry('Reroute to Sunny Hill authorized.');
+    },
+    citizen_replace_container: function() {
+      if (state.cash < 600) { logEntry('Cannot replace container.'); bumpSat('households', -3); return; }
+      state.cash -= 600; bumpSat('households', +6); logEntry('Damaged container replaced in Vellusha.');
+    },
+    citizen_refer_legal: function() { bumpSat('households', -2); logEntry('Vellusha injury referred to legal.'); },
+    citizen_lajthishte_visit: function() { bumpSat('households', +6); bumpSat('mayor', +3); logEntry('Visited Lajthishtë in person. Press picked it up.'); },
+    citizen_blame_klmc: function() { bumpSat('households', -8); bumpSat('klmc', -4); logEntry('Blamed KLMC publicly. Velija furious.'); },
+    hotel_reroute: function() {
+      if (state.cash < 700) { logEntry('Cannot fund hotel reroute.'); return; }
+      state.cash -= 700; bumpSat('households', +2); logEntry('Airport-corridor reroute authorized.');
+    },
+    hotel_informal: function() { logEntry('Informal arrangement with hotel group.'); },
+
+    // Press variants
+    press_aggressive: function() { bumpSat('mayor', -12); bumpSat('assembly', +6); bumpSat('households', -2); logEntry('Aggressive Telegrafi statement. Mayor enraged.'); },
+    press_balanced: function() { bumpSat('mayor', -4); bumpSat('assembly', +2); bumpSat('eu', +2); logEntry('Balanced Telegrafi statement.'); },
+    press_access_full: function() { bumpSat('households', +6); bumpSat('union', +4); bumpSat('mayor', -3); logEntry('Full Prishtina Insight access. Risky but humanizing.'); },
+    press_access_limited: function() { bumpSat('households', +2); logEntry('Limited Prishtina Insight access.'); },
+    press_access_decline: function() { bumpSat('households', -2); logEntry('Declined Prishtina Insight feature.'); },
+    press_op_ed: function() { bumpSat('eu', +6); bumpSat('households', +2); logEntry('Wrote Kosovo 2.0 op-ed personally.'); },
+    press_op_ed_ghost: function() { bumpSat('eu', +3); logEntry('Mira ghost-wrote the Kosovo 2.0 op-ed.'); },
+    press_profile: function() { bumpSat('households', +5); bumpSat('mayor', -4); logEntry('Sat for RFE/RL profile.'); },
+
+    // Other gov / civic
+    ammk_respond: function() { bumpSat('eu', +3); bumpSat('klmc', +3); logEntry('Submitted joint AMMK response with KLMC.'); },
+    ammk_pushback: function() { bumpSat('eu', -4); bumpSat('klmc', -6); logEntry('Pushed back on AMMK finding.'); },
+    atlas_critical: function() { bumpSat('mayor', -6); bumpSat('assembly', +2); logEntry('Sharp Atlas quote (Mayor critique).'); },
+    atlas_balanced: function() { bumpSat('eu', +3); logEntry('Balanced Atlas quote.'); },
+    hackerspace_help: function() { bumpSat('households', +3); logEntry('Sat for FLOSSK interview. Civic-tech project gets your time.'); },
+
+    // Red herrings — most do nothing
+    phishing_click: function() { state.cash -= 800; bumpSat('households', -2); logEntry('Clicked phishing link. Some funds compromised. Faton flagged it.'); },
+    phishing_forward: function() { logEntry('Forwarded phishing to Arta. She handles it.'); },
+    conference_accept: function() {
+      if (state.cash < 1800) { logEntry('Cannot afford Vienna trip.'); return; }
+      state.cash -= 1800; bumpSat('eu', +4); logEntry('Vienna conference attended. Modest EU goodwill.');
+    },
+    fake_grant_pay: function() { state.cash -= 1200; logEntry('Paid fake grant fee. €1,200 gone. Faton notes the loss.'); },
+    fake_grant_verify: function() { logEntry('Forwarded fake grant to Faton. Confirmed scam, no loss.'); },
+
+    // Internal anonymous complaint
+    internal_investigate: function() {
+      if (state.cash < 600) { logEntry('Cannot fund investigation.'); return; }
+      state.cash -= 600; bumpSat('union', +3); logEntry('Confidential investigation opened at Depot 2.');
+    },
+    internal_krasniqi: function() { bumpSat('union', +6); logEntry('Brought the Depot 2 complaint to Krasniqi quietly.'); },
+    internal_dismiss: function() { bumpSat('union', -8); logEntry('Filed and forgot Depot 2 complaint. Word will spread.'); },
+  };
+
+  // ====== INBOX GENERATION ======
+  function nextEmailId() {
+    state.emailIdCounter++;
+    return 'e' + state.emailIdCounter;
+  }
+
+  function generateInbox() {
+    const inbox = [];
+
+    // Always: Chief of Staff
+    const cosTpl = TEMPLATES.find(function(t) { return t.id === 't_cos'; });
+    const cosBuilt = cosTpl.build(state);
+    inbox.push({
+      id: nextEmailId(), templateId: cosTpl.id, sender: cosBuilt.sender, subject: cosBuilt.subject,
+      body: cosBuilt.body, options: cosBuilt.options, resolved: false, chosenLabel: null,
+    });
+    state.templateHistory[cosTpl.id] = state.week;
+
+    // Pending forced (e.g. Jashari follow-up)
+    const ombudsTpl = TEMPLATES.find(function(t) { return t.id === 't_jashari'; });
+    if (state._ombudspersonPending && ombudsTpl) {
+      const built = ombudsTpl.build(state);
+      inbox.push({
+        id: nextEmailId(), templateId: ombudsTpl.id, sender: built.sender, subject: built.subject,
+        body: built.body, options: built.options, resolved: false, chosenLabel: null,
+      });
+      state.templateHistory[ombudsTpl.id] = state.week;
+    }
+
+    // Easter egg: hardcoded FLOSSK / Prishtina Hackerspace email in week 3
+    if (state.week === 3) {
+      const hsTpl = TEMPLATES.find(function(t) { return t.id === 't_hackerspace'; });
+      if (hsTpl && state.templateHistory[hsTpl.id] === undefined) {
+        const built = hsTpl.build(state);
+        inbox.push({
+          id: nextEmailId(), templateId: hsTpl.id, sender: built.sender, subject: built.subject,
+          body: built.body, options: built.options, resolved: false, chosenLabel: null,
+        });
+        state.templateHistory[hsTpl.id] = state.week;
+      }
+    }
+
+    // Roll others — respect cooldowns
+    const candidates = [];
+    for (let i = 0; i < TEMPLATES.length; i++) {
+      const t = TEMPLATES[i];
+      if (t.always || t.id === 't_jashari') continue;
+      if (t.eligible && !t.eligible(state)) continue;
+      // Cooldown check
+      const last = state.templateHistory[t.id];
+      const cd = t.cooldown || 1;
+      if (last !== undefined && (state.week - last) < cd) continue;
+      const w = t.weight ? t.weight(state) : 1;
+      for (let r = 0; r < w; r++) candidates.push(t);
+    }
+    // Shuffle
+    candidates.sort(function() { return Math.random() - 0.5; });
+
+    // Bigger inbox: 4-7 additional emails (5-8 total with Chief)
+    const target = 4 + Math.floor(Math.random() * 4);
+    const usedIds = {};
+    for (let i = 0; i < candidates.length && inbox.length < target + 1; i++) {
+      const t = candidates[i];
+      if (usedIds[t.id]) continue;
+      usedIds[t.id] = true;
+      const built = t.build(state);
+      inbox.push({
+        id: nextEmailId(), templateId: t.id, sender: built.sender, subject: built.subject,
+        body: built.body, options: built.options, resolved: false, chosenLabel: null,
+      });
+      state.templateHistory[t.id] = state.week;
+    }
+
+    state.inbox = inbox;
+    state.selectedEmailId = inbox.length > 0 ? inbox[0].id : null;
+  }
+
+  // ====== TICK ======
+  function tick() {
+    if (state.gameOver) return;
+
+    const prev = Object.assign({}, state.satisfaction);
+
+    // Process unresolved emails as Ignore
+    for (let i = 0; i < state.inbox.length; i++) {
+      const em = state.inbox[i];
+      if (!em.resolved) {
+        em.resolved = true;
+        em.chosenLabel = '(no action)';
+      }
+    }
+
+    // Auto-resolve weekly flow
+    state.backlog += state.trashGenerated;
+    let effCap = state.onStrike ? 0 : Math.max(0, state.capacity);
+    const collected = Math.min(effCap, state.backlog);
+    state.backlog -= collected;
+    state.lastCoverage = state.trashGenerated > 0 ? collected / state.trashGenerated : 1;
+
+    state.lastWeeklyRevenue = calcWeeklyRevenue(state);
+    state.cash += state.lastWeeklyRevenue;
+
+    state.lastWeeklyCost = calcWeeklyCost(state);
+    state.cash -= state.lastWeeklyCost;
+
+    const klmcBill = collected * 0.5;
+    state.klmcDebt += klmcBill;
+
+    // Strike auto-end after 1 week
+    if (state.onStrike) {
+      state.strikeWeeks++;
+      if (state.strikeWeeks > 1) {
+        state.onStrike = false;
+        state.strikeWeeks = 0;
+        state.capacity = 380 + (state.extraWorkers * 20);  // restore
+        logEntry('Strike ended. Operations resumed.');
+      }
+    }
+
+    // Mandate-driven satisfaction drift
+    let hDelta = 0;
+    if (state.lastCoverage >= 0.95) hDelta += 2;
+    else if (state.lastCoverage >= 0.85) hDelta += 0;
+    else if (state.lastCoverage >= 0.75) hDelta -= 3;
+    else hDelta -= 6;
+    if (state.feeMonthly > 6.20) hDelta -= 1;
+    bumpSat('households', hDelta);
+
+    if (state.satisfaction.union >= 55) bumpSat('union', +1);
+    else if (state.satisfaction.union < 35) bumpSat('union', -1);
+
+    if (state.satisfaction.households < 40) bumpSat('mayor', -1);  // mayor takes citizen heat
+    if (state.recyclingMandate) bumpSat('mayor', +1);
+
+    if (state.satisfaction.households < 40) bumpSat('assembly', -1);
+    if (state.satisfaction.households > 60) bumpSat('assembly', +1);
+
+    if (state.klmcDebt > 5000) bumpSat('klmc', -3);
+    else if (state.klmcDebt > 3000) bumpSat('klmc', -1);
+    else if (state.klmcDebt < 1500) bumpSat('klmc', +1);
+
+    if (state.recyclingMandate) bumpSat('eu', +1);
+    else bumpSat('eu', -1);
+
+    // EU sanction
+    if (state.satisfaction.eu < 20 && !state.euSanctionApplied) {
+      state.cash -= 30000;
+      state.euSanctionApplied = true;
+      logEntry('EU triggered compliance penalty: €30,000.');
+    }
+
+    if (state.satisfaction.union < 25) state.consecutiveLowUnion++;
+    else state.consecutiveLowUnion = 0;
+
+    // Lose conditions
+    if (state.cash < -3000) {
+      state.gameOver = { result: 'lose', verdict: 'Pastrimi went bankrupt.', takeaway: takeawayString('cash') };
+    } else if (state.consecutiveLowUnion >= 3) {
+      state.gameOver = { result: 'lose', verdict: 'Sustained strike. Operations collapsed.', takeaway: takeawayString('union') };
+    } else if (state.satisfaction.mayor < 20 && state.satisfaction.assembly < 30) {
+      state.gameOver = { result: 'lose', verdict: 'No-confidence vote. You are out.', takeaway: takeawayString('political') };
+    } else if (state.week >= TOTAL_WEEKS) {
+      const avgCitizen = (state.satisfaction.households + state.satisfaction.union) / 2;
+      if (state.cash >= 0 && avgCitizen >= 50 && state.satisfaction.assembly >= 40) {
+        state.gameOver = { result: 'win', verdict: 'You served a full year. The regulation holds.',
+          takeaway: 'Fifty-two weeks. Pastrimi solvent. Pristina mostly served. Mirash still leaks. The system is still wildly complicated.' };
+      } else if (state.cash < 0) {
+        state.gameOver = { result: 'lose', verdict: 'Year ended in the red.', takeaway: takeawayString('cash') };
+      } else {
+        state.gameOver = { result: 'lose', verdict: 'Year ended with citizens unhappy.', takeaway: takeawayString('citizens') };
+      }
+    }
+
+    state.week++;
+
+    // Generate next inbox
+    if (!state.gameOver) generateInbox();
+
+    render();
+    if (state.gameOver) showEndScreen();
+  }
+
+  function takeawayString(reason) {
+    const sortedLow = Object.keys(state.satisfaction).map(function(k) { return [k, state.satisfaction[k]]; }).sort(function(a, b) { return a[1] - b[1]; });
+    const worst = sortedLow[0];
+    const stake = MANDATES.find(function(m) { return m.id === 'm_' + worst[0]; });
+    const stakeName = stake ? stake.holder : worst[0];
+    if (reason === 'cash') return 'Cash ran out. €6.20/mo flat does not cover ops + KLMC + Krasniqi at once. You alienated ' + stakeName + ' the most.';
+    if (reason === 'union') return 'Krasniqi held the line. The Municipality used the chaos to bring private operators back.';
+    if (reason === 'political') return 'Both blocs lost faith. The next director inherits everything you fought.';
+    if (reason === 'citizens') return 'Cash held but Pristina did not feel served. ' + stakeName + ' was the one you alienated most.';
+    return '';
+  }
+
+  // ====== EMAIL ACTIONS ======
+  function selectEmail(id) {
+    state.selectedEmailId = id;
+    render();
+  }
+
+  function chooseOption(emailId, optionIndex) {
+    const em = state.inbox.find(function(e) { return e.id === emailId; });
+    if (!em || em.resolved) return;
+    const opt = em.options[optionIndex];
+    if (!opt) return;
+    em.resolved = true;
+    em.chosenLabel = opt.label;
+    const fn = APPLIES[opt.applyKey];
+    if (fn) fn();
+    render();
+  }
+
+  // ====== RENDER ======
+  function statusFor(check) {
+    return check; // 'met'|'edge'|'breach'
+  }
+
+  function render() {
+    // Top stats
+    document.getElementById('stat-week').textContent = state.week + ' / ' + TOTAL_WEEKS;
+    const cashEl = document.getElementById('stat-cash');
+    cashEl.textContent = fmtMoney(state.cash);
+    cashEl.className = 'value ' + (state.cash < 0 ? 'negative' : (state.cash < 1500 ? 'warn' : 'positive'));
+    document.getElementById('stat-backlog').textContent = Math.round(state.backlog) + 't';
+
+    // Income / Costs (recompute current projections)
+    const projIncome = calcWeeklyRevenue(state);
+    const projCost = calcWeeklyCost(state);
+    const incomeEl = document.getElementById('stat-income');
+    const costsEl = document.getElementById('stat-costs');
+    incomeEl.textContent = fmtMoney(projIncome);
+    costsEl.textContent = fmtMoney(projCost);
+    incomeEl.className = 'value ' + (state.onStrike ? 'negative' : 'positive');
+    costsEl.className = 'value ' + (projCost > projIncome ? 'warn' : '');
+
+    const debtEl = document.getElementById('stat-debt');
+    debtEl.textContent = fmtMoney(state.klmcDebt);
+    debtEl.className = 'value ' + (state.klmcDebt > 3500 ? 'negative' : (state.klmcDebt > 2200 ? 'warn' : ''));
+
+    // Mandates
+    const mGrid = document.getElementById('mandates');
+    clear(mGrid);
+    for (let i = 0; i < MANDATES.length; i++) {
+      const m = MANDATES[i];
+      const status = m.check(state);
+      const meterVal = m.meterValue(state);
+      const card = mkEl('div', { cls: 'mandate-card' });
+      card.appendChild(mkEl('div', { cls: 'holder', text: m.holder }));
+      card.appendChild(mkEl('div', { cls: 'text', text: m.text }));
+      const sb = mkEl('div', { cls: 'status-bar' });
+      const meter = mkEl('div', { cls: 'meter' });
+      const fill = mkEl('div', { cls: 'fill ' + status, style: 'width:' + Math.max(2, meterVal) + '%' });
+      meter.appendChild(fill);
+      sb.appendChild(meter);
+      sb.appendChild(mkEl('div', { cls: 'status ' + status, text: status === 'met' ? '✓ MET' : (status === 'edge' ? '⚠ EDGE' : '✗ BREACH') }));
+      card.appendChild(sb);
+      mGrid.appendChild(card);
+    }
+
+    // Inbox week label
+    document.getElementById('inbox-wk').textContent = state.week;
+
+    // Inbox list
+    const inboxEl = document.getElementById('inbox-frame');
+    clear(inboxEl);
+    const inboxList = mkEl('div', { cls: 'inbox-list' });
+    if (state.inbox.length === 0) {
+      inboxList.appendChild(mkEl('div', { cls: 'email-item', text: '(empty)' }));
+    }
+    for (let i = 0; i < state.inbox.length; i++) {
+      const em = state.inbox[i];
+      const cls = 'email-item' + (em.resolved ? ' resolved' : '') + (em.id === state.selectedEmailId ? ' selected' : '');
+      const item = mkEl('div', { cls: cls });
+      const icon = mkEl('div', { cls: 'icon', text: em.resolved ? '✓' : '✉' });
+      const right = mkEl('div');
+      right.appendChild(mkEl('div', { cls: 'sender', text: em.sender }));
+      right.appendChild(mkEl('div', { cls: 'subject', text: em.subject }));
+      item.appendChild(icon);
+      item.appendChild(right);
+      item.onclick = function() { selectEmail(em.id); };
+      inboxList.appendChild(item);
+    }
+    inboxEl.appendChild(inboxList);
+
+    // Detail
+    const detailEl = document.getElementById('detail-frame');
+    clear(detailEl);
+    const sel = state.inbox.find(function(e) { return e.id === state.selectedEmailId; });
+    if (!sel) {
+      detailEl.appendChild(mkEl('div', { cls: 'empty', text: 'Select a message to read.' }));
+    } else {
+      const dc = mkEl('div', { cls: 'detail-content' });
+      const hr = mkEl('div', { cls: 'header-row' });
+      hr.appendChild(mkEl('div', { cls: 'field-label', text: 'From:' }));
+      hr.appendChild(mkEl('div', { cls: 'field-val', text: sel.sender }));
+      hr.appendChild(mkEl('div', { cls: 'field-label', text: 'Subj:' }));
+      hr.appendChild(mkEl('div', { cls: 'field-val', text: sel.subject }));
+      dc.appendChild(hr);
+      dc.appendChild(mkEl('div', { cls: 'body-text', text: sel.body }));
+
+      if (sel.resolved) {
+        dc.appendChild(mkEl('div', { cls: 'resolved-banner', text: 'Already resolved: ' + sel.chosenLabel }));
+      } else {
+        const optsRow = mkEl('div', { cls: 'options-row' });
+        optsRow.appendChild(mkEl('div', { cls: 'options-label', text: 'Choose response:' }));
+        for (let j = 0; j < sel.options.length; j++) {
+          const opt = sel.options[j];
+          const isIgnore = /ignore/i.test(opt.label);
+          const b = mkEl('button', { cls: 'btn' + (isIgnore ? ' btn-ignore' : ''), text: opt.label });
+          (function(idx) { b.onclick = function() { chooseOption(sel.id, idx); }; })(j);
+          optsRow.appendChild(b);
+        }
+        dc.appendChild(optsRow);
+      }
+      detailEl.appendChild(dc);
+    }
+
+    // Tick
+    document.getElementById('tick-btn').disabled = !!state.gameOver;
+
+    // Log strip
+    const logStrip = document.getElementById('log-strip');
+    clear(logStrip);
+    if (state.log.length === 0) {
+      logStrip.appendChild(document.createTextNode('System ready.'));
+    } else {
+      const last = state.log[0];
+      logStrip.appendChild(mkEl('span', { cls: 'wk', text: 'W' + last.week + ': ' }));
+      logStrip.appendChild(document.createTextNode(last.text));
+    }
+
+    // Status bar
+    const statusLeft = document.getElementById('status-left');
+    if (state.gameOver) statusLeft.textContent = 'Term ended';
+    else {
+      const unresolved = state.inbox.filter(function(e) { return !e.resolved; }).length;
+      statusLeft.textContent = unresolved + ' message' + (unresolved === 1 ? '' : 's') + ' unresolved';
+    }
+  }
+
+  function showEndScreen() {
+    const overlay = document.getElementById('end-overlay');
+    overlay.classList.add('show');
+    document.getElementById('end-title').textContent = 'End of Term — Week ' + (state.week - 1);
+    document.getElementById('end-icon').textContent = state.gameOver.result === 'win' ? '✓' : '✕';
+    const v = document.getElementById('end-verdict');
+    v.textContent = state.gameOver.verdict;
+    v.className = 'verdict ' + (state.gameOver.result === 'win' ? 'win' : 'lose');
+    document.getElementById('end-takeaway').textContent = state.gameOver.takeaway;
+
+    const summary = document.getElementById('end-summary');
+    clear(summary);
+    const items = [
+      { label: 'Cash', val: fmtMoney(state.cash) },
+      { label: 'KLMC debt', val: fmtMoney(state.klmcDebt) },
+      { label: 'Coverage', val: state.lastCoverage === null ? '—' : Math.round(state.lastCoverage * 100) + '%' },
+    ];
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      const cell = mkEl('div', { cls: 'summary-cell' });
+      cell.appendChild(mkEl('div', { cls: 'label', text: it.label }));
+      cell.appendChild(mkEl('div', { cls: 'val', text: it.val }));
+      summary.appendChild(cell);
+    }
+  }
+
+  // Clock
+  function tickClock() {
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    document.getElementById('status-right').textContent = 'PRISTINA · ' + hh + ':' + mm;
+  }
+  setInterval(tickClock, 30000);
+  tickClock();
+
+  document.getElementById('tick-btn').addEventListener('click', tick);
+  document.getElementById('replay-btn').addEventListener('click', function() {
+    state = makeInitialState();
+    document.getElementById('end-overlay').classList.remove('show');
+    generateInbox();
+    render();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !state.gameOver) {
+      const tickBtn = document.getElementById('tick-btn');
+      if (!tickBtn.disabled) tick();
+    }
+  });
+
+  // Initial setup
+  generateInbox();
+  render();
+
+})();
+</script>
+
+</body>
+</html>
