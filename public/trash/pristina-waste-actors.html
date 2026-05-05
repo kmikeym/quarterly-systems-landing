@@ -6,20 +6,12 @@
 <title>Pristina Waste Management Actor Map</title>
 <style>
 :root {
-  --bg: #faf9f5;
-  --text-primary: #1f1f1c;
-  --text-secondary: #5f5e5a;
-  --legend-text: #5f5e5a;
+  color-scheme: dark;
+  --bg: #0a0a0a;
+  --text-primary: #f0eee6;
+  --text-secondary: #b4b2a9;
+  --legend-text: #8a8a8a;
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0a0a0a;
-    --text-primary: #f0eee6;
-    --text-secondary: #b4b2a9;
-    --legend-text: #8a8a8a;
-  }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -106,51 +98,29 @@ body {
 }
 
 /* Coral - Operational core */
-.c-coral { background: #FAECE7; border-color: #993C1D; }
-.c-coral .name { color: #4A1B0C; }
-.c-coral .role { color: #993C1D; }
+.c-coral { background: #712B13; border-color: #F0997B; }
+.c-coral .name { color: #FAECE7; }
+.c-coral .role { color: #F5C4B3; }
 
 /* Blue - Municipal */
-.c-blue { background: #E6F1FB; border-color: #185FA5; }
-.c-blue .name { color: #042C53; }
-.c-blue .role { color: #185FA5; }
+.c-blue { background: #0C447C; border-color: #85B7EB; }
+.c-blue .name { color: #E6F1FB; }
+.c-blue .role { color: #B5D4F4; }
 
 /* Purple - National */
-.c-purple { background: #EEEDFE; border-color: #534AB7; }
-.c-purple .name { color: #26215C; }
-.c-purple .role { color: #534AB7; }
+.c-purple { background: #3C3489; border-color: #AFA9EC; }
+.c-purple .name { color: #EEEDFE; }
+.c-purple .role { color: #CECBF6; }
 
 /* Teal - External */
-.c-teal { background: #E1F5EE; border-color: #0F6E56; }
-.c-teal .name { color: #04342C; }
-.c-teal .role { color: #0F6E56; }
+.c-teal { background: #085041; border-color: #5DCAA5; }
+.c-teal .name { color: #E1F5EE; }
+.c-teal .role { color: #9FE1CB; }
 
 /* Amber - Citizens */
-.c-amber { background: #FAEEDA; border-color: #854F0B; }
-.c-amber .name { color: #412402; }
-.c-amber .role { color: #854F0B; }
-
-@media (prefers-color-scheme: dark) {
-  .c-coral { background: #712B13; border-color: #F0997B; }
-  .c-coral .name { color: #FAECE7; }
-  .c-coral .role { color: #F5C4B3; }
-
-  .c-blue { background: #0C447C; border-color: #85B7EB; }
-  .c-blue .name { color: #E6F1FB; }
-  .c-blue .role { color: #B5D4F4; }
-
-  .c-purple { background: #3C3489; border-color: #AFA9EC; }
-  .c-purple .name { color: #EEEDFE; }
-  .c-purple .role { color: #CECBF6; }
-
-  .c-teal { background: #085041; border-color: #5DCAA5; }
-  .c-teal .name { color: #E1F5EE; }
-  .c-teal .role { color: #9FE1CB; }
-
-  .c-amber { background: #633806; border-color: #EF9F27; }
-  .c-amber .name { color: #FAEEDA; }
-  .c-amber .role { color: #FAC775; }
-}
+.c-amber { background: #633806; border-color: #EF9F27; }
+.c-amber .name { color: #FAEEDA; }
+.c-amber .role { color: #FAC775; }
 </style>
 </head>
 <body>
