@@ -56,22 +56,31 @@ import Layout from '../layouts/Layout.astro';
 				<div class="text-xs uppercase tracking-widest text-purple-600 mb-4">Investment Memo · May 2026</div>
 				<h1 class="text-5xl font-bold text-gray-900 mb-4 tracking-tight">Dead Internet Theory</h1>
 				<p class="text-xl text-gray-600 mb-8">A proposed first-money-in investment from the KmikeyM shareholder fund into Paizley Lee's Dead Internet Theory tour.</p>
-				<div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm border-t border-gray-200 pt-6">
-					<div>
-						<div class="text-xs uppercase tracking-wider text-gray-400 mb-1">Investor</div>
-						<div class="font-semibold text-gray-900">KmikeyM</div>
-					</div>
-					<div>
-						<div class="text-xs uppercase tracking-wider text-gray-400 mb-1">Recipient</div>
-						<div class="font-semibold text-gray-900">Paizley Lee</div>
-					</div>
-					<div>
-						<div class="text-xs uppercase tracking-wider text-gray-400 mb-1">Amount</div>
-						<div class="font-semibold text-gray-900">$5,000</div>
-					</div>
-					<div>
-						<div class="text-xs uppercase tracking-wider text-gray-400 mb-1">Cap</div>
-						<div class="font-semibold text-gray-900">2x ($10,000)</div>
+
+				<!-- Hero image with overlay stats -->
+				<div class="relative rounded-xl overflow-hidden border border-gray-300 shadow-sm">
+					<img src="/dit/hero.jpg" alt="Dead Internet Theory" class="block w-full h-auto" />
+
+					<!-- Stats overlay (FLOSSK 404-card aesthetic: black panel, mono font, green accent labels) -->
+					<div class="absolute inset-x-4 bottom-4 sm:inset-x-6 sm:bottom-6 md:inset-x-10 md:bottom-8 bg-black/90 rounded-md px-4 py-4 sm:px-6 sm:py-5 backdrop-blur-sm">
+						<div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 font-mono">
+							<div>
+								<div class="text-[10px] uppercase tracking-[0.2em] mb-1" style="color:#6cff8a">Investor</div>
+								<div class="text-sm sm:text-base text-white tracking-wide">KmikeyM</div>
+							</div>
+							<div>
+								<div class="text-[10px] uppercase tracking-[0.2em] mb-1" style="color:#6cff8a">Recipient</div>
+								<div class="text-sm sm:text-base text-white tracking-wide">Paizley Lee</div>
+							</div>
+							<div>
+								<div class="text-[10px] uppercase tracking-[0.2em] mb-1" style="color:#6cff8a">Amount</div>
+								<div class="text-sm sm:text-base text-white tracking-wide">$5,000</div>
+							</div>
+							<div>
+								<div class="text-[10px] uppercase tracking-[0.2em] mb-1" style="color:#6cff8a">Cap</div>
+								<div class="text-sm sm:text-base text-white tracking-wide">2x ($10,000)</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -103,11 +112,11 @@ import Layout from '../layouts/Layout.astro';
 					</div>
 					<div>
 						<div class="text-xs uppercase tracking-wider text-gray-400 mb-2">Tour Arc</div>
-						<p>LA proof-of-concept (May 17, 2026, self-funded). Brooklyn (June). Brooklyn (August). NYC long-form 7-day game, ~200 players (September).</p>
+						<p>Begins with the LA proof-of-concept on May 17, 2026, followed by events in Brooklyn, NYC, and more.</p>
 					</div>
 					<div>
 						<div class="text-xs uppercase tracking-wider text-gray-400 mb-2">Raise</div>
-						<p>$15K mid-tier raise. KmikeyM's $5K is the first slug; remainder closes via Paizley's network.</p>
+						<p>KmikeyM is first-money in on a larger raise. Paizley's fundraising continues.</p>
 					</div>
 				</div>
 			</div>
@@ -318,23 +327,6 @@ import Layout from '../layouts/Layout.astro';
 
 				</div>
 
-				<!-- Cumulative summary -->
-				<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 bg-white rounded-xl p-6 border border-gray-200">
-					<div class="text-center md:border-r md:border-gray-200 md:pr-4">
-						<div class="text-xs uppercase tracking-wider text-gray-400 mb-1">Total tour gross</div>
-						<div class="text-3xl font-bold text-gray-900" id="summary-total-gross">$70,000</div>
-					</div>
-					<div class="text-center md:border-r md:border-gray-200 md:pr-4">
-						<div class="text-xs uppercase tracking-wider text-gray-400 mb-1">KmikeyM total return</div>
-						<div class="text-3xl font-bold text-purple-600" id="summary-total-return">$10,000</div>
-						<div class="text-xs text-gray-500 mt-1" id="summary-rate">2x cap · 14.3% of gross</div>
-					</div>
-					<div class="text-center">
-						<div class="text-xs uppercase tracking-wider text-gray-400 mb-1">Cap reached</div>
-						<div class="text-3xl font-bold text-gray-900" id="summary-cap-event">After Event 3</div>
-						<div class="text-xs text-gray-500 mt-1" id="summary-cap-detail">after Sept 2026</div>
-					</div>
-				</div>
 			</div>
 		</section>
 
@@ -350,125 +342,6 @@ import Layout from '../layouts/Layout.astro';
 					This matters when she's raising new capital, undergoing diligence, or simply wants the cleanest possible balance sheet. KmikeyM is a partner now and a closed item later, on her schedule.
 				</p>
 
-				<div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
-					<div class="text-xs uppercase tracking-wider text-gray-400 mb-4">Buyout schedule (calculated from your projection above)</div>
-					<div class="space-y-3">
-						<div class="flex justify-between items-center pb-3 border-b border-gray-200">
-							<span class="text-gray-700">After Event 1 (<span id="buyout-recv-1">$2,000</span> received)</span>
-							<span class="font-semibold text-gray-900"><span id="buyout-clear-1">$8,000</span> to clear</span>
-						</div>
-						<div class="flex justify-between items-center pb-3 border-b border-gray-200">
-							<span class="text-gray-700">After Event 2 (<span id="buyout-recv-2">$4,500</span> received)</span>
-							<span class="font-semibold text-gray-900"><span id="buyout-clear-2">$5,500</span> to clear</span>
-						</div>
-						<div class="flex justify-between items-center">
-							<span class="text-gray-700">After Event 3 (<span id="buyout-recv-3">$6,300</span> received)</span>
-							<span class="font-semibold text-gray-900"><span id="buyout-clear-3">$3,700</span> to clear</span>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- Vote Phases -->
-		<section class="py-20 bg-gray-50 border-y border-gray-200">
-			<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-				<div class="text-xs uppercase tracking-widest text-purple-600 mb-3">The Phases</div>
-				<h2 class="text-3xl font-bold text-gray-900 mb-12">Vote Timeline & Positioning</h2>
-
-				<div class="space-y-6">
-					<!-- Phase 1 -->
-					<div class="flex gap-6 items-start">
-						<div class="flex-shrink-0 w-16 text-right">
-							<div class="text-xs uppercase tracking-wider text-gray-400">Phase 1</div>
-							<div class="text-sm font-semibold text-gray-900">Lock</div>
-						</div>
-						<div class="w-px bg-gray-300 self-stretch"></div>
-						<div class="flex-1 pb-2">
-							<h3 class="text-lg font-semibold text-gray-900">Terms locked privately</h3>
-							<p class="text-gray-600 mt-1">Mike, Marcus, and Paizley resolve open items in a shared sheet. Inner mechanics stay private under the standing <em>New Vote Terms of Engagement</em> policy. Headline ($5K + soft-circle endorsement) becomes the public ask.</p>
-						</div>
-					</div>
-
-					<!-- Phase 2 -->
-					<div class="flex gap-6 items-start">
-						<div class="flex-shrink-0 w-16 text-right">
-							<div class="text-xs uppercase tracking-wider text-gray-400">Phase 2</div>
-							<div class="text-sm font-semibold text-gray-900">~ May 7</div>
-						</div>
-						<div class="w-px bg-gray-300 self-stretch"></div>
-						<div class="flex-1 pb-2">
-							<h3 class="text-lg font-semibold text-gray-900">Vote opens at vote.kmikeym.com</h3>
-							<p class="text-gray-600 mt-1">Public 14-day shareholder vote. Long-form blog post on kmikeym.com explains the case. Tighter Substack version goes to news.kmikeym.com. Vote page is the binary YES/NO.</p>
-						</div>
-					</div>
-
-					<!-- Phase 3 -->
-					<div class="flex gap-6 items-start">
-						<div class="flex-shrink-0 w-16 text-right">
-							<div class="text-xs uppercase tracking-wider text-gray-400">Phase 3</div>
-							<div class="text-sm font-semibold text-gray-900">~ May 11</div>
-						</div>
-						<div class="w-px bg-gray-300 self-stretch"></div>
-						<div class="flex-1 pb-2">
-							<h3 class="text-lg font-semibold text-gray-900">Wire moves</h3>
-							<p class="text-gray-600 mt-1">Vote closes, $5,000 wires from KmikeyM shareholder fund to Paizley. KmikeyM is named first-money-in on Paizley's external materials.</p>
-						</div>
-					</div>
-
-					<!-- Phase 4 -->
-					<div class="flex gap-6 items-start">
-						<div class="flex-shrink-0 w-16 text-right">
-							<div class="text-xs uppercase tracking-wider text-gray-400">Phase 4</div>
-							<div class="text-sm font-semibold text-gray-900">May 17</div>
-						</div>
-						<div class="w-px bg-gray-300 self-stretch"></div>
-						<div class="flex-1 pb-2">
-							<h3 class="text-lg font-semibold text-gray-900">LA proof-of-concept runs</h3>
-							<p class="text-gray-600 mt-1">Self-funded Paizley event. Not counted in payback structure. Sets the format that the paid Brooklyn and NYC events build on.</p>
-						</div>
-					</div>
-
-					<!-- Phase 5 -->
-					<div class="flex gap-6 items-start">
-						<div class="flex-shrink-0 w-16 text-right">
-							<div class="text-xs uppercase tracking-wider text-gray-400">Phase 5</div>
-							<div class="text-sm font-semibold text-gray-900">Jun – Aug</div>
-						</div>
-						<div class="w-px bg-gray-300 self-stretch"></div>
-						<div class="flex-1 pb-2">
-							<h3 class="text-lg font-semibold text-gray-900">Stage 1 payback (25%)</h3>
-							<p class="text-gray-600 mt-1">Brooklyn #1 returns $2,000. Stage 1 cap ($5,000 to KmikeyM) reaches mid-Brooklyn-#2. Principal recovered four months after wire.</p>
-						</div>
-					</div>
-
-					<!-- Phase 6 -->
-					<div class="flex gap-6 items-start">
-						<div class="flex-shrink-0 w-16 text-right">
-							<div class="text-xs uppercase tracking-wider text-gray-400">Phase 6</div>
-							<div class="text-sm font-semibold text-gray-900">Aug – Sep</div>
-						</div>
-						<div class="w-px bg-gray-300 self-stretch"></div>
-						<div class="flex-1 pb-2">
-							<h3 class="text-lg font-semibold text-gray-900">Stage 2 ride-along (10%)</h3>
-							<p class="text-gray-600 mt-1">Rate drops to 10%. Tail of Brooklyn #2 plus the front of NYC long-form. Cap likely hits early in NYC; deal closes.</p>
-						</div>
-					</div>
-
-					<!-- Phase 7 -->
-					<div class="flex gap-6 items-start">
-						<div class="flex-shrink-0 w-16 text-right">
-							<div class="text-xs uppercase tracking-wider text-gray-400">Phase 7</div>
-							<div class="text-sm font-semibold text-gray-900">Resolution</div>
-						</div>
-						<div class="w-px bg-gray-300 self-stretch"></div>
-						<div class="flex-1">
-							<h3 class="text-lg font-semibold text-gray-900">Cap, buyout, or expiry</h3>
-							<p class="text-gray-600 mt-1">Three possible endings. (1) <strong>Cap reached</strong> at $10K return — most likely outcome under tour-runs-as-projected scenario. (2) <strong>Paizley buyout</strong> — she pays remaining balance to clear books, useful if she's raising new capital. (3) <strong>Term expiry</strong> — long-tail backstop if events stall and cap is never reached. Recommended term: 5–7 years.</p>
-						</div>
-					</div>
-
-				</div>
 			</div>
 		</section>
 
@@ -510,10 +383,10 @@ import Layout from '../layouts/Layout.astro';
 				<div class="text-xs uppercase tracking-widest text-purple-600 mb-3">The Honest Read</div>
 				<h2 class="text-3xl font-bold text-gray-900 mb-6">Risk</h2>
 				<p class="text-lg text-gray-700 leading-relaxed mb-4">
-					This is the first time KmikeyM has deployed shareholder-fund capital as risk capital. Saying yes sets the precedent that the fund can be used this way. The amount is sized to be loseable; a series of similar deals would weaken the fund's redemption posture.
+					This is the first time KmikeyM has deployed shareholder-fund capital as risk capital. Saying yes sets the precedent that the fund can be used this way. The amount is sized to be loseable; even a full loss of funds has no impact on redemption.
 				</p>
 				<p class="text-lg text-gray-700 leading-relaxed mb-4">
-					KmikeyM accepts loss-of-principal risk. There is no personal guarantee, no collateral, no recourse against non-performance other than the term limit. If the tour stalls before NYC, returns will be partial. Mike is in Kosovo through early June and cannot help produce events directly; he is a financial backer, not an operator.
+					KmikeyM accepts loss-of-principal risk. There is no personal guarantee, no collateral, no recourse against non-performance other than the term limit. If the tour stalls before NYC, returns will be partial.
 				</p>
 				<p class="text-lg text-gray-700 leading-relaxed">
 					The thesis-fit between Dead Internet Theory and KmikeyM is the strongest non-KmikeyM thesis-fit in years. That is also a bias. The case stands on the structure, not on enthusiasm.
@@ -661,20 +534,11 @@ import Layout from '../layouts/Layout.astro';
 			];
 
 			let cum = 0;
-			let totalGross = 0;
-			let capEventNum = null;
-			const cumAfterEvent = [];
 
 			for (let i = 0; i < 4; i++) {
 				const eventId = i + 1;
 				const r = calcEvent(grosses[i], cum);
-				totalGross += r.gross;
 				cum = r.cumulative;
-				cumAfterEvent.push(cum);
-
-				if (cum >= STAGE2_CAP && capEventNum === null) {
-					capEventNum = eventId;
-				}
 
 				updateBar(eventId, r);
 				updateLegend(eventId, r);
@@ -682,35 +546,6 @@ import Layout from '../layouts/Layout.astro';
 				const cumEl = document.getElementById('cum-' + eventId);
 				cumEl.textContent = fmt(cum);
 				cumEl.className = cum >= STAGE2_CAP ? 'text-green-600' : 'text-purple-600';
-			}
-
-			// Update summary
-			document.getElementById('summary-total-gross').textContent = fmt(totalGross);
-			document.getElementById('summary-total-return').textContent = fmt(cum);
-
-			const ratePct = totalGross > 0 ? (cum / totalGross * 100).toFixed(1) : '0';
-			const ratePrefix = cum >= STAGE2_CAP ? '2x cap · ' : '';
-			document.getElementById('summary-rate').textContent = ratePrefix + ratePct + '% of gross';
-
-			const capEventEl = document.getElementById('summary-cap-event');
-			const capDetailEl = document.getElementById('summary-cap-detail');
-			if (capEventNum !== null) {
-				const eventNames = ['', 'Event 1', 'Event 2', 'Event 3', 'Future events'];
-				const eventDates = ['', 'June 2026', 'August 2026', 'September 2026', 'after Sept 2026'];
-				capEventEl.textContent = capEventNum <= 3 ? ('During Event ' + capEventNum) : 'After Event 3';
-				capDetailEl.textContent = eventDates[capEventNum];
-			} else {
-				capEventEl.textContent = 'Not reached';
-				capDetailEl.textContent = fmt(STAGE2_CAP - cum) + ' short of cap';
-			}
-
-			// Update buyout schedule (Events 1-3 only; Event 4+ is sandbox)
-			for (let i = 0; i < 3; i++) {
-				const id = i + 1;
-				const recv = cumAfterEvent[i];
-				const clear = Math.max(0, STAGE2_CAP - recv);
-				document.getElementById('buyout-recv-' + id).textContent = fmt(recv);
-				document.getElementById('buyout-clear-' + id).textContent = fmt(clear);
 			}
 		}
 
