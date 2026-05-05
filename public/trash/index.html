@@ -238,6 +238,115 @@
     display: none;
   }
 
+  /* ===== Flow-diagram variant (Slide 7) ===== */
+  .slide.flow .still {
+    display: block;
+    padding: 24px 28px;
+    position: relative;
+  }
+  .slide.flow .still .label { display: none; }
+  .flow-grid {
+    display: grid;
+    grid-template-areas:
+      "a-team a-arr1 a-research a-arr2 a-model a-arr3 connect"
+      "b-team b-arr1 b-research b-arr2 b-model b-arr3 connect"
+      "c-team c-arr1 c-research c-arr2 c-model c-arr3 connect";
+    grid-template-columns: auto auto auto auto auto auto auto;
+    grid-template-rows: 1fr 1fr 1fr;
+    column-gap: 6px;
+    row-gap: 18px;
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+  }
+  .flow-grid .build {
+    display: contents;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  .flow-grid .build > * {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .flow-grid .build.visible > * {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .flow-cell {
+    background: rgba(8,8,8,0.85);
+    border: 1.5px solid var(--accent);
+    border-radius: 4px;
+    padding: 10px 16px;
+    text-align: center;
+    min-width: 120px;
+    font-family: var(--mono);
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .flow-cell.team {
+    font-size: clamp(13px, 1.9vh, 20px);
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .flow-cell .title {
+    font-size: clamp(12px, 1.7vh, 18px);
+    font-weight: 600;
+  }
+  .flow-cell .subtitle {
+    font-size: clamp(10px, 1.3vh, 13px);
+    color: var(--accent);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+    opacity: 0.85;
+  }
+  .flow-cell.connect {
+    background: rgba(127,255,155,0.08);
+    border: 2px solid var(--accent);
+    padding: 18px 26px;
+    height: 90%;
+    min-width: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flow-cell.connect .title {
+    font-size: clamp(16px, 2.5vh, 28px);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .flow-arrow {
+    width: 38px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  .flow-arrow::before {
+    content: '';
+    flex: 1;
+    height: 1.5px;
+    background: var(--ink);
+    opacity: 0.6;
+  }
+  .flow-arrow::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 8px solid var(--ink);
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    margin-left: -1px;
+    opacity: 0.85;
+  }
+
   /* Auto-show caption pair (Slide 4: movie title labels under each image) */
   .still .captions {
     position: absolute;
@@ -564,7 +673,7 @@
 </section>
 
 <!-- ============= SLIDE 7 — THE FORMAT ============= -->
-<section class="slide builds-side" data-num="7">
+<section class="slide flow" data-num="7">
   <div class="topbar">
     <span class="title">Trash, Please · FLOSSK / Prishtina Hackerspace</span>
     <div class="meta">
@@ -574,17 +683,38 @@
   </div>
   <div class="stage">
     <div class="still">
-      <img src="images/05-dumpster.png" alt="Hackers — dumpster-diving scene" onerror="this.remove()">
-      <div class="builds">
-        <div class="build">Teams</div>
-        <div class="build">Research</div>
-        <div class="build">Build</div>
-        <div class="build">Connect</div>
-      </div>
-      <div class="label">
-        <span class="tag">Still</span>
-        <span class="desc">Drop file at: <code>images/05-dumpster.png</code></span>
-        <span class="alt">Hackers — dumpster-diving scene · the team digging into trash</span>
+      <div class="flow-grid">
+        <!-- Row A -->
+        <div class="build flow-row">
+          <div class="flow-cell team" style="grid-area: a-team">Team A</div>
+          <div class="flow-arrow" style="grid-area: a-arr1"></div>
+          <div class="flow-cell" style="grid-area: a-research"><div class="title">Research</div><div class="subtitle">Municipal collection</div></div>
+          <div class="flow-arrow" style="grid-area: a-arr2"></div>
+          <div class="flow-cell" style="grid-area: a-model"><div class="title">Model / Build</div><div class="subtitle">Inputs + Outputs</div></div>
+        </div>
+        <!-- Row B -->
+        <div class="build flow-row">
+          <div class="flow-cell team" style="grid-area: b-team">Team B</div>
+          <div class="flow-arrow" style="grid-area: b-arr1"></div>
+          <div class="flow-cell" style="grid-area: b-research"><div class="title">Research</div><div class="subtitle">Recycling stream</div></div>
+          <div class="flow-arrow" style="grid-area: b-arr2"></div>
+          <div class="flow-cell" style="grid-area: b-model"><div class="title">Model / Build</div><div class="subtitle">Inputs + Outputs</div></div>
+        </div>
+        <!-- Row C -->
+        <div class="build flow-row">
+          <div class="flow-cell team" style="grid-area: c-team">Team C</div>
+          <div class="flow-arrow" style="grid-area: c-arr1"></div>
+          <div class="flow-cell" style="grid-area: c-research"><div class="title">Research</div><div class="subtitle">Informal scavenging</div></div>
+          <div class="flow-arrow" style="grid-area: c-arr2"></div>
+          <div class="flow-cell" style="grid-area: c-model"><div class="title">Model / Build</div><div class="subtitle">Inputs + Outputs</div></div>
+        </div>
+        <!-- Connect (final reveal: 3 arrows + Connect box) -->
+        <div class="build flow-connect">
+          <div class="flow-arrow" style="grid-area: a-arr3"></div>
+          <div class="flow-arrow" style="grid-area: b-arr3"></div>
+          <div class="flow-arrow" style="grid-area: c-arr3"></div>
+          <div class="flow-cell connect" style="grid-area: connect"><div class="title">Connect</div></div>
+        </div>
       </div>
     </div>
     <div class="script">
@@ -636,7 +766,7 @@
       </div>
     </div>
   </div>
-  <a class="win95-app-icon" href="sim-demo/" target="_blank" title="Click to launch the Pastrimi CEO simulation">
+  <a class="win95-app-icon" href="simulation.html" target="_blank" title="Click to launch the Pastrimi CEO simulation">
     <div class="icon-box"><span class="icon-glyph">🗑️</span></div>
     <div class="label">Trash_Please<br>.exe</div>
   </a>
