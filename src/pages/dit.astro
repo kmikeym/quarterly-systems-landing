@@ -4,15 +4,30 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="DIT Investment Memo - Quarterly Systems">
 
-	<!-- Password Gate (client-side; placeholder password = "kidgrandma") -->
-	<div id="auth-gate" class="fixed inset-0 z-50 bg-white flex items-center justify-center">
-		<div class="max-w-md w-full mx-auto px-6">
+	<!-- Email Gate (HubSpot form primary; access code fallback) -->
+	<div id="auth-gate" class="fixed inset-0 z-50 bg-white flex items-center justify-center overflow-y-auto">
+		<div class="max-w-md w-full mx-auto px-6 py-12">
 			<div class="text-center mb-8">
 				<div class="text-xs uppercase tracking-widest text-gray-400 mb-3">Quarterly Systems</div>
 				<h1 class="text-2xl font-bold text-gray-900">Confidential Memo</h1>
-				<p class="text-sm text-gray-500 mt-2">This document is shared by invitation only.</p>
+				<p class="text-sm text-gray-500 mt-2">Drop your email to access the Dead Internet Theory investment memo.</p>
 			</div>
-			<form id="auth-form" class="space-y-4">
+
+			<!-- HubSpot form mounts here -->
+			<div id="hubspot-form-target"></div>
+
+			<!-- Verifying state (after form submit) -->
+			<div id="auth-verifying" class="hidden text-center mt-6">
+				<div class="text-sm text-gray-700 font-medium">Verifying access…</div>
+				<div class="mt-2 text-xs text-gray-500">A copy of the access link is on its way to your inbox.</div>
+			</div>
+
+			<!-- Code fallback -->
+			<div class="mt-8 text-center">
+				<button id="auth-code-toggle" type="button" class="text-xs text-gray-500 hover:text-purple-600 underline">Have an access code?</button>
+			</div>
+
+			<form id="auth-form" class="space-y-3 mt-4 hidden">
 				<input
 					id="auth-input"
 					type="password"
@@ -28,11 +43,26 @@ import Layout from '../layouts/Layout.astro';
 				</button>
 				<div id="auth-error" class="text-sm text-red-600 text-center hidden">Incorrect access code.</div>
 			</form>
+
 			<div class="mt-8 text-center">
 				<a href="/" class="text-xs text-gray-400 hover:text-gray-600">← Quarterly Systems</a>
 			</div>
 		</div>
 	</div>
+
+	<style is:global>
+		/* HubSpot form styling to match the gate aesthetic */
+		#hubspot-form-target form { font-family: inherit; }
+		#hubspot-form-target .hs-form-field { margin-bottom: 0.75rem; }
+		#hubspot-form-target label { display: block; font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem; font-weight: 500; }
+		#hubspot-form-target label .hs-form-required { color: #dc2626; margin-left: 2px; }
+		#hubspot-form-target input.hs-input { width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; color: #111827; background: white; }
+		#hubspot-form-target input.hs-input:focus { outline: none; border-color: transparent; box-shadow: 0 0 0 2px #a855f7; }
+		#hubspot-form-target .hs-button { width: 100%; background: #9333ea; color: white; font-weight: 500; padding: 0.75rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 1rem; transition: background 0.15s; margin-top: 0.5rem; }
+		#hubspot-form-target .hs-button:hover { background: #7e22ce; }
+		#hubspot-form-target .hs-error-msgs, #hubspot-form-target .hs-error-msg { color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; list-style: none; padding: 0; }
+		#hubspot-form-target .submitted-message { color: #6b7280; font-size: 0.875rem; text-align: center; }
+	</style>
 
 	<div id="memo-content" class="hidden">
 
@@ -558,41 +588,78 @@ import Layout from '../layouts/Layout.astro';
 		// Initial render
 		recalc();
 
-		// ── Password gate ─────────────────────────────────────────────────
-		// Password: "kidgrandma" (placeholder; change before sharing)
+		// ── Auth gate: email form (primary) + access code (fallback) ──────
 		const PASSWORD = 'kidgrandma';
 
 		const gate = document.getElementById('auth-gate');
 		const memo = document.getElementById('memo-content');
-		const form = document.getElementById('auth-form');
-		const input = document.getElementById('auth-input');
-		const errEl = document.getElementById('auth-error');
+		const verifying = document.getElementById('auth-verifying');
+		const codeToggle = document.getElementById('auth-code-toggle');
+		const codeForm = document.getElementById('auth-form');
+		const codeInput = document.getElementById('auth-input');
+		const codeErr = document.getElementById('auth-error');
+		const hsTarget = document.getElementById('hubspot-form-target');
 
 		function unlock() {
 			gate.style.display = 'none';
 			memo.classList.remove('hidden');
+			sessionStorage.setItem('dit-auth', 'ok');
 		}
 
-		// Auto-unlock if previously authenticated this session
+		function unlockWithBeat() {
+			hsTarget.classList.add('hidden');
+			verifying.classList.remove('hidden');
+			setTimeout(unlock, 1100);
+		}
+
+		// Auto-unlock paths
+		const urlParams = new URLSearchParams(window.location.search);
 		if (sessionStorage.getItem('dit-auth') === 'ok') {
 			unlock();
-		} else {
-			input.focus();
+		} else if ((urlParams.get('code') || '').toLowerCase() === PASSWORD) {
+			unlock();
 		}
 
-		form.addEventListener('submit', (e) => {
+		// Code fallback toggle
+		codeToggle.addEventListener('click', (e) => {
 			e.preventDefault();
-			const guess = input.value.trim().toLowerCase();
+			codeForm.classList.toggle('hidden');
+			if (!codeForm.classList.contains('hidden')) codeInput.focus();
+		});
+
+		// Code form submission
+		codeForm.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const guess = codeInput.value.trim().toLowerCase();
 			if (guess === PASSWORD) {
-				sessionStorage.setItem('dit-auth', 'ok');
-				errEl.classList.add('hidden');
+				codeErr.classList.add('hidden');
 				unlock();
 			} else {
-				errEl.classList.remove('hidden');
-				input.value = '';
-				input.focus();
+				codeErr.classList.remove('hidden');
+				codeInput.value = '';
+				codeInput.focus();
 			}
 		});
+
+		// HubSpot form embed (legacy v2 API for reliable onFormSubmitted callback)
+		const hsScript = document.createElement('script');
+		hsScript.src = 'https://js-eu1.hsforms.net/forms/v2.js';
+		hsScript.charset = 'utf-8';
+		hsScript.type = 'text/javascript';
+		hsScript.onload = () => {
+			if (window.hbspt) {
+				window.hbspt.forms.create({
+					region: 'eu1',
+					portalId: '148298560',
+					formId: '369b6ab0-5f6d-43e8-a5ec-3cc73a1524a0',
+					target: '#hubspot-form-target',
+					onFormSubmitted: () => {
+						unlockWithBeat();
+					}
+				});
+			}
+		};
+		document.head.appendChild(hsScript);
 	</script>
 
 </Layout>
