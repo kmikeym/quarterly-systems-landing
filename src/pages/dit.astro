@@ -113,10 +113,18 @@ import Layout from '../layouts/Layout.astro';
 					</div>
 				</div>
 
-					<!-- CTA links -->
-					<div class="mt-8 flex flex-col sm:flex-row gap-3 sm:gap-6 text-sm">
-						<a href="https://vote.kmikeym.com/k5m/questions/180" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold">Cast your vote →</a>
-						<a href="https://news.kmikeym.com/vote-5k-in-dead-internet-theory/" class="inline-flex items-center text-gray-600 hover:text-gray-800 underline">Long-form context: why I'm asking you to back Dead Internet Theory</a>
+					<!-- CTA cards (mirror Stage 1 / Stage 2 aesthetic, smaller) -->
+					<div class="mt-8 grid md:grid-cols-2 gap-4">
+						<a href="https://vote.kmikeym.com/k5m/questions/180" class="block bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-5 border border-purple-200 hover:border-purple-400 hover:shadow-md transition-all group">
+							<div class="text-xs uppercase tracking-wider text-purple-600 font-semibold mb-1">The Vote</div>
+							<div class="text-lg font-bold text-gray-900 group-hover:text-purple-700">Cast your vote &rarr;</div>
+							<div class="text-sm text-gray-600 mt-1">Closes Mon, May 11, 2026</div>
+						</a>
+						<a href="https://news.kmikeym.com/vote-5k-in-dead-internet-theory/" class="block bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-5 border border-blue-200 hover:border-blue-400 hover:shadow-md transition-all group">
+							<div class="text-xs uppercase tracking-wider text-blue-600 font-semibold mb-1">Long-form Context</div>
+							<div class="text-lg font-bold text-gray-900 group-hover:text-blue-700">Why I'm asking you to back DIT &rarr;</div>
+							<div class="text-sm text-gray-600 mt-1">The narrative version</div>
+						</a>
 					</div>
 			</div>
 		</section>
