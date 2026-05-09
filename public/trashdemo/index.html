@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HackTheTrash Mockups</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="page-head">
+  <h1>HackTheTrash UI Mockups</h1>
+  <p>Static HTML/CSS previews of key screens. Open in browser to inspect.</p>
+</header>
+
+<h2>1. Mobile - Submit Report</h2>
+<div class="frame device-mobile">
+  <div class="frame-label">Mobile / 380x800</div>
+  <div class="topbar"><span>Back</span><strong>Report Trash</strong><span></span></div>
+  <div class="pad">
+    <div class="label">Photos</div>
+    <div class="photo-drop"><div class="big-icon">+</div>Tap to add photo(s) - max 5</div>
+    <div class="label">Location</div>
+    <div class="map-mini"><div class="pin">PIN</div></div>
+    <div class="coords">Lat: 45.46420 / Lng: 9.19000</div>
+    <div class="space-top"><button class="btn btn-ghost">Use my location</button></div>
+    <div class="label">What kind of trash?</div>
+    <div class="chips">
+      <span class="chip active">Plastic</span>
+      <span class="chip">E-waste</span>
+      <span class="chip active">Hazardous</span>
+      <span class="chip">Construction</span>
+      <span class="chip">Organic</span>
+      <span class="chip">Other</span>
+    </div>
+    <div class="label">Size</div>
+    <div class="seg">
+      <button>Small</button>
+      <button class="active">Medium</button>
+      <button>Large</button>
+    </div>
+    <div class="label">Description (optional)</div>
+    <textarea rows="3" placeholder="e.g. Pile of debris near the park entrance"></textarea>
+    <div class="anon">[x] Submit anonymously</div>
+    <button class="btn btn-primary submit">SUBMIT REPORT</button>
+  </div>
+</div>
+
+<h2>2. Public Map (Desktop)</h2>
+<div class="frame">
+  <div class="frame-label">Desktop / 1280px</div>
+  <div class="topbar">
+    <span class="brand">HackTheTrash</span>
+    <div class="nav"><a>Map</a><a>Stats</a><a>About</a></div>
+    <div><button class="btn btn-ghost">Sign in</button> <button class="btn btn-primary">Report</button></div>
+  </div>
+  <div class="map-screen">
+    <div class="filters">
+      <h4>Status</h4>
+      <label><input type="checkbox" checked> Reported</label>
+      <label><input type="checkbox" checked> Verified</label>
+      <label><input type="checkbox"> Cleaned</label>
+      <h4>Severity</h4>
+      <label><input type="checkbox" checked> Small</label>
+      <label><input type="checkbox" checked> Medium</label>
+      <label><input type="checkbox" checked> Large</label>
+      <h4>Type</h4>
+      <label><input type="checkbox" checked> Plastic</label>
+      <label><input type="checkbox" checked> E-waste</label>
+      <label><input type="checkbox" checked> Hazardous</label>
+    </div>
+    <div class="map-big">
+      <div class="marker r" style="top:30%;left:25%"></div>
+      <div class="marker v" style="top:45%;left:40%"></div>
+      <div class="marker r" style="top:55%;left:60%"></div>
+      <div class="marker c" style="top:65%;left:35%"></div>
+      <div class="marker r" style="top:35%;left:70%"></div>
+      <div class="marker v" style="top:70%;left:55%"></div>
+      <div class="marker b" style="top:50%;left:50%"></div>
+      <div class="map-foot">Showing 247 reports - Last updated 2 min ago</div>
+    </div>
+  </div>
+</div>
+
+<h2>3. Authority Dashboard</h2>
+<div class="frame">
+  <div class="frame-label">Desktop / 1280px</div>
+  <div class="topbar">
+    <span class="brand">Dashboard - Comune di Milano</span>
+    <div class="nav"><a>Reports</a><a>Map</a><a>Analytics</a><a>Settings</a></div>
+    <button class="btn btn-ghost">Logout</button>
+  </div>
+  <div class="stats">
+    <div class="stat gry"><div class="l">Total</div><div class="v">247</div></div>
+    <div class="stat red"><div class="l">Reported</div><div class="v">42</div></div>
+    <div class="stat yel"><div class="l">Verified</div><div class="v">89</div></div>
+    <div class="stat grn"><div class="l">Cleaned</div><div class="v">116</div></div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Status</th><th>Severity</th><th>Description</th><th>AI Score</th><th>Created</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>#1247</td><td><span class="badge r">Reported</span></td><td>Large</td><td>Pile near park</td><td>0.91</td><td>1h ago</td></tr>
+      <tr><td>#1246</td><td><span class="badge v">Verified</span></td><td>Medium</td><td>Dumpster fire residue</td><td>0.87</td><td>3h ago</td></tr>
+      <tr><td>#1245</td><td><span class="badge c">Cleaned</span></td><td>Large</td><td>Construction debris</td><td>0.95</td><td>1d ago</td></tr>
+      <tr><td>#1244</td><td><span class="badge r">Reported</span></td><td>Small</td><td>Hazardous chemicals</td><td>0.82</td><td>5h ago</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>4. Landing Page</h2>
+<div class="frame">
+  <div class="frame-label">Desktop / 1280px</div>
+  <div class="topbar">
+    <span class="brand">HackTheTrash</span>
+    <div class="nav"><a>Map</a><a>How it works</a><a>About</a></div>
+    <div><button class="btn btn-ghost">Sign in</button> <button class="btn btn-primary">Report</button></div>
+  </div>
+  <div class="hero">
+    <h1>Together, we clean up our cities.</h1>
+    <p>Spot illegal trash? Snap a photo, drop a pin, change your community.</p>
+    <div class="hero-actions">
+      <button class="btn btn-primary big">Report Trash</button>
+      <button class="btn btn-ghost big">View Map</button>
+    </div>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><strong>Snap</strong><p>Photograph the dump</p></div>
+    <div class="step"><div class="n">2</div><strong>Locate</strong><p>Auto-detect or pin GPS</p></div>
+    <div class="step"><div class="n">3</div><strong>Submit</strong><p>Anonymous or signed-in</p></div>
+  </div>
+</div>
+
+<h2>Color Palette</h2>
+<div class="palette">
+  <div class="sw" style="background:#16A34A;color:#fff">Primary<br><small>#16A34A</small></div>
+  <div class="sw" style="background:#DC2626;color:#fff">Danger<br><small>#DC2626</small></div>
+  <div class="sw" style="background:#F59E0B;color:#fff">Warning<br><small>#F59E0B</small></div>
+  <div class="sw" style="background:#10B981;color:#fff">Success<br><small>#10B981</small></div>
+  <div class="sw" style="background:#111827;color:#fff">Text<br><small>#111827</small></div>
+</div>
+
+<footer class="page-foot">Built for a cleaner planet</footer>
+</body>
+</html>
